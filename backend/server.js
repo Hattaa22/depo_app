@@ -28,7 +28,12 @@ function midtransAuthHeader() {
 }
 
 const PORT = process.env.PORT || 3000;
-const JWT_SECRET = process.env.JWT_SECRET || 'depoair-dev-secret-change-in-production';
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  console.error('[FATAL] JWT_SECRET belum diset di file .env. Server dihentikan demi keamanan.');
+  console.error('        Salin backend/.env.example ke backend/.env dan isi JWT_SECRET dengan string acak yang rahasia.');
+  process.exit(1);
+}
 
 const app = express();
 app.use(cors());
@@ -1909,6 +1914,11 @@ app.post('/v1/transaksi', authMiddleware, async (req, res) => {
     const isQris = metode === 'qris';
     const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
     const trxId = uuidv4();
+
+    if (itemsIn.length === 0) {
+      await connection.rollback();
+      return res.status(400).json({ message: 'Transaksi harus memiliki minimal 1 item' });
+    }
     
     const items = [];
     let totalHarga = 0;
@@ -1916,7 +1926,11 @@ app.post('/v1/transaksi', authMiddleware, async (req, res) => {
     for (const itemIn of itemsIn) {
       const [prodRows] = await connection.query('SELECT * FROM produk WHERE id = ?', [itemIn.produkId]);
       const product = prodRows[0];
-      const hargaSatuan = product ? parseFloat(product.harga) : 0;
+      if (!product) {
+        await connection.rollback();
+        return res.status(400).json({ message: `Produk dengan id ${itemIn.produkId} tidak ditemukan` });
+      }
+      const hargaSatuan = parseFloat(product.harga);
       const jumlah = parseInt(itemIn.jumlah, 10) || 0;
       const subtotal = hargaSatuan * jumlah;
       totalHarga += subtotal;
@@ -1936,11 +1950,13 @@ app.post('/v1/transaksi', authMiddleware, async (req, res) => {
     const tipePembelian = body.tipePembelian === 'dikirim' ? 'dikirim' : 'di_depo';
     const pengirimCrewId = tipePembelian === 'dikirim' ? (body.pengirimCrewId || body.crewPengirimId || null) : null;
     if (tipePembelian === 'dikirim' && !pengirimCrewId) {
+      await connection.rollback();
       return res.status(400).json({ message: 'Crew pengirim wajib dipilih untuk transaksi dikirim' });
     }
     if (pengirimCrewId) {
       const [pengirimRows] = await connection.query('SELECT id FROM users WHERE id = ? AND role = "crew" AND is_aktif = 1', [pengirimCrewId]);
       if (pengirimRows.length === 0) {
+        await connection.rollback();
         return res.status(400).json({ message: 'Crew pengirim tidak valid' });
       }
     }
@@ -2042,7 +2058,10 @@ app.put('/v1/transaksi/:id/validasi', authMiddleware, async (req, res) => {
   await connection.beginTransaction();
   try {
     const [rows] = await connection.query('SELECT * FROM transaksi WHERE id = ?', [req.params.id]);
-    if (rows.length === 0) return res.status(404).json({ message: 'Transaksi tidak ditemukan' });
+    if (rows.length === 0) {
+      await connection.rollback();
+      return res.status(404).json({ message: 'Transaksi tidak ditemukan' });
+    }
     
     const t = rows[0];
     const { status } = req.body || {};

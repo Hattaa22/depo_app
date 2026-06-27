@@ -9,6 +9,7 @@ import '../../../config/api_config.dart';
 import '../../../config/app_theme.dart';
 import '../../../config/routes.dart';
 import '../../../services/api_service.dart';
+import '../../../utils/api_error_helper.dart';
 import '../../../utils/formatters.dart';
 
 class PembayaranQrScreen extends StatefulWidget {
@@ -65,7 +66,7 @@ class _PembayaranQrScreenState extends State<PembayaranQrScreen> {
       _jumlah.value = payment.jumlah;
       _expiredAt.value = Formatters.dateTime(DateTime.parse(payment.expiresAt));
     } catch (e) {
-      _errorMessage.value = 'Gagal memuat QRIS. Periksa koneksi internet.\n$e';
+      _errorMessage.value = ApiErrorHelper.message(e);
     } finally {
       _isLoading.value = false;
     }
@@ -110,7 +111,7 @@ class _PembayaranQrScreenState extends State<PembayaranQrScreen> {
         );
       }
     } catch (e) {
-      Get.snackbar('Error', 'Tidak dapat membuka browser: $e');
+      Get.snackbar('Error', 'Tidak dapat membuka browser. Coba lagi.');
     }
   }
 

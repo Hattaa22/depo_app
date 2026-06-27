@@ -46,3 +46,9 @@ app.*.map.json
 
 # FVM Version Cache
 .fvm/
+
+# Backend (Node.js) — secrets & dependencies
+backend/.env
+backend/node_modules/
+*.env
+!.env.example

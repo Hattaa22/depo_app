@@ -13,11 +13,17 @@ class ApiErrorHelper {
         case DioExceptionType.receiveTimeout:
           return connectionHelp();
         case DioExceptionType.badResponse:
+          final code = error.response?.statusCode;
+          // 502/503/504 berarti server backend tidak terjangkau lewat
+          // proxy/tunnel (mis. ngrok mati atau npm start belum jalan),
+          // bukan error logika dari aplikasi kita sendiri.
+          if (code == 502 || code == 503 || code == 504) {
+            return connectionHelp();
+          }
           final data = error.response?.data;
           if (data is Map && data['message'] != null) {
             return data['message'].toString();
           }
-          final code = error.response?.statusCode;
           if (code == 401) {
             return 'Sesi habis. Silakan login ulang.';
           }
@@ -26,10 +32,10 @@ class ApiErrorHelper {
           }
           return 'Server error ($code).';
         default:
-          return error.message ?? error.toString();
+          return 'Terjadi kesalahan saat menghubungi server. Coba lagi.';
       }
     }
-    return error.toString();
+    return 'Terjadi kesalahan yang tidak terduga. Coba lagi.';
   }
 
   static String connectionHelp() {
