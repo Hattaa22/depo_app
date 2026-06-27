@@ -1,0 +1,1515 @@
+================================================================================
+                    DEPO AIR - DETAIL USECASE & ACTIVITY
+                        Dokumentasi Lengkap Format Teks
+================================================================================
+
+Tanggal: 23 Mei 2026
+Aplikasi: Depo Air - Sistem Manajemen Depot Air
+Tujuan: Dokumentasi detil use case, activity diagram, dan fitur per role
+
+
+================================================================================
+BAGIAN 1: USE CASE CREW (STAFF DEPOT)
+================================================================================
+
+CREW ADALAH: Staff/kurir depot yang bertugas membuat transaksi, mengambil pesanan,
+            mengelola pembayaran, dan berinteraksi dengan pelanggan.
+
+---
+
+USE CASE 1.1 - LOGIN CREW
+---
+Nama: Login Crew
+Aktor Utama: Crew (Staff Depot)
+Sistem: Depo Air Mobile App
+Tujuan: Staff dapat masuk ke aplikasi dengan username dan password
+Precondition: Aplikasi sudah terinstall dan server running
+Postcondition: Crew sudah login dan bisa akses fitur crew
+
+Flow Utama:
+1. Crew membuka aplikasi Depo Air
+2. Aplikasi menampilkan halaman Login
+3. Crew memilih role "CREW"
+4. Crew input username
+5. Crew input password
+6. Crew klik tombol "Login"
+7. Sistem validasi username & password ke server
+8. Server mengecek di database
+9. Jika benar: Server return JWT token (8 jam)
+10. Sistem menyimpan token di Secure Storage
+11. Sistem menyimpan data user di SharedPreferences
+12. Aplikasi navigate ke Dashboard Crew
+13. Use case selesai - LOGIN SUKSES
+
+Flow Alternatif:
+- Jika username/password salah: Tampilkan error message, kembali ke step 4
+- Jika server down: Tampilkan error "Koneksi Server Gagal"
+- Jika timeout: Tampilkan error "Request Timeout", tawarkan retry
+
+
+USE CASE 1.2 - LOGOUT CREW
+---
+Nama: Logout Crew
+Aktor Utama: Crew
+Sistem: Depo Air Mobile App
+Tujuan: Staff keluar dari aplikasi dan session dihapus
+Precondition: Crew sudah login
+Postcondition: Token dihapus, kembali ke halaman login
+
+Flow Utama:
+1. Crew klik menu Settings (pada Dashboard)
+2. Crew scroll dan klik tombol "Logout"
+3. Sistem menampilkan dialog konfirmasi "Yakin ingin logout?"
+4. Crew klik "Ya"
+5. Sistem menghapus JWT token dari Secure Storage
+6. Sistem menghapus user data dari SharedPreferences
+7. Sistem hapus cache data lokal
+8. Aplikasi navigate kembali ke Login Screen
+9. Use case selesai - LOGOUT SUKSES
+
+
+USE CASE 1.3 - BUAT TRANSAKSI BARU
+---
+Nama: Buat Transaksi Penjualan
+Aktor Utama: Crew
+Sistem: Depo Air Mobile App
+Tujuan: Crew membuat transaksi penjualan untuk pelanggan
+Precondition: Crew sudah login
+Postcondition: Transaksi berhasil dibuat dengan status PENDING (menunggu validasi)
+
+Flow Utama:
+1. Crew dari Dashboard klik tombol "Buat Transaksi"
+2. Aplikasi menampilkan halaman "Buat Transaksi Baru"
+3. Halaman menampilkan form:
+   - Dropdown: Pilih Pelanggan
+   - Button: Tambah Pelanggan Baru
+   - Cart display (awal kosong)
+   - Tombol: Tambah Produk
+4. Crew memilih pelanggan dari dropdown
+5. Jika pelanggan tidak ada, Crew klik "Tambah Pelanggan Baru" (lihat UC 1.8)
+6. Crew klik tombol "Tambah Produk"
+7. Aplikasi buka Modal: Pilih Produk
+8. Modal menampilkan list semua produk dengan:
+   - Nama produk, harga, stok
+   - Kategori filter
+   - Search bar
+9. Crew scroll dan klik produk yang ingin dibeli
+10. Aplikasi buka form input jumlah & harga:
+    - Input field: Jumlah
+    - Input field: Harga Satuan (pre-fill dari database)
+    - Input field: Galon Pinjam (opsional)
+    - Input field: Galon Kembali (opsional)
+    - Tombol: Tambah ke Keranjang
+11. Crew input jumlah (misal: 5)
+12. Harga otomatis dihitung: 5 x harga satuan
+13. Crew klik "Tambah ke Keranjang"
+14. Item ditambah ke cart
+15. Cart display update menampilkan item baru
+16. Crew bisa klik "Tambah Produk Lagi" atau lanjut (repeat step 6-15)
+17. Setelah selesai tambah semua item, Crew klik "Lanjut ke Pembayaran"
+18. Aplikasi navigate ke halaman Pilih Metode Pembayaran (lihat UC 1.4)
+
+Flow Alternatif:
+- Jika stok tidak cukup: Tampilkan warning, tapi tetap bisa input (kuantitas > stok)
+- Jika customer salah: Bisa ganti customer sebelum lanjut ke pembayaran
+- Edit Item: Crew bisa klik item di cart untuk edit jumlah/harga
+- Hapus Item: Crew bisa swipe/klik delete untuk hapus item dari cart
+
+
+USE CASE 1.4 - PILIH METODE PEMBAYARAN
+---
+Nama: Pilih & Proses Metode Pembayaran
+Aktor Utama: Crew
+Sistem: Depo Air Mobile App
+Tujuan: Crew memilih metode pembayaran dan proses pembayaran
+Precondition: Crew sudah memilih customer dan items
+Postcondition: Pembayaran selesai, transaksi status PENDING
+
+Flow Utama:
+1. Crew di halaman Pembayaran, melihat ringkasan:
+   - Nama customer
+   - List items dengan total
+   - Total harga transaksi
+   - 3 tombol metode: CASH, QRIS, TRANSFER
+2. Crew klik salah satu metode pembayaran
+
+JIKA CASH:
+3a. Aplikasi tanya nominal uang diterima
+4a. Crew input nominal (misal: 100000)
+5a. Sistem hitung kembalian: 100000 - total harga
+6a. Tampilkan ringkasan kembalian
+7a. Crew klik "Konfirmasi Pembayaran CASH"
+8a. Jump ke UC 1.5 SIMPAN TRANSAKSI
+
+JIKA QRIS:
+3b. Aplikasi generate QR Code QRIS
+4b. Tampilkan QR Code di screen
+5b. Tampilkan pesan "Scan QR Code dengan e-wallet"
+6b. Start polling status pembayaran ke server
+7b. Customer scan QR Code dan bayar
+8b. Aplikasi terus poll server cek status
+9b. Jika pembayaran berhasil: Tampilkan ✓ "Pembayaran Diterima"
+10b. Jump ke UC 1.5 SIMPAN TRANSAKSI
+11b. Jika timeout (2 menit): Tampilkan "Pembayaran Expired", tawarkan retry
+    - Retry: Generate QR baru, repeat step 3b
+    - Cancel: Batalkan transaksi
+
+JIKA TRANSFER:
+3c. Aplikasi tampilkan: Rekening Bank Depot
+4c. Crew catat/screenshot rekening
+5c. Crew kasih info ke customer
+6c. Customer transfer ke rekening
+7c. Crew tunggu konfirmasi
+8c. Bisa klik "Konfirmasi Transfer" (manual confirm)
+9c. Jump ke UC 1.5 SIMPAN TRANSAKSI
+
+
+USE CASE 1.5 - SIMPAN TRANSAKSI
+---
+Nama: Simpan Transaksi
+Aktor Utama: Crew
+Sistem: Depo Air Mobile App
+Tujuan: Transaksi disimpan ke server dan menunggu validasi manager
+Precondition: Pembayaran sudah selesai
+Postcondition: Transaksi BERHASIL DIBUAT, status PENDING
+
+Flow Utama:
+1. Sistem siapkan data transaksi:
+   - Nomor transaksi (auto generate: TRX-20260523-001)
+   - Crew ID
+   - Customer ID
+   - List items dengan detail
+   - Total harga
+   - Metode pembayaran
+   - Status pembayaran
+   - Tanggal/jam transaksi
+   - Status: PENDING (menunggu validasi manager)
+2. Sistem kirim ke server via API: POST /v1/transaksi/create
+3. Server validasi data
+4. Server simpan ke database
+5. Server return response dengan transaksi ID
+6. Sistem simpan data transaksi ke cache lokal
+7. Aplikasi tampilkan dialog sukses:
+   - "✓ Transaksi Berhasil Dibuat!"
+   - Nomor transaksi: TRX-20260523-001
+   - Total: Rp 500.000
+   - Status: MENUNGGU VALIDASI MANAGER
+   - 2 tombol: "Lihat Detail" dan "Kembali ke Dashboard"
+8. Jika klik "Lihat Detail": Tampilkan detail lengkap transaksi
+9. Jika klik "Kembali ke Dashboard": Navigate ke Dashboard Crew
+10. Notifikasi dikirim ke Manager: Ada transaksi baru menunggu validasi
+
+
+USE CASE 1.6 - LIHAT RIWAYAT TRANSAKSI
+---
+Nama: Lihat Riwayat Transaksi Crew
+Aktor Utama: Crew
+Sistem: Depo Air Mobile App
+Tujuan: Crew melihat semua transaksi yang pernah dibuat
+Precondition: Crew sudah login
+Postcondition: Menampilkan list riwayat transaksi
+
+Flow Utama:
+1. Crew dari Dashboard klik menu "Riwayat Transaksi"
+2. Aplikasi fetch data dari server: GET /v1/transaksi?crewId=XXX
+3. Aplikasi menampilkan list transaksi dengan filter:
+   - Search bar: Cari berdasarkan nomor transaksi/customer
+   - Filter dropdown: Semua, Pending, Diproses, Selesai, Dibatalkan
+   - Sorting: Terbaru, Tertua, Tertinggi, Terendah
+4. Setiap item list menampilkan:
+   - Nomor transaksi (TRX-xxx)
+   - Nama customer
+   - Total harga
+   - Status (dengan warna: pending=kuning, diproses=biru, selesai=hijau, dibatalkan=merah)
+   - Tanggal
+5. Crew klik 1 transaksi untuk lihat detail
+6. Aplikasi menampilkan detail lengkap:
+   - Nomor, tanggal, customer
+   - List items dengan detail (produk, qty, harga)
+   - Total harga, metode bayar
+   - Status validasi (pending/disetujui/ditolak)
+   - Nama manager yang validasi (jika sudah)
+   - Alasan jika ditolak
+7. Crew bisa scroll untuk lihat semua detail
+8. Crew bisa klik "Kembali" untuk back ke list
+
+
+USE CASE 1.7 - LIHAT STOK PRODUK
+---
+Nama: Lihat Stok Produk Tersedia
+Aktor Utama: Crew
+Sistem: Depo Air Mobile App
+Tujuan: Crew bisa lihat stok produk yang tersedia di depot
+Precondition: Crew sudah login
+Postcondition: Menampilkan list produk dan stok
+
+Flow Utama:
+1. Crew dari Dashboard klik menu "Stok Produk" / "Inventory"
+2. Aplikasi fetch dari server: GET /v1/produk/all
+3. Aplikasi menampilkan list produk dengan:
+   - Gambar produk (dari URL)
+   - Nama produk
+   - Kategori
+   - Harga
+   - Stok tersedia
+   - Warna indikator: Hijau (stok OK), Kuning (hampir habis <10), Merah (habis)
+4. Ada filter kategori dropdown atas
+5. Ada search bar untuk cari produk
+6. Crew bisa scroll list untuk lihat semua
+7. Crew klik 1 produk untuk lihat detail:
+   - Gambar besar
+   - Nama, kategori, harga
+   - Deskripsi lengkap
+   - Stok detail
+   - Riwayat perubahan stok (opsional)
+8. Crew kembali ke list
+
+
+USE CASE 1.8 - TAMBAH PELANGGAN BARU
+---
+Nama: Tambah Pelanggan Baru
+Aktor Utama: Crew
+Sistem: Depo Air Mobile App
+Tujuan: Crew bisa menambah data pelanggan baru ke sistem
+Precondition: Crew sedang membuat transaksi atau di menu pelanggan
+Postcondition: Pelanggan baru berhasil ditambahkan
+
+Flow Utama:
+1. Crew klik "Tambah Pelanggan Baru"
+2. Aplikasi buka halaman/form "Tambah Pelanggan"
+3. Form menampilkan input fields:
+   - Nama Pelanggan (text field)
+   - Nomor HP (number field)
+   - Alamat (text area)
+   - (Optional) Email
+   - (Optional) Catatan
+4. Crew isi semua field wajib (nama, HP, alamat)
+5. Crew klik "Simpan Pelanggan"
+6. Sistem validasi input:
+   - Nama tidak boleh kosong
+   - HP harus format benar
+   - Alamat tidak boleh kosong
+7. Jika validasi gagal: Tampilkan error, highlight field error
+8. Jika validasi sukses: Kirim ke server POST /v1/pelanggan/create
+9. Server membuat record baru, return customer ID
+10. Sistem simpan pelanggan ke cache lokal
+11. Aplikasi kembali otomatis dan pre-select pelanggan baru ini
+12. Tampilkan toast: "✓ Pelanggan berhasil ditambahkan"
+
+
+USE CASE 1.9 - LIHAT DAFTAR PELANGGAN
+---
+Nama: Lihat Daftar Pelanggan
+Aktor Utama: Crew
+Sistem: Depo Air Mobile App
+Tujuan: Crew melihat semua data pelanggan
+Precondition: Crew sudah login
+Postcondition: Menampilkan list pelanggan
+
+Flow Utama:
+1. Crew dari Dashboard / Settings klik "Pelanggan"
+2. Aplikasi fetch dari server: GET /v1/pelanggan/all
+3. Menampilkan list pelanggan dengan:
+   - Nama pelanggan
+   - Nomor HP
+   - Alamat
+   - Total galon pinjam
+   - Total pembelian (Rp)
+4. Ada search bar cari pelanggan
+5. Ada filter/sort options
+6. Crew klik 1 pelanggan untuk lihat detail:
+   - Data lengkap (nama, HP, alamat, email)
+   - Total galon pinjam saat ini
+   - Total pembelian sepanjang waktu
+   - Riwayat 5 transaksi terakhir
+   - Tombol: Edit, Delete, Lihat Riwayat Lengkap
+7. Crew bisa edit atau delete pelanggan
+
+
+USE CASE 1.10 - MANAJEMEN GALON (PINJAM/KEMBALI)
+---
+Nama: Manajemen Galon (Pinjam & Kembali)
+Aktor Utama: Crew
+Sistem: Depo Air Mobile App
+Tujuan: Crew mencatat galon yang dipinjam/dikembalikan pelanggan
+Precondition: Crew sudah login
+Postcondition: Mutasi galon tercatat di sistem
+
+Flow Utama - PINJAM GALON:
+1. Crew dari Dashboard klik "Manajemen Galon"
+2. Aplikasi menampilkan halaman Galon:
+   - Tab: Tersedia | Dipinjam | Rusak | Hilang
+   - Tab default: "Tersedia"
+3. Crew klik tab "Tersedia"
+4. Menampilkan list galon dengan status "Tersedia"
+5. Crew klik tombol "Pinjam"
+6. Aplikasi buka form "Pinjam Galon":
+   - Pilih Pelanggan (dropdown)
+   - Pilih Galon (dari list tersedia)
+   - Jumlah: auto 1, bisa edit
+   - Catatan (opsional)
+7. Crew pilih pelanggan & galon
+8. Crew klik "Konfirmasi Pinjam"
+9. Sistem update status galon: Tersedia → Dipinjam
+10. Sistem catat mutasi: PINJAM
+11. Sistem update customer: Total galon pinjam +1
+12. Kirim ke server: POST /v1/galon/pinjam
+13. Server simpan dan return response
+14. Toast: "✓ Galon berhasil dipinjam"
+
+Flow Utama - KEMBALIKAN GALON:
+1. Crew dari halaman Galon, klik tab "Dipinjam"
+2. Menampilkan galon yang sedang dipinjam
+3. Crew klik 1 galon untuk detail
+4. Detail menampilkan:
+   - Kode galon
+   - Customer yang pinjam
+   - Tanggal pinjam
+   - Kondisi saat dipinjam
+   - Tombol: Kembalikan
+5. Crew klik "Kembalikan"
+6. Aplikasi buka form "Kembalikan Galon":
+   - Display info galon & customer
+   - Pilihan Kondisi: Baik, Rusak, Hilang
+7. Crew pilih kondisi galon saat kembali
+8. Crew klik "Konfirmasi Kembali"
+9. Sistem update status galon sesuai kondisi:
+   - Baik → Tersedia
+   - Rusak → Rusak
+   - Hilang → Hilang
+10. Sistem catat mutasi: KEMBALI + kondisi
+11. Sistem update customer: Total galon pinjam -1
+12. Kirim ke server: POST /v1/galon/kembali
+13. Server simpan dan return response
+14. Toast: "✓ Galon berhasil dikembalikan"
+
+
+USE CASE 1.11 - LIHAT DASHBOARD CREW
+---
+Nama: Lihat Dashboard Crew
+Aktor Utama: Crew
+Sistem: Depo Air Mobile App
+Tujuan: Crew melihat overview statistik harian
+Precondition: Crew sudah login
+Postcondition: Menampilkan dashboard dengan widget statistik
+
+Flow Utama:
+1. Aplikasi buka ke halaman Dashboard Crew (default setelah login)
+2. Dashboard menampilkan:
+   
+   SECTION 1 - GREETING:
+   "Selamat Pagi, Budi!" (nama crew)
+   Tanggal hari ini
+   
+   SECTION 2 - QUICK STATS (Widget):
+   - Total Transaksi Hari Ini: 12
+   - Total Penjualan Hari Ini: Rp 3.500.000
+   - Transaksi Pending: 3 (menunggu validasi manager)
+   - Status: ✓ Online
+   
+   SECTION 3 - MENU UTAMA (Tombol):
+   - Buat Transaksi
+   - Lihat Riwayat
+   - Manajemen Galon
+   - Stok Produk
+   - Pelanggan
+   - Settings
+   
+   SECTION 4 - AKTIVITAS TERBARU:
+   Transaksi terakhir dibuat:
+   - TRX-20260523-001 | Rp 500.000 | Pending | Pukul 09:30
+   - TRX-20260523-002 | Rp 250.000 | Selesai | Pukul 09:45
+   (bisa scroll untuk lihat lebih banyak)
+   
+3. Data auto refresh setiap 30 detik
+4. Crew bisa swipe refresh
+5. Crew bisa klik menu untuk akses fitur lainnya
+
+
+USE CASE 1.12 - SETTINGS CREW
+---
+Nama: Settings & Profile Crew
+Aktor Utama: Crew
+Sistem: Depo Air Mobile App
+Tujuan: Crew mengatur preferensi dan lihat profile
+Precondition: Crew sudah login
+Postcondition: Pengaturan tersimpan
+
+Flow Utama:
+1. Crew klik menu "Settings" dari Dashboard
+2. Aplikasi buka halaman Settings
+3. Settings menampilkan sections:
+   
+   SECTION 1 - PROFILE:
+   - Foto profil crew
+   - Nama: Budi Santoso
+   - Username: crew_001
+   - Nomor HP: 08123456789
+   - Alamat: Jl. Merdeka No.10
+   - Tombol: Edit Profile, Ubah Password
+   
+   SECTION 2 - PREFERENSI:
+   - Toggle: Notifikasi (On/Off)
+   - Dropdown: Bahasa (Indonesia/English)
+   - Dropdown: Tema (Light/Dark)
+   - Toggle: Auto-refresh Data
+   
+   SECTION 3 - INFORMASI:
+   - Versi Aplikasi: 1.0.0
+   - Build: 001
+   - Server: 127.0.0.1:3000 (bisa edit)
+   - Database: Connected ✓
+   
+   SECTION 4 - AKSI:
+   - Tombol: Clear Cache
+   - Tombol: Backup Data
+   - Tombol: Logout
+   
+4. Crew bisa mengubah preferensi dan perubahan auto save
+5. Crew bisa klik "Logout" untuk keluar
+
+
+================================================================================
+BAGIAN 2: USE CASE MANAGER (ADMINISTRATOR)
+================================================================================
+
+MANAGER ADALAH: Administrator/manajer depot yang bertugas validasi transaksi,
+               mengelola stok, membuat laporan, dan manage crew.
+
+---
+
+USE CASE 2.1 - LOGIN MANAGER
+---
+Nama: Login Manager
+Aktor Utama: Manager
+Sistem: Depo Air Mobile App
+Tujuan: Manager dapat masuk ke aplikasi dengan email dan password
+Precondition: Aplikasi sudah terinstall
+Postcondition: Manager sudah login dan bisa akses fitur manager
+
+Flow Utama:
+1. Manager membuka aplikasi Depo Air
+2. Aplikasi menampilkan halaman Login
+3. Manager memilih role "MANAGER"
+4. Manager input email (misal: manager@depoair.com)
+5. Manager input password
+6. Manager klik tombol "Login"
+7. Sistem validasi email & password ke server
+8. Server mengecek di database manager
+9. Jika benar: Server return JWT token
+10. Sistem menyimpan token di Secure Storage
+11. Sistem menyimpan data manager
+12. Aplikasi navigate ke Dashboard Manager
+13. Login sukses
+
+
+USE CASE 2.2 - LIHAT DASHBOARD MANAGER
+---
+Nama: Lihat Dashboard Manager
+Aktor Utama: Manager
+Sistem: Depo Air Mobile App
+Tujuan: Manager melihat overview bisnis dan metrik penting
+Precondition: Manager sudah login
+Postcondition: Menampilkan dashboard manager lengkap
+
+Flow Utama:
+1. Aplikasi buka Dashboard Manager (default setelah login)
+2. Dashboard menampilkan:
+   
+   SECTION 1 - GREETING:
+   "Selamat Pagi, Hendra Kusuma!" (nama manager)
+   Tanggal hari ini
+   
+   SECTION 2 - KEY METRICS (Widget):
+   ┌─────────────────────────────────────┐
+   │ Total Penjualan Hari Ini            │
+   │ Rp 25.500.000                       │
+   │ ↑ 15% dari kemarin                  │
+   └─────────────────────────────────────┘
+   
+   ┌─────────────────────────────────────┐
+   │ Transaksi Hari Ini                  │
+   │ 45 transaksi                        │
+   │ ✓ 42 Selesai | ⚠ 3 Pending         │
+   └─────────────────────────────────────┘
+   
+   ┌─────────────────────────────────────┐
+   │ Transaksi Menunggu Validasi         │
+   │ 5 transaksi                         │
+   │ [VIEW] → Lihat Detail               │
+   └─────────────────────────────────────┘
+   
+   SECTION 3 - CHART:
+   - Grafik Penjualan 7 hari terakhir (area chart)
+   - Top 5 Produk Terlaris (bar chart)
+   - Breakdown Metode Pembayaran (pie chart)
+   
+   SECTION 4 - MENU UTAMA:
+   - Validasi Transaksi
+   - Laporan Keuangan
+   - Manajemen Stok
+   - Manajemen Pelanggan
+   - Manajemen Crew
+   - Analytics
+   - Settings
+   
+3. Data auto refresh setiap 1 menit
+4. Semua data bisa di-tap untuk lihat detail lebih lengkap
+
+
+USE CASE 2.3 - VALIDASI TRANSAKSI (CREW)
+---
+Nama: Validasi Transaksi dari Crew
+Aktor Utama: Manager
+Sistem: Depo Air Mobile App
+Tujuan: Manager menyetujui atau menolak transaksi yang dibuat crew
+Precondition: Ada transaksi pending dari crew
+Postcondition: Transaksi di-approve/reject, stok ter-update
+
+Flow Utama - VIEW LIST PENDING:
+1. Manager dari Dashboard klik "Validasi Transaksi"
+2. Aplikasi fetch dari server: GET /v1/transaksi?status=pending
+3. Aplikasi menampilkan list transaksi PENDING:
+   - Nomor transaksi (TRX-xxx)
+   - Nama crew yang buat
+   - Nama customer
+   - Total harga
+   - Jam dibuat
+   - Tombol: Detail
+4. Manager bisa scroll lihat semua pending transaksi
+5. Manager klik 1 transaksi untuk lihat detail
+
+Flow Utama - DETAIL TRANSAKSI:
+1. Aplikasi menampilkan halaman "Detail Transaksi" dengan:
+   
+   SECTION 1 - INFO UMUM:
+   - Nomor Transaksi: TRX-20260523-001
+   - Tanggal/Jam: 23/05/2026 09:30
+   - Status: PENDING (MENUNGGU VALIDASI)
+   - Crew: Budi Santoso
+   
+   SECTION 2 - DATA PELANGGAN:
+   - Nama: Rudi Hermawan
+   - Nomor HP: 0812345678
+   - Alamat: Jl. Sudirman No.5
+   - Total Pembelian: Rp 5.500.000 (from history)
+   - Total Galon Pinjam: 3 galon
+   
+   SECTION 3 - DETAIL ITEM:
+   ┌────────────────────────────────────────────┐
+   │ Produk                   | Qty | Harga     │
+   ├────────────────────────────────────────────┤
+   │ Air Galon 19L            │ 5   │ 2.500.000 │
+   │ Air Minum Kemasan 600ml  │ 10  │ 750.000   │
+   │ Galon Baru (Pinjam)      │ 2   │ -         │
+   │ Galon Lama (Kembali)     │ 1   │ -         │
+   └────────────────────────────────────────────┘
+   Total: Rp 3.250.000
+   
+   SECTION 4 - PEMBAYARAN:
+   - Metode: QRIS
+   - Status: ✓ Sudah Bayar
+   - Nominal: Rp 3.250.000
+   - Waktu Bayar: 23/05/2026 09:32
+   - Reference ID: QRIS-12345678
+   
+   SECTION 5 - VALIDASI INFO:
+   Manager bisa check:
+   ✓ Stok produk cukup?
+   ✓ Harga sesuai?
+   ✓ Customer valid?
+   ✓ Pembayaran valid?
+   ✓ Galon status valid?
+   
+   SECTION 6 - AKSI:
+   - Tombol BESAR: [APPROVE] [REJECT]
+
+Flow Utama - APPROVE TRANSAKSI:
+1. Manager review semua data
+2. Jika semua OK, Manager klik "APPROVE"
+3. Aplikasi minta konfirmasi: "Setuju validasi transaksi ini?"
+4. Manager klik "Ya, Approve"
+5. Sistem update status transaksi: PENDING → DIPROSES → SELESAI
+6. Sistem kurangi stok produk:
+   - Air Galon 19L: -5
+   - Air Minum 600ml: -10
+7. Sistem update status galon:
+   - 2 Galon baru: Tersedia → Dipinjam (untuk customer ini)
+   - 1 Galon lama: Dipinjam → Tersedia
+8. Sistem update customer:
+   - Total Galon Pinjam: +2 -1 = +1
+   - Total Pembelian: +3.250.000
+9. Kirim ke server: POST /v1/transaksi/validate (approve=true)
+10. Server update database
+11. Aplikasi tampilkan: "✓ Transaksi berhasil di-approve"
+12. Kirim notifikasi ke crew: "Transaksi Anda di-approve"
+13. Auto back ke list pending
+
+Flow Utama - REJECT TRANSAKSI:
+1. Manager review data
+2. Jika ada masalah, Manager klik "REJECT"
+3. Aplikasi buka form "Alasan Penolakan":
+   - Dropdown: Pilih Alasan (Stok tidak cukup, Harga salah, etc)
+   - Text area: Catatan detail
+4. Manager pilih alasan dan input catatan
+5. Manager klik "Konfirmasi Reject"
+6. Sistem update status transaksi: PENDING → DIBATALKAN
+7. Sistem tidak update stok (tetap asli)
+8. Sistem tidak update galon
+9. Kirim ke server: POST /v1/transaksi/validate (approve=false)
+10. Server update database
+11. Kirim notifikasi ke crew: "Transaksi Anda ditolak. Alasan: Stok tidak cukup"
+12. Aplikasi tampilkan: "✓ Transaksi berhasil di-reject"
+13. Auto back ke list pending
+
+
+USE CASE 2.4 - LAPORAN PENJUALAN & KEUANGAN
+---
+Nama: Buat dan Lihat Laporan Penjualan
+Aktor Utama: Manager
+Sistem: Depo Air Mobile App
+Tujuan: Manager membuat laporan penjualan dan keuangan per periode
+Precondition: Manager sudah login
+Postcondition: Laporan tersedia, bisa di-view dan di-export
+
+Flow Utama:
+1. Manager dari Dashboard klik "Laporan Keuangan"
+2. Aplikasi buka halaman Laporan:
+   
+   SECTION 1 - FILTER:
+   - Tanggal Mulai: [23/05/2026]
+   - Tanggal Akhir: [23/05/2026]
+   - Tombol: Generate Laporan
+   - Quick Filters: Hari Ini, Minggu Ini, Bulan Ini, Custom
+   
+3. Manager bisa set tanggal atau pilih quick filter
+4. Manager klik "Generate Laporan"
+5. Aplikasi fetch dari server: GET /v1/laporan/keuangan?from=xxx&to=xxx
+6. Aplikasi menampilkan laporan:
+   
+   SECTION 2 - RINGKASAN:
+   Periode: 23/05/2026 s/d 23/05/2026
+   
+   ┌──────────────────────────────────────┐
+   │ RINGKASAN KEUANGAN                   │
+   ├──────────────────────────────────────┤
+   │ Total Penjualan      │ Rp 25.500.000 │
+   │ Total Transaksi      │ 45            │
+   │ Rata-rata Transaksi  │ Rp 567.000    │
+   │ Transaksi Selesai    │ 42            │
+   │ Transaksi Pending    │ 3             │
+   └──────────────────────────────────────┘
+   
+   SECTION 3 - BREAKDOWN PEMBAYARAN:
+   ┌───────────────┬─────────┬────────────────┐
+   │ Metode Bayar  │ Jumlah  │ Total          │
+   ├───────────────┼─────────┼────────────────┤
+   │ CASH          │ 20      │ Rp 10.000.000  │
+   │ QRIS          │ 15      │ Rp 10.500.000  │
+   │ TRANSFER      │ 10      │ Rp 5.000.000   │
+   └───────────────┴─────────┴────────────────┘
+   
+   SECTION 4 - TOP PRODUK:
+   ┌─────────────────────┬─────┬────────────────┐
+   │ Produk              │ Qty │ Total Penjualan│
+   ├─────────────────────┼─────┼────────────────┤
+   │ Air Galon 19L       │ 150 │ Rp 15.000.000  │
+   │ Air Kemasan 600ml   │ 200 │ Rp 8.000.000   │
+   │ Galon Baru (Pinjam) │ 45  │ Rp 2.250.000   │
+   └─────────────────────┴─────┴────────────────┘
+   
+   SECTION 5 - TOP PELANGGAN:
+   ┌──────────────────┬────────┬──────────────┐
+   │ Pelanggan        │ Qty    │ Total Beli   │
+   ├──────────────────┼────────┼──────────────┤
+   │ Rudi Hermawan    │ 5 trx  │ Rp 3.000.000 │
+   │ Siti Nurjannah   │ 4 trx  │ Rp 2.500.000 │
+   │ Ahmad Wijaya     │ 3 trx  │ Rp 2.000.000 │
+   └──────────────────┴────────┴──────────────┘
+   
+7. Manager bisa scroll lihat semua bagian laporan
+8. Manager klik "Export PDF" untuk download laporan
+9. Sistem generate file PDF dan prompt download
+
+
+USE CASE 2.5 - MANAJEMEN STOK PRODUK
+---
+Nama: Manajemen Stok & Update Produk
+Aktor Utama: Manager
+Sistem: Depo Air Mobile App
+Tujuan: Manager mengelola stok produk dan tambah/edit produk
+Precondition: Manager sudah login
+Postcondition: Stok ter-update, produk tersimpan
+
+Flow Utama - VIEW STOK:
+1. Manager dari Dashboard klik "Manajemen Stok"
+2. Aplikasi fetch dari server: GET /v1/produk/all
+3. Aplikasi menampilkan halaman Stok:
+   
+   VIEW 1 - LIST PRODUK:
+   ┌──────────────┬──────────┬────────┬────────────┐
+   │ Produk       │ Kategori │ Stok   │ Status     │
+   ├──────────────┼──────────┼────────┼────────────┤
+   │ Air Galon 19L│ Air      │ 25/50  │ ⚠ Normal   │
+   │ Air Kemasan  │ Air      │ 5/100  │ 🔴 Rendah  │
+   │ Galon Baru   │ Galon    │ 200/∞  │ ✓ Normal   │
+   └──────────────┴──────────┴────────┴────────────┘
+   
+   Ada filter kategori, search bar, sort options
+   Warna status: Hijau (OK), Kuning (mendekati habis), Merah (habis)
+   
+4. Manager klik 1 produk untuk detail
+
+Flow Utama - UPDATE STOK:
+1. Manager di halaman detail produk:
+   - Nama: Air Galon 19L
+   - Kategori: Air Minum
+   - Harga: Rp 2.500.000
+   - Stok Saat Ini: 25
+   - Stok Minimum: 10
+   
+2. Manager klik tombol "Update Stok"
+3. Aplikasi buka dialog:
+   
+   ┌─────────────────────────────────────┐
+   │ UPDATE STOK                         │
+   ├─────────────────────────────────────┤
+   │ Stok Saat Ini: 25                   │
+   │ Pilih Aksi:                         │
+   │ ○ Tambah Stok                       │
+   │ ○ Kurangi Stok                      │
+   │ Input Jumlah: [___________]         │
+   │ Alasan: [List dropdown atau input]  │
+   │ [SIMPAN] [CANCEL]                   │
+   └─────────────────────────────────────┘
+   
+4. Manager pilih aksi (tambah/kurangi)
+5. Manager input jumlah (misal: 10)
+6. Manager pilih alasan (Restock, Rusak, Expired, etc)
+7. Manager klik "Simpan"
+8. Sistem update stok di server: POST /v1/produk/update-stok
+9. Sistem catat mutasi stok
+10. Tampilkan: "✓ Stok berhasil diupdate"
+11. Stok baru: 25 + 10 = 35
+
+Flow Utama - TAMBAH PRODUK BARU:
+1. Manager dari halaman Stok klik "Tambah Produk"
+2. Aplikasi buka form "Produk Baru":
+   - Input: Nama Produk
+   - Dropdown: Kategori
+   - Input: Harga
+   - Input: Stok Awal
+   - Input: Stok Minimum
+   - Text Area: Deskripsi
+   - Button: Upload Gambar
+3. Manager isi semua field
+4. Manager klik "Upload Gambar" untuk upload foto
+5. Manager klik "Simpan"
+6. Sistem validasi data
+7. Kirim ke server: POST /v1/produk/create
+8. Server simpan dan return product ID
+9. Toast: "✓ Produk berhasil ditambahkan"
+
+
+USE CASE 2.6 - MANAJEMEN GALON & TRACKING
+---
+Nama: Manajemen & Tracking Galon
+Aktor Utama: Manager
+Sistem: Depo Air Mobile App
+Tujuan: Manager mengelola dan tracking status semua galon
+Precondition: Manager sudah login
+Postcondition: Galon ter-update, tracking tercatat
+
+Flow Utama:
+1. Manager dari Dashboard klik "Manajemen Galon"
+2. Aplikasi menampilkan halaman Galon:
+   
+   SECTION 1 - OVERVIEW GALON:
+   ┌────────────────────────────────────┐
+   │ Tersedia: 150          Dipinjam: 75│
+   │ Rusak: 5               Hilang: 2   │
+   │ TOTAL: 232                         │
+   └────────────────────────────────────┘
+   
+   SECTION 2 - TAB FILTER:
+   [Tersedia] [Dipinjam] [Rusak] [Hilang] [Semua]
+   
+3. Manager klik tab untuk filter galon
+4. Misalnya klik "Dipinjam"
+5. Aplikasi menampilkan list galon yang sedang dipinjam:
+   
+   ┌─────────────────────────────────────┐
+   │ Kode Galon │ Customer    │ Tgl Pinjam│
+   ├─────────────────────────────────────┤
+   │ GLN-001    │ Rudi H.     │ 20/05/26  │
+   │ GLN-002    │ Siti N.     │ 21/05/26  │
+   │ GLN-003    │ Ahmad W.    │ 22/05/26  │
+   └─────────────────────────────────────┘
+   
+6. Manager bisa klik 1 galon untuk detail:
+   - Kode: GLN-001
+   - Merek: Sinar Mas
+   - Jenis: 19L
+   - Status: Dipinjam
+   - Customer: Rudi Hermawan
+   - Tanggal Pinjam: 20/05/2026
+   - Durasi: 3 hari
+   - Riwayat Mutasi: (list semua perubahan)
+   
+7. Manager bisa update status manual jika diperlukan:
+   - Tombol: Update Status → Dikembalikan, Rusak, Hilang
+   
+8. Manager bisa lihat laporan galon hilang/rusak
+
+
+USE CASE 2.7 - MANAJEMEN PELANGGAN
+---
+Nama: Manajemen Data Pelanggan
+Aktor Utama: Manager
+Sistem: Depo Air Mobile App
+Tujuan: Manager mengelola data pelanggan (add/edit/delete)
+Precondition: Manager sudah login
+Postcondition: Data pelanggan tersimpan
+
+Flow Utama - VIEW LIST:
+1. Manager dari Dashboard klik "Manajemen Pelanggan"
+2. Aplikasi menampilkan halaman Pelanggan:
+   
+   ┌────────────────────────────────────────┐
+   │ Search: [_______________] [Filter]     │
+   ├────────────────────────────────────────┤
+   │ Pelanggan                │ Galon │ Trx│
+   │ Rudi Hermawan (08xxx)    │ 3     │ 15 │
+   │ Siti Nurjannah (08xxx)   │ 2     │ 10 │
+   │ Ahmad Wijaya (08xxx)     │ 5     │ 20 │
+   └────────────────────────────────────────┘
+   
+   Ada tombol [+ TAMBAH] di atas
+   
+3. Manager bisa cari pelanggan dengan search
+4. Manager bisa sort by nama/galon/transaksi
+5. Manager klik 1 pelanggan untuk detail
+
+Flow Utama - DETAIL PELANGGAN:
+1. Halaman detail menampilkan:
+   - Nama: Rudi Hermawan
+   - HP: 08123456789
+   - Alamat: Jl. Sudirman No.5
+   - Total Galon Pinjam Saat Ini: 3
+   - Total Pembelian: Rp 15.000.000
+   - Transaksi Terakhir: 23/05/2026
+   - 5 Transaksi Terakhir (list mini)
+   
+2. Tombol: Edit, Delete, Lihat Semua Transaksi
+3. Manager bisa klik "Edit" untuk update data
+4. Manager bisa klik "Delete" untuk hapus (confirm dialog)
+5. Manager bisa klik "Lihat Semua Transaksi" untuk detail history
+
+
+USE CASE 2.8 - MANAJEMEN CREW/STAFF
+---
+Nama: Manajemen Data Crew
+Aktor Utama: Manager
+Sistem: Depo Air Mobile App
+Tujuan: Manager mengelola data staff/crew (add/edit/delete)
+Precondition: Manager sudah login
+Postcondition: Data crew tersimpan
+
+Flow Utama:
+1. Manager dari Dashboard klik "Manajemen Crew"
+2. Aplikasi menampilkan halaman Crew:
+   
+   ┌──────────────────────────────────────┐
+   │ List Crew Aktif                      │
+   ├──────────────────────────────────────┤
+   │ Budi Santoso (crew_001)    │ ✓ Aktif│
+   │ Roni Wijaya (crew_002)     │ ✓ Aktif│
+   │ Susi Handayani (crew_003)  │ ✗ Off  │
+   └──────────────────────────────────────┘
+   
+   Ada toggle untuk On/Off
+   Ada tombol [+ TAMBAH] untuk new crew
+   
+3. Manager klik 1 crew untuk detail:
+   - Nama: Budi Santoso
+   - Username: crew_001
+   - HP: 08123456789
+   - Alamat: Jl. Merdeka No.10
+   - Status: Aktif
+   - Total Transaksi: 42
+   - Penjualan: Rp 25.500.000
+   - Rating: ⭐⭐⭐⭐⭐
+   
+4. Manager bisa toggle status On/Off
+5. Manager bisa Edit data crew
+6. Manager bisa Delete crew (confirm)
+7. Manager bisa Lihat riwayat transaksi crew
+
+
+USE CASE 2.9 - ANALYTICS & CHART
+---
+Nama: Analytics dan Visualisasi Chart
+Aktor Utama: Manager
+Sistem: Depo Air Mobile App
+Tujuan: Manager melihat analytics lengkap dengan grafik
+Precondition: Manager sudah login
+Postcondition: Menampilkan analytics dashboard
+
+Flow Utama:
+1. Manager dari Dashboard klik menu "Analytics"
+2. Aplikasi menampilkan halaman Analytics:
+   
+   SECTION 1 - TOP METRICS:
+   - Revenue 7 Hari: Rp 175.500.000
+   - Total Transaksi: 315
+   - Avg Transaksi: Rp 556.800
+   - Growth: ↑ 12% vs minggu lalu
+   
+   SECTION 2 - CHART PENJUALAN:
+   [7 Days Line Chart showing daily revenue]
+   
+   SECTION 3 - TOP PRODUCTS:
+   [Horizontal Bar Chart - Top 10 Products by quantity]
+   
+   SECTION 4 - PAYMENT METHOD:
+   [Pie Chart - Breakdown Cash/QRIS/Transfer]
+   
+   SECTION 5 - TOP CUSTOMERS:
+   [Horizontal Bar Chart - Top 10 Customers by total spending]
+   
+   SECTION 6 - CREW PERFORMANCE:
+   [Table showing crew + their transactions + revenue]
+   
+3. Semua chart interactive - bisa tap untuk detail
+4. Bisa swipe left/right untuk filter periode
+5. Bisa zoom, pan pada chart
+
+
+USE CASE 2.10 - SETTINGS MANAGER
+---
+Nama: Settings Manager
+Aktor Utama: Manager
+Sistem: Depo Air Mobile App
+Tujuan: Manager mengatur preferensi dan konfigurasi
+Precondition: Manager sudah login
+Postcondition: Pengaturan tersimpan
+
+Flow Utama:
+1. Manager klik menu "Settings"
+2. Aplikasi buka halaman Settings:
+   
+   SECTION 1 - PROFILE:
+   - Foto profil
+   - Nama: Hendra Kusuma
+   - Email: hendra@depoair.com
+   - HP: 08987654321
+   - Tombol: Edit Profile, Ubah Password
+   
+   SECTION 2 - PREFERENSI:
+   - Toggle: Notifikasi
+   - Dropdown: Bahasa
+   - Dropdown: Tema (Light/Dark)
+   - Toggle: Auto-refresh Data
+   - Input: Interval Refresh (menit)
+   
+   SECTION 3 - KONFIGURASI SISTEM:
+   - Input: URL Server
+   - Input: Timeout Koneksi (detik)
+   - Toggle: Debug Mode
+   - Info: Database Status
+   
+   SECTION 4 - BACKUP & RESTORE:
+   - Tombol: Backup Data Sekarang
+   - Tombol: Restore from Backup
+   - Info: Last Backup (waktu)
+   
+   SECTION 5 - AKSI:
+   - Tombol: Clear Cache
+   - Tombol: Reset Aplikasi
+   - Tombol: Logout
+   
+3. Manager bisa ubah semua pengaturan
+4. Perubahan auto save
+
+
+================================================================================
+BAGIAN 3: ACTIVITY DIAGRAM - ALUR PROSES UTAMA
+================================================================================
+
+ACTIVITY DIAGRAM 1: ALUR LOGIN & ROLE SELECTION
+---
+START
+  ↓
+[User buka aplikasi]
+  ↓
+[Cek: User sudah login?]
+  ├─ Ya → [Skip ke Main Dashboard]
+  └─ Tidak → [Tampilkan Login Screen]
+             ↓
+             [Pilih Role: CREW atau MANAGER]
+             ↓
+             [Input Username/Email & Password]
+             ↓
+             [Klik Login Button]
+             ↓
+             [Sistem kirim ke server untuk validasi]
+             ↓
+             [Server cek database]
+             ↓
+             [Validasi berhasil?]
+             ├─ Tidak → [Tampilkan Error, kembali ke input]
+             └─ Ya → [Server return JWT Token]
+                     ↓
+                     [Sistem simpan token di Secure Storage]
+                     ↓
+                     [Sistem simpan user data]
+                     ↓
+                     [Aplikasi navigate ke Main Dashboard]
+                     ↓
+                     [Role = CREW?]
+                     ├─ Ya → [Dashboard CREW ditampilkan]
+                     └─ Tidak → [Dashboard MANAGER ditampilkan]
+  ↓
+END - User logged in & ready to use app
+
+
+ACTIVITY DIAGRAM 2: ALUR TRANSAKSI PENJUALAN (CREW)
+---
+START - Crew di Dashboard
+  ↓
+[Crew klik "Buat Transaksi"]
+  ↓
+[Tampilkan halaman Buat Transaksi]
+  ↓
+[STEP 1 - PILIH CUSTOMER]
+  ├─ Dropdown Pelanggan → [Pilih dari list] → [Skip step create]
+  └─ Tombol Tambah → [Form input pelanggan baru] → [Simpan] → [Auto select]
+  ↓
+[STEP 2 - TAMBAH ITEM KE CART]
+  ↓
+  [Loop: Tambah Item?]
+  ├─ Ya → [Klik Tambah Produk]
+  │        ↓
+  │        [Modal Pilih Produk ditampilkan]
+  │        ↓
+  │        [Filter/Search produk]
+  │        ↓
+  │        [Klik produk yang dipilih]
+  │        ↓
+  │        [Form input qty & harga]
+  │        ↓
+  │        [Input Qty, harga auto-fill]
+  │        ↓
+  │        [Klik "Tambah ke Cart"]
+  │        ↓
+  │        [Item ditambah ke cart display]
+  │        ↓
+  │        [Kembali ke langkah ini - Loop?]
+  │
+  └─ Tidak → [Lanjut ke step berikutnya]
+  ↓
+[STEP 3 - REVIEW CART]
+  ↓
+  [Tampilkan summary cart]
+  ├─ Edit item? → [Bisa edit qty/harga/hapus]
+  └─ OK → [Lanjut]
+  ↓
+[STEP 4 - PILIH METODE PEMBAYARAN]
+  ↓
+  [3 Pilihan: CASH / QRIS / TRANSFER]
+  ├─ CASH → [Input nominal uang diterima]
+  │          ↓
+  │          [Hitung kembalian]
+  │          ↓
+  │          [Display ringkasan]
+  │
+  ├─ QRIS → [Generate QR Code]
+  │         ↓
+  │         [Tampilkan QR ke screen]
+  │         ↓
+  │         [Mulai polling status pembayaran]
+  │         ↓
+  │         [Tunggu customer bayar atau timeout]
+  │         ↓
+  │         [Jika timeout → Tawarkan retry]
+  │
+  └─ TRANSFER → [Display rekening bank]
+                ↓
+                [Crew catat/share rekening]
+                ↓
+                [Tunggu transfer masuk]
+  ↓
+[STEP 5 - CONFIRM PEMBAYARAN]
+  ↓
+  [Crew klik "Konfirmasi Pembayaran"]
+  ↓
+[STEP 6 - SIMPAN TRANSAKSI]
+  ↓
+  [Sistem siapkan data transaksi lengkap]
+  ↓
+  [Kirim ke server: POST /v1/transaksi/create]
+  ↓
+  [Server validasi dan simpan]
+  ↓
+  [Server return transaksi ID]
+  ↓
+  [Sistem catat di cache lokal]
+  ↓
+  [Tampilkan dialog sukses dengan nomor transaksi]
+  ↓
+  [Notifikasi ke Manager: Ada transaksi pending validasi]
+  ↓
+END - Transaksi berhasil dibuat, status PENDING
+
+
+ACTIVITY DIAGRAM 3: ALUR VALIDASI TRANSAKSI (MANAGER)
+---
+START - Manager di Dashboard
+  ↓
+[Manager lihat widget "Transaksi Pending: 5"]
+  ↓
+[Manager klik "Validasi Transaksi" atau "View" di widget]
+  ↓
+[Aplikasi fetch list transaksi pending dari server]
+  ↓
+[Tampilkan halaman List Pending Transaksi]
+  ├─ Filter/Sort options
+  └─ List menampilkan: Nomor, Crew, Customer, Total, Tombol Detail
+  ↓
+[Manager klik 1 transaksi untuk detail]
+  ↓
+[Aplikasi menampilkan halaman Detail Transaksi dengan:]
+  - Info transaksi (nomor, crew, customer, jam)
+  - List items detail lengkap
+  - Info pembayaran (metode, status, nominal, waktu)
+  - Galon pinjam/kembali
+  - Validasi checklist (stok? harga? customer? payment?)
+  ↓
+[Manager review semua detail]
+  ↓
+[Manager check: Semua data valid?]
+  ├─ Tidak Valid → [Manager klik REJECT]
+  │                ↓
+  │                [Form: Pilih alasan penolakan + catatan]
+  │                ↓
+  │                [Klik Konfirmasi Reject]
+  │                ↓
+  │                [Update status: DIBATALKAN]
+  │                ↓
+  │                [Tidak update stok/galon]
+  │                ↓
+  │                [Kirim notif ke crew: Transaksi ditolak - alasan XXX]
+  │                ↓
+  │                [Back ke list pending]
+  │
+  └─ Valid → [Manager klik APPROVE]
+             ↓
+             [Konfirmasi: "Setuju approve transaksi ini?"]
+             ↓
+             [Manager klik "Ya"]
+             ↓
+             [Update status transaksi: SELESAI]
+             ↓
+             [PROCESS: Kurangi stok produk]
+             ├─ Air Galon: -qty
+             └─ Air Kemasan: -qty
+             ↓
+             [PROCESS: Update status galon]
+             ├─ Galon pinjam: Tersedia → Dipinjam
+             └─ Galon kembali: Dipinjam → Tersedia
+             ↓
+             [PROCESS: Update customer data]
+             ├─ Total galon pinjam: ±qty
+             └─ Total pembelian: +nominal
+             ↓
+             [Kirim ke server: POST /v1/transaksi/validate (approve=true)]
+             ↓
+             [Server update database, return response]
+             ↓
+             [Kirim notif ke crew: Transaksi di-approve ✓]
+             ↓
+             [Back ke list pending]
+  ↓
+[Loop: Ada transaksi pending lagi?]
+  ├─ Ya → [Kembali ke tampilkan detail transaksi]
+  └─ Tidak → [Done, kembali ke Dashboard]
+  ↓
+END - Semua transaksi pending sudah divalidasi
+
+
+ACTIVITY DIAGRAM 4: ALUR MANAJEMEN GALON (PINJAM/KEMBALI)
+---
+START - Crew/Manager di menu Galon
+  ↓
+[Tampilkan halaman Galon dengan tab filter]
+  - Tab: Tersedia | Dipinjam | Rusak | Hilang | Semua
+  ↓
+[Aksi apa?]
+  ├─ PINJAM GALON (dari tab Tersedia)
+  │  ↓
+  │  [Klik tab "Tersedia"]
+  │  ↓
+  │  [List galon dengan status Tersedia]
+  │  ↓
+  │  [Klik 1 galon → Klik tombol "PINJAM"]
+  │  ↓
+  │  [Form: Pilih Customer + Jumlah]
+  │  ↓
+  │  [Klik "Konfirmasi Pinjam"]
+  │  ↓
+  │  [Validasi: Galon tersedia? Customer valid?]
+  │  ├─ Error → [Tampilkan error message]
+  │  └─ OK → [Proses]
+  │           ↓
+  │           [Update status galon: Tersedia → Dipinjam]
+  │           ↓
+  │           [Catat mutasi: PINJAM, tanggal, customer]
+  │           ↓
+  │           [Update customer: Total galon +1]
+  │           ↓
+  │           [Kirim ke server: POST /v1/galon/pinjam]
+  │           ↓
+  │           [Toast: ✓ Galon dipinjam]
+  │
+  ├─ KEMBALIKAN GALON (dari tab Dipinjam)
+  │  ↓
+  │  [Klik tab "Dipinjam"]
+  │  ↓
+  │  [List galon dengan status Dipinjam]
+  │  ↓
+  │  [Klik 1 galon → Detail + tombol "KEMBALIKAN"]
+  │  ↓
+  │  [Form: Pilih Kondisi (Baik/Rusak/Hilang)]
+  │  ↓
+  │  [Klik "Konfirmasi Kembali"]
+  │  ↓
+  │  [Update status sesuai kondisi:]
+  │  ├─ Baik → Tersedia
+  │  ├─ Rusak → Rusak
+  │  └─ Hilang → Hilang
+  │  ↓
+  │  [Catat mutasi: KEMBALI, kondisi, tanggal]
+  │  ↓
+  │  [Update customer: Total galon -1]
+  │  ↓
+  │  [Kirim ke server: POST /v1/galon/kembali]
+  │  ↓
+  │  [Toast: ✓ Galon dikembalikan]
+  │
+  └─ UPDATE STATUS (manual update)
+     ↓
+     [Klik 1 galon → Detail + tombol "UPDATE STATUS"]
+     ↓
+     [Dropdown: Pilih status baru]
+     ↓
+     [Klik "Konfirmasi Update"]
+     ↓
+     [Validasi: Status baru valid?]
+     ├─ Error → [Tampilkan error]
+     └─ OK → [Update]
+              ↓
+              [Catat mutasi: UPDATE, status baru]
+              ↓
+              [Kirim ke server]
+              ↓
+              [Toast: ✓ Status updated]
+  ↓
+[Loop: Aksi lagi?]
+  ├─ Ya → [Kembali ke tampilkan halaman Galon]
+  └─ Tidak → [Done]
+  ↓
+END
+
+
+ACTIVITY DIAGRAM 5: ALUR LAPORAN KEUANGAN (MANAGER)
+---
+START - Manager di menu Laporan
+  ↓
+[Tampilkan halaman Laporan Keuangan]
+  ├─ Filter tanggal: Dari [_____] Sampai [_____]
+  ├─ Quick filters: Hari Ini, Minggu Ini, Bulan Ini, Custom
+  └─ Tombol: Generate Laporan
+  ↓
+[Manager pilih periode / quick filter]
+  ↓
+[Manager klik "Generate Laporan"]
+  ↓
+[Aplikasi fetch dari server: GET /v1/laporan/keuangan?from=xxx&to=xxx]
+  ↓
+[Server query database, aggregate data]
+  ↓
+[Server return laporan data]
+  ↓
+[Aplikasi menampilkan LAPORAN dengan sections:]
+  ├─ Ringkasan Keuangan
+  ├─ Breakdown Pembayaran (Cash/QRIS/Transfer)
+  ├─ Top 10 Produk Terlaris
+  ├─ Top 10 Pelanggan
+  ├─ Performance Crew
+  └─ Chart Visualisasi
+  ↓
+[Manager bisa:]
+  ├─ Scroll untuk lihat semua data
+  ├─ Tap chart untuk detail
+  └─ Klik "Export PDF" → Download laporan
+  ↓
+[Manager bisa buat laporan baru dengan periode berbeda]
+  ├─ Klik "Generate Laporan Baru"
+  └─ [Back ke filter tanggal]
+  ↓
+END
+
+
+================================================================================
+BAGIAN 4: RINGKASAN FITUR PER ROLE
+================================================================================
+
+FITUR CREW (12 Use Case):
+1. ✓ Login Crew
+2. ✓ Logout Crew
+3. ✓ Buat Transaksi Baru
+4. ✓ Pilih Metode Pembayaran
+5. ✓ Simpan Transaksi
+6. ✓ Lihat Riwayat Transaksi
+7. ✓ Lihat Stok Produk
+8. ✓ Tambah Pelanggan Baru
+9. ✓ Lihat Daftar Pelanggan
+10. ✓ Manajemen Galon (Pinjam/Kembali)
+11. ✓ Lihat Dashboard Crew
+12. ✓ Settings & Profile Crew
+
+FITUR MANAGER (10 Use Case):
+1. ✓ Login Manager
+2. ✓ Lihat Dashboard Manager
+3. ✓ Validasi Transaksi (Approve/Reject)
+4. ✓ Laporan Penjualan & Keuangan
+5. ✓ Manajemen Stok Produk
+6. ✓ Manajemen & Tracking Galon
+7. ✓ Manajemen Pelanggan
+8. ✓ Manajemen Crew/Staff
+9. ✓ Analytics & Chart
+10. ✓ Settings & Profile Manager
+
+
+================================================================================
+BAGIAN 5: INTEGRASI & FLOW CROSS-ROLE
+================================================================================
+
+FLOW: CREW CREATES → MANAGER VALIDATES → SYSTEM UPDATES
+---
+Timeline: Waktu real dalam sistem
+
+T=0:00 - Crew Login
+  └─ Crew: Akses aplikasi dengan role CREW
+
+T=0:10 - Crew: Buat Transaksi
+  └─ Crew membuat transaksi dengan customer, items, pembayaran
+
+T=0:15 - Sistem: Simpan & Notifikasi
+  └─ Transaksi status: PENDING
+  └─ Notifikasi ke Manager: Ada transaksi baru
+
+T=0:30 - Manager: Lihat Widget
+  └─ Manager: Melihat widget "5 transaksi pending"
+
+T=0:35 - Manager: Validasi
+  └─ Manager: Buka, review, approve/reject transaksi
+
+T=0:40 - Sistem: Update
+  └─ Jika APPROVE: Update stok, galon, customer, notif crew
+  └─ Jika REJECT: Cancel transaksi, notif crew dengan alasan
+
+T=0:45 - Crew: Notifikasi
+  └─ Crew: Menerima notifikasi hasil validasi
+  └─ Crew: Bisa lihat di riwayat transaksi
+
+
+DATABASE RELATIONSHIPS:
+---
+Crew ─┬─→ Transaksi (1:Many)
+      ├─→ Pelanggan (1:Many) [create/manage]
+      └─→ Galon (1:Many) [pinjam/kembali record]
+
+Manager ─┬─→ Transaksi [validasi]
+         ├─→ Produk [manage stok]
+         ├─→ Crew [manage]
+         └─→ Laporan [generate]
+
+Customer ─┬─→ Transaksi (1:Many)
+          ├─→ Galon (Many:Many) [borrow history]
+          └─→ ItemTransaksi (1:Many)
+
+Transaksi ─┬─→ ItemTransaksi (1:Many)
+           ├─→ Galon (Many:Many) [pinjam/kembali]
+           └─→ Pembayaran (1:1)
+
+Produk ─┬─→ ItemTransaksi (1:Many)
+        └─→ Kategori (Many:1)
+
+
+================================================================================
+FITUR TEKNIS (BACKEND SUPPORT)
+================================================================================
+
+API Endpoints yang diperlukan:
+---
+AUTH:
+  POST /v1/auth/login-crew
+  POST /v1/auth/login-manager
+  POST /v1/auth/refresh-token
+  POST /v1/auth/logout
+
+TRANSAKSI:
+  GET /v1/transaksi/all
+  GET /v1/transaksi?crewId=XXX
+  GET /v1/transaksi?status=pending
+  POST /v1/transaksi/create
+  POST /v1/transaksi/validate
+  PUT /v1/transaksi/{id}
+
+PEMBAYARAN:
+  POST /v1/qris/generate
+  GET /v1/qris/status/{id}
+  POST /v1/qris/confirm
+
+PELANGGAN:
+  GET /v1/pelanggan/all
+  GET /v1/pelanggan/{id}
+  POST /v1/pelanggan/create
+  PUT /v1/pelanggan/{id}
+  DELETE /v1/pelanggan/{id}
+
+PRODUK:
+  GET /v1/produk/all
+  GET /v1/produk/{id}
+  POST /v1/produk/create
+  PUT /v1/produk/{id}
+  POST /v1/produk/update-stok
+
+GALON:
+  GET /v1/galon/all
+  GET /v1/galon?status=tersedia
+  POST /v1/galon/pinjam
+  POST /v1/galon/kembali
+  PUT /v1/galon/{id}
+
+CREW:
+  GET /v1/crew/all
+  GET /v1/crew/{id}
+  POST /v1/crew/create
+  PUT /v1/crew/{id}
+  DELETE /v1/crew/{id}
+
+LAPORAN:
+  GET /v1/laporan/keuangan?from=XXX&to=XXX
+  GET /v1/laporan/produk?from=XXX&to=XXX
+  GET /v1/laporan/crew?from=XXX&to=XXX
+
+
+================================================================================
+Dokumen selesai
+Format: Plain Text / Teks Murni
+Tanggal: 23 Mei 2026
+Untuk keperluan: Dokumentasi Skripsi & Presentasi
+Aplikasi: Depo Air - Sistem Manajemen Depot Air
+================================================================================

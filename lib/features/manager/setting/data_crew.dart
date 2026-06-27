@@ -1,0 +1,674 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../../../controllers/crew_controller.dart';
+import '../../../config/routes.dart';
+import '../../../models/crew.dart';
+import '../../../widgets/header_back_button.dart';
+
+class SettingDataCrewScreen extends StatefulWidget {
+  const SettingDataCrewScreen({super.key});
+
+  @override
+  State<SettingDataCrewScreen> createState() => _SettingDataCrewScreenState();
+}
+
+class _SettingDataCrewScreenState extends State<SettingDataCrewScreen> {
+  static const Color _primary = Color(0xFF1392EC);
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Get.find<CrewController>().loadCrew();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final crew = Get.find<CrewController>();
+
+    return Scaffold(
+      backgroundColor: const Color(0xFFF2F2F7),
+      body: Column(
+        children: [
+          _buildHeader(context, crew),
+          Expanded(
+            child: Obx(() {
+              if (crew.isLoading.value) {
+                return const Center(
+                  child: CircularProgressIndicator(color: _primary),
+                );
+              }
+              if (crew.errorMessage.value.isNotEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.error_outline,
+                          color: Color(0xFFEF4444), size: 48),
+                      const SizedBox(height: 12),
+                      Text(crew.errorMessage.value,
+                          textAlign: TextAlign.center),
+                      const SizedBox(height: 12),
+                      ElevatedButton(
+                          onPressed: crew.loadCrew,
+                          child: const Text('Coba Lagi')),
+                    ],
+                  ),
+                );
+              }
+              if (crew.crewList.isEmpty) {
+                return const Center(
+                  child: Text(
+                    'Belum ada data crew.',
+                    style: TextStyle(fontSize: 14, color: Color(0xFF94A3B8)),
+                  ),
+                );
+              }
+              return ListView.builder(
+                padding: const EdgeInsets.fromLTRB(20, 24, 20, 100),
+                itemCount: crew.crewList.length,
+                itemBuilder: (_, i) => _buildCrewCard(crew.crewList[i]),
+              );
+            }),
+          ),
+        ],
+      ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 72),
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width - 48,
+          child: _buildAddCrewButton(crew),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    );
+  }
+
+  // ── HEADER ──────────────────────────────────────────────────────────────────
+  Widget _buildHeader(BuildContext context, CrewController crew) {
+    final topPad = MediaQuery.of(context).padding.top;
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.only(
+        top: topPad + 16,
+        left: 24,
+        right: 24,
+        bottom: 32,
+      ),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFF1392EC), Color(0xFF0056B3)],
+        ),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(40),
+          bottomRight: Radius.circular(40),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Color(0x401392EC),
+            blurRadius: 24,
+            offset: Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Title Row
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const HeaderBackButton(
+                fallbackRoute: AppRoutes.managerSettings,
+              ),
+              const Text(
+                'Manajemen Crew',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.3,
+                ),
+              ),
+              const Icon(Icons.tune_rounded, color: Colors.white, size: 22),
+            ],
+          ),
+          const SizedBox(height: 24),
+
+          // Stats Card
+          Obx(() => Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.2),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'TOTAL CREW',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white.withOpacity(0.7),
+                              letterSpacing: 1.5,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${crew.crewList.length} Anggota',
+                            style: const TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      width: 1,
+                      height: 40,
+                      color: Colors.white.withOpacity(0.2),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'HALAMAN',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.white.withOpacity(0.7),
+                                letterSpacing: 1.5,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '${crew.currentPage.value} / ${crew.totalPage.value}',
+                              style: const TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w900,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              )),
+        ],
+      ),
+    );
+  }
+
+  // ── CREW CARD ────────────────────────────────────────────────────────────────
+  Widget _buildCrewCard(Crew c) {
+    final initials = c.nama.isNotEmpty
+        ? c.nama.trim().split(' ').take(2).map((w) => w[0].toUpperCase()).join()
+        : 'CR';
+    final colors = [
+      const Color(0xFF3B82F6),
+      const Color(0xFFEC4899),
+      const Color(0xFF8B5CF6),
+      const Color(0xFFF59E0B),
+      const Color(0xFF10B981),
+    ];
+    final avatarColor = colors[c.nama.length % colors.length];
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFF1F5F9)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          // Avatar
+          Stack(
+            children: [
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: avatarColor,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  initials,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+              // Online status dot (always active for crew in list)
+              Positioned(
+                bottom: -2,
+                right: -2,
+                child: Container(
+                  width: 16,
+                  height: 16,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF22C55E),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 2),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(width: 16),
+
+          // Info
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  c.nama,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF1E293B),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '@${c.username}',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF64748B),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF0FDF4),
+                    borderRadius: BorderRadius.circular(100),
+                    border: Border.all(color: const Color(0xFFBBF7D0)),
+                  ),
+                  child: const Text(
+                    'CREW AKTIF',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF16A34A),
+                      letterSpacing: 0.8,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Actions menu
+          PopupMenuButton<String>(
+            onSelected: (val) {
+              if (val == 'reset') {
+                Get.find<CrewController>().resetPasswordCrew(c.id);
+              }
+              if (val == 'hapus') _confirmHapus(c);
+              if (val == 'edit') _showEditDialog(c);
+            },
+            icon: Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.more_vert_rounded,
+                color: Color(0xFF94A3B8),
+              ),
+            ),
+            itemBuilder: (_) => [
+              const PopupMenuItem(
+                  value: 'edit',
+                  child: Row(children: [
+                    Icon(Icons.edit_outlined, size: 18),
+                    SizedBox(width: 8),
+                    Text('Edit Nama'),
+                  ])),
+              const PopupMenuItem(
+                  value: 'reset',
+                  child: Row(children: [
+                    Icon(Icons.lock_reset_outlined, size: 18),
+                    SizedBox(width: 8),
+                    Text('Reset PIN'),
+                  ])),
+              const PopupMenuItem(
+                  value: 'hapus',
+                  child: Row(children: [
+                    Icon(Icons.delete_outline,
+                        size: 18, color: Color(0xFFEF4444)),
+                    SizedBox(width: 8),
+                    Text('Hapus', style: TextStyle(color: Color(0xFFEF4444))),
+                  ])),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── ADD CREW BUTTON ──────────────────────────────────────────────────────────
+  Widget _buildAddCrewButton(CrewController crew) {
+    return GestureDetector(
+      onTap: () => _showTambahDialog(crew),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 18),
+        decoration: BoxDecoration(
+          color: _primary,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: _primary.withOpacity(0.4),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.person_add_rounded, color: Colors.white, size: 22),
+            SizedBox(width: 10),
+            Text(
+              'Tambah Crew Baru',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.3,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── DIALOGS ──────────────────────────────────────────────────────────────────
+  void _showTambahDialog(CrewController crew) {
+    final namaCtrl = TextEditingController();
+    final usernameCtrl = TextEditingController();
+    final pinCtrl = TextEditingController();
+    Get.dialog(
+      Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Tambah Crew Baru',
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF1E293B)),
+              ),
+              const SizedBox(height: 20),
+              _dialogField(namaCtrl, 'Nama Lengkap', Icons.person_outline),
+              const SizedBox(height: 12),
+              _dialogField(
+                  usernameCtrl, 'Username', Icons.alternate_email_rounded),
+              const SizedBox(height: 12),
+              _dialogField(pinCtrl, 'PIN 4-6 digit', Icons.pin_outlined,
+                  obscure: true),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Get.back(),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14)),
+                        side: const BorderSide(color: Color(0xFFE2E8F0)),
+                      ),
+                      child: const Text('Batal',
+                          style: TextStyle(color: Color(0xFF64748B))),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        final nama = namaCtrl.text.trim();
+                        final username = usernameCtrl.text.trim();
+                        final pin = pinCtrl.text.trim();
+                        if (nama.isEmpty || username.isEmpty) {
+                          Get.snackbar(
+                            'Error',
+                            'Nama dan username wajib diisi',
+                            backgroundColor: const Color(0xFFE63946),
+                            colorText: Colors.white,
+                          );
+                          return;
+                        }
+                        if (!RegExp(r'^\d{4,6}$').hasMatch(pin)) {
+                          Get.snackbar(
+                            'Error',
+                            'PIN harus 4-6 digit angka',
+                            backgroundColor: const Color(0xFFE63946),
+                            colorText: Colors.white,
+                          );
+                          return;
+                        }
+                        Get.back();
+                        await crew.tambahCrew({
+                          'nama': nama,
+                          'username': username,
+                          'pin': pin,
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _primary,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14)),
+                        elevation: 0,
+                      ),
+                      child: const Text('Simpan'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showEditDialog(Crew c) {
+    final namaCtrl = TextEditingController(text: c.nama);
+    Get.dialog(
+      Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Edit Crew',
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF1E293B))),
+              const SizedBox(height: 20),
+              _dialogField(namaCtrl, 'Nama Lengkap', Icons.person_outline),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Get.back(),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14)),
+                        side: const BorderSide(color: Color(0xFFE2E8F0)),
+                      ),
+                      child: const Text('Batal',
+                          style: TextStyle(color: Color(0xFF64748B))),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Get.find<CrewController>()
+                            .editCrew(c.id, {'nama': namaCtrl.text});
+                        Get.back();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _primary,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14)),
+                        elevation: 0,
+                      ),
+                      child: const Text('Simpan'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _confirmHapus(Crew c) {
+    Get.dialog(
+      Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        child: Padding(
+          padding: const EdgeInsets.all(28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 64,
+                height: 64,
+                decoration: const BoxDecoration(
+                    color: Color(0xFFFEF2F2), shape: BoxShape.circle),
+                child: const Icon(Icons.delete_outline,
+                    color: Color(0xFFEF4444), size: 32),
+              ),
+              const SizedBox(height: 16),
+              const Text('Hapus Crew?',
+                  style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF1E293B))),
+              const SizedBox(height: 8),
+              Text(
+                'Data crew "${c.nama}" akan dihapus secara permanen.',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                    fontSize: 13, color: Color(0xFF64748B), height: 1.5),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Get.back(),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14)),
+                        side: const BorderSide(color: Color(0xFFE2E8F0)),
+                      ),
+                      child: const Text('Batal',
+                          style: TextStyle(color: Color(0xFF64748B))),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Get.find<CrewController>().hapusCrew(c.id);
+                        Get.back();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFEF4444),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14)),
+                        elevation: 0,
+                      ),
+                      child: const Text('Hapus'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _dialogField(TextEditingController ctrl, String label, IconData icon,
+      {bool obscure = false}) {
+    return TextField(
+      controller: ctrl,
+      obscureText: obscure,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, color: const Color(0xFF94A3B8), size: 20),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: _primary, width: 2),
+        ),
+        filled: true,
+        fillColor: const Color(0xFFF8FAFC),
+      ),
+    );
+  }
+}

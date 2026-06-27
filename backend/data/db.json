@@ -1,0 +1,758 @@
+{
+  "users": [
+    {
+      "id": "crew_001",
+      "role": "crew",
+      "username": "crew001",
+      "passwordHash": "$2a$10$yLghnx8L8J07MuV0El6NKepyXwXmGTY8yr.HEvcqRFICZv9qm6sXq",
+      "nama": "Budi Santoso",
+      "noHp": "081234567890",
+      "alamat": "Jl. Crew No. 1",
+      "isAktif": true,
+      "createdAt": "2026-06-03T11:57:49.136Z"
+    },
+    {
+      "id": "manager_001",
+      "role": "manager",
+      "username": "manager@depoair.com",
+      "passwordHash": "$2a$10$Gtkr2F73tRDBmz2HKMcQuuT0f7VBr.kAo41LUV0Er5DY5DPT2DzFq",
+      "nama": "Ahmad Manager",
+      "email": "manager@depoair.com",
+      "noHp": "081298765432",
+      "alamat": "Kantor Depo",
+      "isAktif": true,
+      "createdAt": "2026-06-03T11:57:49.136Z"
+    }
+  ],
+  "kategori": [
+    {
+      "tipe": "pemasukan",
+      "ikon": "water_drop",
+      "isSystem": true,
+      "id": "e516abb8-c775-4961-8b16-1650edd80b35",
+      "nama": "Penjualan Isi Ulang",
+      "deskripsi": "Produk Utama",
+      "isAktif": true,
+      "createdAt": "2026-06-03T11:57:49.136Z"
+    },
+    {
+      "tipe": "pemasukan",
+      "ikon": "inventory_2",
+      "isSystem": true,
+      "id": "7c4724f7-0709-4113-9a6f-2496270584e9",
+      "nama": "Penjualan Galon Baru",
+      "deskripsi": "Inventori",
+      "isAktif": true,
+      "createdAt": "2026-06-03T11:57:49.136Z"
+    },
+    {
+      "tipe": "pengeluaran",
+      "ikon": "people",
+      "isSystem": true,
+      "id": "4cc36cce-35d4-487d-b033-2728b4691aa4",
+      "nama": "Gaji Crew",
+      "deskripsi": "Biaya Operasional",
+      "isAktif": true,
+      "createdAt": "2026-06-03T11:57:49.136Z"
+    },
+    {
+      "tipe": "pengeluaran",
+      "ikon": "bolt",
+      "isSystem": true,
+      "id": "a06d08b1-8453-4f44-991b-fe902f1a6056",
+      "nama": "Biaya Listrik & Air",
+      "deskripsi": "Utilitas Bulanan",
+      "isAktif": true,
+      "createdAt": "2026-06-03T11:57:49.136Z"
+    },
+    {
+      "tipe": "pengeluaran",
+      "ikon": "store",
+      "isSystem": true,
+      "id": "292fefb1-8add-4fca-a0e4-886e2440eaa6",
+      "nama": "Sewa Tempat",
+      "deskripsi": "Biaya Tetap",
+      "isAktif": true,
+      "createdAt": "2026-06-03T11:57:49.136Z"
+    }
+  ],
+  "produk": [
+    {
+      "id": "0bb0011e-cf14-4245-a6f8-d8591d28d792",
+      "nama": "Galon",
+      "kategoriId": "7c4724f7-0709-4113-9a6f-2496270584e9",
+      "harga": 50000,
+      "stok": 0,
+      "deskripsi": null,
+      "gambarUrl": null,
+      "isAktif": true,
+      "createdAt": "2026-06-03T12:38:34.451Z"
+    },
+    {
+      "id": "80904a21-9881-48dd-85b9-b2b49278a218",
+      "nama": "Air Bio",
+      "kategoriId": "e516abb8-c775-4961-8b16-1650edd80b35",
+      "harga": 8000,
+      "stok": 0,
+      "deskripsi": null,
+      "gambarUrl": null,
+      "isAktif": true,
+      "createdAt": "2026-06-03T12:40:01.854Z",
+      "updatedAt": "2026-06-03T12:40:39.312Z"
+    },
+    {
+      "id": "547d91c2-7036-4bd0-9681-a30176f28ae0",
+      "nama": "Air Mineral",
+      "kategoriId": "e516abb8-c775-4961-8b16-1650edd80b35",
+      "harga": 7000,
+      "stok": 0,
+      "deskripsi": null,
+      "gambarUrl": null,
+      "isAktif": true,
+      "createdAt": "2026-06-03T12:40:32.224Z"
+    },
+    {
+      "id": "9405c3cf-a359-44d2-94c5-ae356b7f5282",
+      "nama": "Air RO",
+      "kategoriId": "e516abb8-c775-4961-8b16-1650edd80b35",
+      "harga": 10000,
+      "stok": 0,
+      "deskripsi": null,
+      "gambarUrl": null,
+      "isAktif": true,
+      "createdAt": "2026-06-03T12:40:52.805Z"
+    }
+  ],
+  "pelanggan": [
+    {
+      "id": "0d0d4d86-3db2-49d2-8dbf-187d4ed8397a",
+      "nama": "Siti Aminah",
+      "noHp": "081211112222",
+      "alamat": "Jl. Melati No. 5",
+      "totalGalonPinjam": 2,
+      "totalTransaksi": 450000,
+      "catatan": null,
+      "isAktif": true,
+      "createdAt": "2026-06-03T11:57:49.136Z"
+    },
+    {
+      "id": "91293846-d78a-4548-8ada-6234e46a2669",
+      "nama": "anggel",
+      "noHp": "081234567890",
+      "alamat": "jl. bajang ratu 3 no 16",
+      "totalGalonPinjam": 0,
+      "totalTransaksi": 57000,
+      "catatan": null,
+      "isAktif": true,
+      "createdAt": "2026-06-03T12:37:55.444Z"
+    }
+  ],
+  "galon": [
+    {
+      "id": "fe44536f-3e4c-416c-a6fa-22e20106e451",
+      "kodeGalon": "G-001",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "tersedia",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "57067b73-c49d-4cab-bb38-474837555fdf",
+      "kodeGalon": "G-002",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "tersedia",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "2c480b51-85bf-4bb1-b476-516c0188b8f3",
+      "kodeGalon": "G-003",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "tersedia",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "c02e3ac9-0c96-4050-9c44-4f81fee29c5a",
+      "kodeGalon": "G-004",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "tersedia",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "e9597cb4-c8cf-42a0-a31c-ae4859bb6a90",
+      "kodeGalon": "G-005",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "tersedia",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "0d764e96-beb1-4a33-b626-d6e6e236359c",
+      "kodeGalon": "G-006",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "tersedia",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "eb16e7bc-782e-4b00-a77f-0796613b4674",
+      "kodeGalon": "G-007",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "tersedia",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "289b9eba-65eb-4af4-9dd9-47c88cd178d7",
+      "kodeGalon": "G-008",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "tersedia",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "93cad3d1-a636-4325-a158-7eadb216b170",
+      "kodeGalon": "G-009",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "tersedia",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "12406af7-01dd-4d24-a736-17fec5d8ade3",
+      "kodeGalon": "G-010",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "tersedia",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "8afc3b02-1e43-4c07-9162-2681c9189cd5",
+      "kodeGalon": "G-011",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "tersedia",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "14918a39-f359-4507-9ff2-df653a6c72ca",
+      "kodeGalon": "G-012",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "tersedia",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "061e7a42-870d-4036-b8c5-04f6708adc4d",
+      "kodeGalon": "G-013",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "tersedia",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "edec14d0-e27c-4702-99a4-83aab61d6aac",
+      "kodeGalon": "G-014",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "tersedia",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "f8628c15-2760-4481-a5f8-139f12acb54f",
+      "kodeGalon": "G-015",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "tersedia",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "9b2e0c58-06aa-4dd1-a6b5-83755f1b33e6",
+      "kodeGalon": "G-016",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "tersedia",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "3d26e520-dea3-4050-b2d9-2ef773315474",
+      "kodeGalon": "G-017",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "tersedia",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "ae7eacd5-9dfe-4072-be53-934d794fe7b5",
+      "kodeGalon": "G-018",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "tersedia",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "6dcc1ea7-ca01-4732-8d56-0af5727ec7cf",
+      "kodeGalon": "G-019",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "tersedia",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "f93048fa-a462-48fc-beb8-27bb6b98daa4",
+      "kodeGalon": "G-020",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "tersedia",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "501d9102-00dc-4aec-8489-a8cfb542773c",
+      "kodeGalon": "G-021",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "tersedia",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "357d0c47-97d3-4929-a241-bd8a4c3db5ae",
+      "kodeGalon": "G-022",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "tersedia",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "c9919e14-a263-4c12-866b-c2bd39784cbf",
+      "kodeGalon": "G-023",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "tersedia",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "d11ae563-2c07-41e7-ae8d-2aa668f1533a",
+      "kodeGalon": "G-024",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "tersedia",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "71592a0a-86d8-40f3-a1d6-3bc4ef5b7182",
+      "kodeGalon": "G-025",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "tersedia",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "67b8f94f-0717-40be-8946-87d71c58c590",
+      "kodeGalon": "G-026",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "tersedia",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "901d92c0-9f38-44e9-b9be-06bb7bbfd0d5",
+      "kodeGalon": "G-027",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "tersedia",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "b7a07602-c6fb-407b-a6e1-05a237d92bdf",
+      "kodeGalon": "G-028",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "tersedia",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "df2457ac-47b0-4b4f-ac9a-49300af31e80",
+      "kodeGalon": "G-029",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "tersedia",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "1ed0a54a-d003-4ecd-8d59-a3de7b10b126",
+      "kodeGalon": "G-030",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "tersedia",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "2a167868-050a-4f8c-bd9c-afe46bb9a2ca",
+      "kodeGalon": "G-031",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "tersedia",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "bf2956c1-b6ac-451d-813b-5d7760d6954e",
+      "kodeGalon": "G-032",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "tersedia",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "734f355d-4b57-4a76-8c2f-8eb83bc0167a",
+      "kodeGalon": "G-033",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "tersedia",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "a3abcb02-1295-4af1-8383-f02902f8687c",
+      "kodeGalon": "G-034",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "tersedia",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "5555e357-e7e4-41d0-b1fd-b6e17b74c163",
+      "kodeGalon": "G-035",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "tersedia",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "7a613f65-8c0c-4745-bef9-27b660c4d560",
+      "kodeGalon": "G-036",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "dipinjam",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "aacc3040-6ff3-42b5-88ff-a67dc357191e",
+      "kodeGalon": "G-037",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "dipinjam",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "95d2edae-cf8c-4ffb-a819-1a57ea5bb1fc",
+      "kodeGalon": "G-038",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "dipinjam",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "d4419e66-8c36-4847-9868-a4bc5529a2a9",
+      "kodeGalon": "G-039",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "dipinjam",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "3b311b9b-39eb-473d-a8a3-2073d417fd0f",
+      "kodeGalon": "G-040",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "dipinjam",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.039Z"
+    },
+    {
+      "id": "8002651d-be61-45dc-a4b1-e5b83b02663f",
+      "kodeGalon": "G-041",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "dipinjam",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.040Z"
+    },
+    {
+      "id": "8bb44b82-e064-4708-9ef0-0b6bad9b3869",
+      "kodeGalon": "G-042",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "dipinjam",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.040Z"
+    },
+    {
+      "id": "ab09be50-e12b-4ba9-9a3d-e393fd68d8b4",
+      "kodeGalon": "G-043",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "dipinjam",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.040Z"
+    },
+    {
+      "id": "0d7236bd-1b26-4791-b480-004b191f2c00",
+      "kodeGalon": "G-044",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "dipinjam",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.040Z"
+    },
+    {
+      "id": "df767108-e24b-42f3-80d6-9929d940bd5e",
+      "kodeGalon": "G-045",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "dipinjam",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.040Z"
+    },
+    {
+      "id": "9871a625-8c4d-4a13-a6b9-68499d93600c",
+      "kodeGalon": "G-046",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "dipinjam",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.040Z"
+    },
+    {
+      "id": "2d4f993d-a2a9-422c-8638-7d7d3612593d",
+      "kodeGalon": "G-047",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "dipinjam",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.040Z"
+    },
+    {
+      "id": "81ad653a-09e6-4821-a3c8-99c642f5d0db",
+      "kodeGalon": "G-048",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "rusak",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.040Z"
+    },
+    {
+      "id": "cd612d92-f6f3-44d1-9613-8c091c42c56a",
+      "kodeGalon": "G-049",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "rusak",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.040Z"
+    },
+    {
+      "id": "608692ef-833f-4e05-8544-7cffdec5b5c7",
+      "kodeGalon": "G-050",
+      "merek": "Depo",
+      "jenis": "isi",
+      "status": "hilang",
+      "pelangganId": null,
+      "catatan": null,
+      "createdAt": "2026-06-03T12:01:21.040Z"
+    }
+  ],
+  "galonSummary": {
+    "totalGalon": 50,
+    "tersedia": 35,
+    "dipinjam": 12,
+    "rusak": 2,
+    "hilang": 1
+  },
+  "galonMutasi": [],
+  "transaksi": [
+    {
+      "id": "e9ef8890-4c79-4ced-beed-04845f3be120",
+      "nomorTransaksi": "1780490475266",
+      "pelangganId": "91293846-d78a-4548-8ada-6234e46a2669",
+      "crewId": "crew_001",
+      "items": [
+        {
+          "id": "19b66c0e-a2da-4f24-8f85-d6680fe3e7d3",
+          "transaksiId": "e9ef8890-4c79-4ced-beed-04845f3be120",
+          "produkId": "f8c4025d-be93-41fc-af76-cb4f1e771e93",
+          "jumlah": 1,
+          "hargaSatuan": 0,
+          "subtotal": 0,
+          "galonPinjam": 0,
+          "galonKembali": 0
+        },
+        {
+          "id": "331de385-8c08-4bc1-af32-2dc06721e3fd",
+          "transaksiId": "e9ef8890-4c79-4ced-beed-04845f3be120",
+          "produkId": "547d91c2-7036-4bd0-9681-a30176f28ae0",
+          "jumlah": 1,
+          "hargaSatuan": 7000,
+          "subtotal": 7000,
+          "galonPinjam": 0,
+          "galonKembali": 0
+        },
+        {
+          "id": "34b157fe-a51a-4765-8b88-6f23ac453f21",
+          "transaksiId": "e9ef8890-4c79-4ced-beed-04845f3be120",
+          "produkId": "0bb0011e-cf14-4245-a6f8-d8591d28d792",
+          "jumlah": 1,
+          "hargaSatuan": 50000,
+          "subtotal": 50000,
+          "galonPinjam": 0,
+          "galonKembali": 0
+        }
+      ],
+      "totalHarga": 57000,
+      "metodePembayaran": "qris",
+      "status": "selesai",
+      "statusValidasi": "valid",
+      "bayar": null,
+      "kembalian": null,
+      "qrPaymentId": "56a70a99-1362-4155-b132-afb60dec405d",
+      "catatan": null,
+      "validasiOleh": "manager_001",
+      "validasiAt": "2026-06-03T12:41:35.919Z",
+      "createdAt": "2026-06-03T12:41:15.266Z",
+      "updatedAt": "2026-06-03T12:41:35.919Z",
+      "qrPaidAt": "2026-06-03T12:41:22.092Z"
+    }
+  ],
+  "qrPayments": [
+    {
+      "paymentId": "56a70a99-1362-4155-b132-afb60dec405d",
+      "transaksiId": "e9ef8890-4c79-4ced-beed-04845f3be120",
+      "jumlah": 57000,
+      "qrContent": "QRIS://depoair/56a70a99-1362-4155-b132-afb60dec405d?trx=e9ef8890-4c79-4ced-beed-04845f3be120&amount=57000",
+      "status": "paid",
+      "namaDepot": "Depo Air Minum",
+      "expiresAt": "2026-06-03T12:56:15.435Z",
+      "createdAt": "2026-06-03T12:41:15.436Z",
+      "paidAt": "2026-06-03T12:41:22.092Z",
+      "updatedAt": "2026-06-03T12:41:22.092Z"
+    }
+  ],
+  "refreshTokens": {
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjcmV3XzAwMSIsInJvbGUiOiJjcmV3IiwidXNlcm5hbWUiOiJjcmV3MDAxIiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3ODA0ODgwODUsImV4cCI6MTc4MTA5Mjg4NX0.8-amP-YzRWopHiTy3iNBfOXvSSPSdlkTbqVdqFmkzIQ": "crew_001",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYW5hZ2VyXzAwMSIsInJvbGUiOiJtYW5hZ2VyIiwidXNlcm5hbWUiOiJtYW5hZ2VyQGRlcG9haXIuY29tIiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3ODA0ODgxMjksImV4cCI6MTc4MTA5MjkyOX0.1WWCAsXDBx7zY8Ie7BXK9q5TxFzBlKA4eCenUeHOPJ8": "manager_001",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYW5hZ2VyXzAwMSIsInJvbGUiOiJtYW5hZ2VyIiwidXNlcm5hbWUiOiJtYW5hZ2VyQGRlcG9haXIuY29tIiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3ODA0ODg2NTIsImV4cCI6MTc4MTA5MzQ1Mn0.Zp1UmHsTXP6uzMLm_LWYrEQVzxIWS9b1SjItpkg_lpA": "manager_001",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYW5hZ2VyXzAwMSIsInJvbGUiOiJtYW5hZ2VyIiwidXNlcm5hbWUiOiJtYW5hZ2VyQGRlcG9haXIuY29tIiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3ODA0ODkwNTUsImV4cCI6MTc4MTA5Mzg1NX0.rjx1w8qRvYJ0qr9SSyIQibjYjaTfXSrgNn_xr9K5LiQ": "manager_001",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYW5hZ2VyXzAwMSIsInJvbGUiOiJtYW5hZ2VyIiwidXNlcm5hbWUiOiJtYW5hZ2VyQGRlcG9haXIuY29tIiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3ODA0ODk3NDAsImV4cCI6MTc4MTA5NDU0MH0.vzrE3Vvz_c0W46oHj15jUBF8BDBlkx0hMlHVSpH1Crk": "manager_001",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYW5hZ2VyXzAwMSIsInJvbGUiOiJtYW5hZ2VyIiwidXNlcm5hbWUiOiJtYW5hZ2VyQGRlcG9haXIuY29tIiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3ODA0OTAwMDUsImV4cCI6MTc4MTA5NDgwNX0.Mv53gstKDVTy-iO0MwOUuKeGsv29ho6txXfuN1ZSs7E": "manager_001",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjcmV3XzAwMSIsInJvbGUiOiJjcmV3IiwidXNlcm5hbWUiOiJjcmV3MDAxIiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3ODA0OTAwMzEsImV4cCI6MTc4MTA5NDgzMX0.7J6j9bneqGzCSYUvtWRO-oFmmhdB-TNiJZGpiLiUuEM": "crew_001",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYW5hZ2VyXzAwMSIsInJvbGUiOiJtYW5hZ2VyIiwidXNlcm5hbWUiOiJtYW5hZ2VyQGRlcG9haXIuY29tIiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3ODA0OTAyMTUsImV4cCI6MTc4MTA5NTAxNX0.meDr3W_2DuTj1c4X0oXEKFAxATwUjBUUsNZqV7lo26w": "manager_001",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjcmV3XzAwMSIsInJvbGUiOiJjcmV3IiwidXNlcm5hbWUiOiJjcmV3MDAxIiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3ODA0OTAyMjUsImV4cCI6MTc4MTA5NTAyNX0.5NubSTiZ2uDVWXnFxiFtndgzyWsu7BoxjLyNMN7Go6w": "crew_001",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYW5hZ2VyXzAwMSIsInJvbGUiOiJtYW5hZ2VyIiwidXNlcm5hbWUiOiJtYW5hZ2VyQGRlcG9haXIuY29tIiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3ODA0OTAyOTAsImV4cCI6MTc4MTA5NTA5MH0.heqMUikjZwYsC2c8FB72GMd-7n5IBGEmZ193TCRIxJo": "manager_001",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjcmV3XzAwMSIsInJvbGUiOiJjcmV3IiwidXNlcm5hbWUiOiJjcmV3MDAxIiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3ODA0OTA0NjEsImV4cCI6MTc4MTA5NTI2MX0.5eGay0GXgP-j0jTRfsS5-4qQ6jWCQ1Hm_JffVR-jAXQ": "crew_001",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYW5hZ2VyXzAwMSIsInJvbGUiOiJtYW5hZ2VyIiwidXNlcm5hbWUiOiJtYW5hZ2VyQGRlcG9haXIuY29tIiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3ODA0OTA0OTEsImV4cCI6MTc4MTA5NTI5MX0.lrRjBx8kpPYZ28N-Nh_3ACAqbTSCkKktCNUvjM_5T0s": "manager_001",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjcmV3XzAwMSIsInJvbGUiOiJjcmV3IiwidXNlcm5hbWUiOiJjcmV3MDAxIiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3ODA0OTA1MTYsImV4cCI6MTc4MTA5NTMxNn0.EvvOJoLqZe_gHzhzblOuLAjVqFpbW8euH8Rr3IFfhrg": "crew_001",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYW5hZ2VyXzAwMSIsInJvbGUiOiJtYW5hZ2VyIiwidXNlcm5hbWUiOiJtYW5hZ2VyQGRlcG9haXIuY29tIiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3ODA0OTA1NjcsImV4cCI6MTc4MTA5NTM2N30.Jpvnm6RfY5eTblDYVvUAPB1Alw-Nys-Co-FtJVvGmKo": "manager_001",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjcmV3XzAwMSIsInJvbGUiOiJjcmV3IiwidXNlcm5hbWUiOiJjcmV3MDAxIiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3ODA0OTA3NjgsImV4cCI6MTc4MTA5NTU2OH0.KChFINHalFwmrSNiFsaN741oZBLzb8IHs1DWKqiXj44": "crew_001",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjcmV3XzAwMSIsInJvbGUiOiJjcmV3IiwidXNlcm5hbWUiOiJjcmV3MDAxIiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3ODA0OTE0NDcsImV4cCI6MTc4MTA5NjI0N30.7V4JoVUsM4qhk2sT9i3uHSYHyGgbn5X1Euhz3AEAook": "crew_001",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYW5hZ2VyXzAwMSIsInJvbGUiOiJtYW5hZ2VyIiwidXNlcm5hbWUiOiJtYW5hZ2VyQGRlcG9haXIuY29tIiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3ODA0OTE2MTcsImV4cCI6MTc4MTA5NjQxN30.L423SFKolXecwL6Gisy2OkUcyi9sZkHEHxyCqMy4ULA": "manager_001",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjcmV3XzAwMSIsInJvbGUiOiJjcmV3IiwidXNlcm5hbWUiOiJjcmV3MDAxIiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3ODA0OTE2NTAsImV4cCI6MTc4MTA5NjQ1MH0.6Dni54R_NIcpfPIvCRyhhUslAUyBC0REyTb7jwrTT0A": "crew_001",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYW5hZ2VyXzAwMSIsInJvbGUiOiJtYW5hZ2VyIiwidXNlcm5hbWUiOiJtYW5hZ2VyQGRlcG9haXIuY29tIiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3ODA0OTE5NzgsImV4cCI6MTc4MTA5Njc3OH0.DugjmU7PZ_n7ce-d1oNgQSFZoT9Aq7BZp67UuOHJb38": "manager_001",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjcmV3XzAwMSIsInJvbGUiOiJjcmV3IiwidXNlcm5hbWUiOiJjcmV3MDAxIiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3ODA0OTE5OTEsImV4cCI6MTc4MTA5Njc5MX0.5x2lguTzb5jWDxt_7ygt0qnVWfpGB9Fls2QmyumbRlw": "crew_001",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYW5hZ2VyXzAwMSIsInJvbGUiOiJtYW5hZ2VyIiwidXNlcm5hbWUiOiJtYW5hZ2VyQGRlcG9haXIuY29tIiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3ODA0OTI0MzIsImV4cCI6MTc4MTA5NzIzMn0.E050KWfEhMUinNBsK8cZLqKr_Q4a4PLLpfLP5XszzOE": "manager_001",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjcmV3XzAwMSIsInJvbGUiOiJjcmV3IiwidXNlcm5hbWUiOiJjcmV3MDAxIiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3ODA0OTM2OTEsImV4cCI6MTc4MTA5ODQ5MX0.TdnYSRg7eoiiFp7kXcynZY6G5FcvAe12uxN9II0U_BA": "crew_001",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYW5hZ2VyXzAwMSIsInJvbGUiOiJtYW5hZ2VyIiwidXNlcm5hbWUiOiJtYW5hZ2VyQGRlcG9haXIuY29tIiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3ODA0OTM3MDUsImV4cCI6MTc4MTA5ODUwNX0.cTGf-_Wj8GwZDVvp226FZ1GoZbk-iZQFzetXQ_eTHk8": "manager_001",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYW5hZ2VyXzAwMSIsInJvbGUiOiJtYW5hZ2VyIiwidXNlcm5hbWUiOiJtYW5hZ2VyQGRlcG9haXIuY29tIiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3ODA0OTM4NjQsImV4cCI6MTc4MTA5ODY2NH0.f_e0RzJJisd0j7ATCN4Uq5mDxrf-OGBHy8hNW-lg2do": "manager_001",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYW5hZ2VyXzAwMSIsInJvbGUiOiJtYW5hZ2VyIiwidXNlcm5hbWUiOiJtYW5hZ2VyQGRlcG9haXIuY29tIiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3ODA0OTQwOTQsImV4cCI6MTc4MTA5ODg5NH0.7ZFqeSmt8dIe4w5uDRgwgqf8NeXKg34CANFBc6Yxl2M": "manager_001",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYW5hZ2VyXzAwMSIsInJvbGUiOiJtYW5hZ2VyIiwidXNlcm5hbWUiOiJtYW5hZ2VyQGRlcG9haXIuY29tIiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3ODA0OTQ4MDIsImV4cCI6MTc4MTA5OTYwMn0.6_UJ_3FzuxC95mITjN91_C5B-SfLevOrNEfoCSyUBLg": "manager_001",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjcmV3XzAwMSIsInJvbGUiOiJjcmV3IiwidXNlcm5hbWUiOiJjcmV3MDAxIiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3ODA0OTY3NDcsImV4cCI6MTc4MTEwMTU0N30.pMIlSgH1wVdVQ1G5hl6zen2500VDEgaDEKiGacrF288": "crew_001",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYW5hZ2VyXzAwMSIsInJvbGUiOiJtYW5hZ2VyIiwidXNlcm5hbWUiOiJtYW5hZ2VyQGRlcG9haXIuY29tIiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3ODA0OTY3NTMsImV4cCI6MTc4MTEwMTU1M30.DgJmLC76hpyIYdwJF8DmQHfSX4bR1isZZTq2ehgiWfw": "manager_001"
+  },
+  "pengeluaran": []
+}
