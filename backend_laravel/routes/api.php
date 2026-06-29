@@ -6,8 +6,8 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1')->controller(DepoApiController::class)->group(function () {
     Route::get('/health', 'health');
 
-    Route::post('/auth/login/crew', 'loginCrew');
-    Route::post('/auth/login/manager', 'loginManager');
+    Route::post('/auth/login/crew', 'loginCrew')->middleware('throttle:login');
+    Route::post('/auth/login/manager', 'loginManager')->middleware('throttle:login');
     Route::post('/auth/refresh', 'refresh');
     Route::get('/pembayaran/qris/test-simulasi', 'qrisTestSimulasi');
     Route::get('/pembayaran/qris/{paymentId}/status-public', 'qrisStatusPublic');

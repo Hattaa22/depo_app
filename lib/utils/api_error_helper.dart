@@ -34,11 +34,11 @@ class ApiErrorHelper {
   }
 
   static String connectionHelp() {
-    return 'HP tidak bisa menjangkau server:\n'
+    return 'Aplikasi tidak bisa menjangkau server API:\n'
         '${ApiConfig.baseUrl}\n\n'
-        '1. Jalankan Laravel API: cd backend_laravel lalu php artisan serve --host=127.0.0.1 --port=8000\n'
-        '2. Pastikan API_BASE_URL mengarah ke backend yang aktif\n'
-        '3. Izinkan firewall Windows untuk port backend\n'
-        '4. Stop lalu jalankan ulang aplikasi Flutter';
+        '1. Pastikan domain API aktif dan memakai HTTPS\n'
+        '2. Pastikan API_BASE_URL pada build aplikasi sudah benar\n'
+        '3. Pastikan firewall, SSL, dan web server mengizinkan akses publik\n'
+        '4. Coba login ulang setelah koneksi internet stabil';
   }
 }

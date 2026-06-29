@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import '../../controllers/auth_controller.dart';
 import '../../config/app_theme.dart';
 import '../../config/routes.dart';
-import 'widgets/server_status_banner.dart';
 
 class LoginManagerScreen extends StatefulWidget {
   const LoginManagerScreen({super.key});
@@ -65,8 +64,6 @@ class _LoginManagerScreenState extends State<LoginManagerScreen> {
                 'Masuk untuk mengelola depot Anda',
                 style: TextStyle(color: AppTheme.textSecondary),
               ),
-              const SizedBox(height: 16),
-              const ServerStatusBanner(),
               const SizedBox(height: 24),
               TextFormField(
                 controller: _emailCtrl,

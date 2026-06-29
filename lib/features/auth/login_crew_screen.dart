@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../controllers/auth_controller.dart';
 import '../../config/routes.dart';
-import 'widgets/server_status_banner.dart';
 
 class LoginCrewScreen extends StatefulWidget {
   const LoginCrewScreen({super.key});
@@ -223,12 +222,6 @@ class _LoginCrewScreenState extends State<LoginCrewScreen> {
                         ),
                       ),
                     ],
-                  ),
-
-                  // Server status
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 24),
-                    child: ServerStatusBanner(),
                   ),
 
                   // ── Custom Keypad ──────────────────────────────────────

@@ -1,42 +1,64 @@
 # Depo Air API
 
-Backend Laravel untuk aplikasi Depo Air Minum. API ini memakai MySQL dan mengekspos endpoint kompatibel dengan aplikasi Flutter pada prefix `/api/v1`.
+Backend Laravel untuk aplikasi Depo Air Minum. API memakai MySQL dan endpoint kompatibel Flutter pada prefix `/api/v1`.
 
-## Setup
-
-1. Install dependency:
-   ```bash
-   composer install
-   ```
-2. Salin konfigurasi environment:
-   ```bash
-   cp .env.example .env
-   php artisan key:generate
-   ```
-3. Sesuaikan koneksi MySQL di `.env`.
-4. Jalankan migrasi dan seeder:
-   ```bash
-   php artisan migrate --seed
-   ```
-5. Jalankan server lokal:
-   ```bash
-   php artisan serve --host=127.0.0.1 --port=8000
-   ```
-
-Health check tersedia di `GET /api/v1/health`.
-
-## Akun Demo Seeder
-
-- Manager: `manager@depoair.com` / `Password123`
-- Crew: PIN `1234`
-
-## Flutter
-
-Default frontend memakai `http://127.0.0.1:8000/api/v1`. Untuk staging atau production, jalankan Flutter dengan:
+## Local Development
 
 ```bash
-flutter run --dart-define=API_BASE_URL=https://domain-api.example.com/api/v1
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed
+php artisan serve --host=127.0.0.1 --port=8000
 ```
+
+Jalankan Flutter lokal dengan API lokal eksplisit:
+
+```bash
+flutter run --dart-define=API_BASE_URL=http://127.0.0.1:8000/api/v1 --dart-define=ALLOW_HTTP_API=true
+```
+
+Health check: `GET /api/v1/health`.
+
+## Production Deployment
+
+Gunakan domain atau subdomain HTTPS, misalnya `https://api.domain.com`.
+
+Environment minimal:
+
+```env
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://api.domain.com
+FORCE_HTTPS=true
+TRUSTED_PROXIES=*
+CORS_ALLOWED_ORIGINS=https://app.domain.com
+FILESYSTEM_DISK=public
+SESSION_DRIVER=array
+SESSION_SECURE_COOKIE=true
+SESSION_SAME_SITE=lax
+```
+
+Web server harus mengarah ke folder `backend_laravel/public`, bukan root project. Pastikan SSL aktif dan jalankan:
+
+```bash
+composer install --no-dev --optimize-autoloader
+php artisan key:generate --force
+php artisan migrate --force
+php artisan storage:link
+php artisan config:cache
+php artisan route:cache
+```
+
+## Flutter Production Build
+
+Release build wajib memakai domain HTTPS:
+
+```bash
+flutter build apk --release --dart-define=API_BASE_URL=https://api.domain.com/api/v1
+```
+
+Tanpa `API_BASE_URL`, aplikasi akan menolak fallback IP lokal.
 
 ## Validasi
 
