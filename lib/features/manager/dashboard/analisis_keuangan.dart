@@ -592,7 +592,7 @@ class _AnalisisKeuanganScreenState extends State<AnalisisKeuanganScreen> {
       child: Column(
         children: breakdown.asMap().entries.map((entry) {
           final idx = entry.key;
-          final item = entry.value as Map<String, dynamic>;
+          final item = Map<String, dynamic>.from(entry.value as Map);
           final String nama = item['nama'] ?? '';
           final String tipe = item['tipe'] ?? 'pemasukan';
           final String? ikon = item['ikon'];

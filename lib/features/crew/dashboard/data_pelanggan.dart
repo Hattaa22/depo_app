@@ -158,7 +158,7 @@ class _CrewDataPelangganScreenState extends State<CrewDataPelangganScreen> {
                     onRefresh: () => pelanggan.loadPelanggan(),
                     color: _primary,
                     child: ListView.builder(
-                      padding: const EdgeInsets.fromLTRB(20, 8, 20, 120),
+                      padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
                       itemCount: pelanggan.pelangganList.length,
                       itemBuilder: (_, i) {
                         final p = pelanggan.pelangganList[i];
@@ -170,16 +170,9 @@ class _CrewDataPelangganScreenState extends State<CrewDataPelangganScreen> {
               ),
             ],
           ),
-
-          // ── ADD BUTTON ────────────────────────────────────────────────────
-          Positioned(
-            left: 24,
-            right: 24,
-            bottom: MediaQuery.of(context).padding.bottom + 16,
-            child: _buildAddButton(pelanggan),
-          ),
         ],
       ),
+      bottomNavigationBar: _buildAddButton(pelanggan),
     );
   }
 
@@ -190,9 +183,9 @@ class _CrewDataPelangganScreenState extends State<CrewDataPelangganScreen> {
       width: double.infinity,
       padding: EdgeInsets.only(
         top: topPad + 16,
-        left: 24,
-        right: 24,
-        bottom: 32,
+        left: 20,
+        right: 20,
+        bottom: 18,
       ),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
@@ -201,14 +194,14 @@ class _CrewDataPelangganScreenState extends State<CrewDataPelangganScreen> {
           colors: [_primary, Color(0xFF0B5FA0)],
         ),
         borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(40),
-          bottomRight: Radius.circular(40),
+          bottomLeft: Radius.circular(24),
+          bottomRight: Radius.circular(24),
         ),
         boxShadow: [
           BoxShadow(
             color: Color(0x331392EC),
-            blurRadius: 24,
-            offset: Offset(0, 8),
+            blurRadius: 16,
+            offset: Offset(0, 6),
           ),
         ],
       ),
@@ -233,13 +226,28 @@ class _CrewDataPelangganScreenState extends State<CrewDataPelangganScreen> {
                   ),
                 ),
               ),
-              const Text(
-                'Data Pelanggan',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: -0.3,
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Data Pelanggan',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    SizedBox(height: 2),
+                    Text(
+                      'Kelola kontak pelanggan',
+                      style: TextStyle(
+                        color: Color(0xCCFFFFFF),
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               GestureDetector(
@@ -259,80 +267,31 @@ class _CrewDataPelangganScreenState extends State<CrewDataPelangganScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 24),
-
-          // Stats Widget
-          Obx(() => Container(
-                padding: const EdgeInsets.all(20),
+          const SizedBox(height: 14),
+          Obx(
+            () => Align(
+              alignment: Alignment.center,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(24),
+                  color: Colors.white.withValues(alpha: 0.14),
+                  borderRadius: BorderRadius.circular(999),
                   border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.2),
+                    color: Colors.white.withValues(alpha: 0.18),
                   ),
                 ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'PELANGGAN TERDAFTAR',
-                            style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w800,
-                              color: Colors.white.withValues(alpha: 0.7),
-                              letterSpacing: 1.5,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            '${pelanggan.pelangganList.length} Orang',
-                            style: const TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.w900,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      width: 1,
-                      height: 40,
-                      color: Colors.white.withValues(alpha: 0.2),
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'HALAMAN DATA',
-                              style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w800,
-                                color: Colors.white.withValues(alpha: 0.7),
-                                letterSpacing: 1.5,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              '${pelanggan.currentPage.value} / ${pelanggan.totalPage.value}',
-                              style: const TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w900,
-                                  color: Colors.white),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+                child: Text(
+                  '${pelanggan.pelangganList.length} pelanggan',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
-              )),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -492,36 +451,37 @@ class _CrewDataPelangganScreenState extends State<CrewDataPelangganScreen> {
 
   // ── ADD BUTTON ──────────────────────────────────────────────────────────────
   Widget _buildAddButton(PelangganController pelanggan) {
-    return GestureDetector(
-      onTap: () => _showTambahDialog(pelanggan),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 18),
-        decoration: BoxDecoration(
-          color: _primary,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: _primary.withValues(alpha: 0.4),
-              blurRadius: 20,
-              offset: const Offset(0, 8),
+    return Container(
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        border: Border(top: BorderSide(color: Color(0xFFE2E8F0))),
+      ),
+      child: SizedBox(
+        width: double.infinity,
+        height: 52,
+        child: ElevatedButton.icon(
+          onPressed: () => _showTambahDialog(pelanggan),
+          icon: const Icon(
+            Icons.person_add_rounded,
+            color: Colors.white,
+            size: 20,
+          ),
+          label: const Text(
+            'Tambah Pelanggan Baru',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
             ),
-          ],
-        ),
-        child: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.person_add_alt_1_rounded, color: Colors.white, size: 22),
-            SizedBox(width: 10),
-            Text(
-              'Tambah Pelanggan Baru',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                letterSpacing: -0.3,
-              ),
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: _primary,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
             ),
-          ],
+            elevation: 0,
+          ),
         ),
       ),
     );

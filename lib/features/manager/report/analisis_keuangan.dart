@@ -141,7 +141,7 @@ class AnalisisKeuanganReportScreen extends StatelessWidget {
                             style: TextStyle(color: AppTheme.textSecondary))
                       else
                         ...ringkasan.transaksiCrew.map((raw) {
-                          final item = raw as Map<String, dynamic>;
+                          final item = Map<String, dynamic>.from(raw as Map);
                           final nama = item['crewNama']?.toString() ?? '-';
                           final total = item['totalTransaksi'] ?? 0;
                           final kirim = item['totalKirim'] ?? 0;
@@ -216,11 +216,13 @@ class AnalisisKeuanganReportScreen extends StatelessWidget {
         itemCount: breakdown.length,
         separatorBuilder: (_, __) => const Divider(height: 1),
         itemBuilder: (context, index) {
-          final item = breakdown[index] as Map<String, dynamic>;
+          final item = Map<String, dynamic>.from(breakdown[index] as Map);
           final String nama = item['nama'] ?? '';
           final String tipe = item['tipe'] ?? 'pemasukan';
           final String? ikon = item['ikon'];
-          final double total = (item['total'] ?? 0).toDouble();
+          final double total = item['total'] is num
+              ? (item['total'] as num).toDouble()
+              : double.tryParse('${item['total']}') ?? 0;
 
           final isPemasukan = tipe == 'pemasukan';
           final color =

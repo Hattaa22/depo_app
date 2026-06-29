@@ -29,11 +29,14 @@ class Formatters {
   static String currency(num amount) =>
       _currencyFormatter.format(amount.toDouble());
 
-  static String date(DateTime date) => _dateFormatter.format(date);
+  static DateTime toWib(DateTime date) =>
+      date.toUtc().add(const Duration(hours: 7));
 
-  static String dateTime(DateTime date) => _dateTimeFormatter.format(date);
+  static String date(DateTime date) => _dateFormatter.format(toWib(date));
 
-  static String time(DateTime date) => _timeFormatter.format(date);
+  static String dateTime(DateTime date) => _dateTimeFormatter.format(toWib(date));
+
+  static String time(DateTime date) => _timeFormatter.format(toWib(date));
 
   static String dateOnly(DateTime date) => _dateOnlyFormatter.format(date);
 

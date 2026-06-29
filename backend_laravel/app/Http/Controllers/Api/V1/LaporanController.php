@@ -40,7 +40,7 @@ class LaporanController extends Controller
             'totalDikirim' => $tx->where('tipe_pembelian', 'dikirim')->count(),
             'totalDiDepo' => $tx->where('tipe_pembelian', '!=', 'dikirim')->count(),
             'transaksiCrew' => $this->pengirimanCrewData($mulai, $akhir),
-            'breakdown' => [],
+            'breakdown' => $this->categoryBreakdown($mulai, $akhir),
         ]);
     }
 

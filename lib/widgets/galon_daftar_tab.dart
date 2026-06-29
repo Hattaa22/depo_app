@@ -113,7 +113,7 @@ class _GalonDaftarTabState extends State<GalonDaftarTab> {
                 ),
                 Positioned(
                   right: 24,
-                  bottom: widget.fabBottomPadding,
+                  bottom: widget.fabBottomPadding - 14,
                   child: FloatingActionButton.extended(
                     onPressed: () => _showCatatDialog(galon),
                     backgroundColor: _primary,

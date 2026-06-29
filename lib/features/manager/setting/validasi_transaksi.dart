@@ -130,10 +130,10 @@ class _ValidasiTransaksiScreenState extends State<ValidasiTransaksiScreen> {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.only(
-        top: topPad + 16,
-        left: 24,
-        right: 24,
-        bottom: 32,
+        top: topPad + 12,
+        left: 20,
+        right: 20,
+        bottom: 18,
       ),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
@@ -142,8 +142,8 @@ class _ValidasiTransaksiScreenState extends State<ValidasiTransaksiScreen> {
           colors: [_primary, Color(0xFF0B5FA0)],
         ),
         borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(40),
-          bottomRight: Radius.circular(40),
+          bottomLeft: Radius.circular(28),
+          bottomRight: Radius.circular(28),
         ),
         boxShadow: [
           BoxShadow(
@@ -188,14 +188,15 @@ class _ValidasiTransaksiScreenState extends State<ValidasiTransaksiScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 14),
 
           // Pending Count Card
           Obx(() => Container(
-                padding: const EdgeInsets.all(20),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.circular(18),
                   border: Border.all(
                     color: Colors.white.withValues(alpha: 0.2),
                   ),
@@ -209,7 +210,7 @@ class _ValidasiTransaksiScreenState extends State<ValidasiTransaksiScreen> {
                           Text(
                             'TRANSAKSI PENDING',
                             style: TextStyle(
-                              fontSize: 10,
+                              fontSize: 9,
                               fontWeight: FontWeight.w800,
                               color: Colors.white.withValues(alpha: 0.7),
                               letterSpacing: 1.5,
@@ -219,7 +220,7 @@ class _ValidasiTransaksiScreenState extends State<ValidasiTransaksiScreen> {
                           Text(
                             '${transaksi.transaksiList.length} Transaksi',
                             style: const TextStyle(
-                              fontSize: 22,
+                              fontSize: 18,
                               fontWeight: FontWeight.w900,
                               color: Colors.white,
                             ),
@@ -229,19 +230,19 @@ class _ValidasiTransaksiScreenState extends State<ValidasiTransaksiScreen> {
                     ),
                     Container(
                       width: 1,
-                      height: 40,
+                      height: 32,
                       color: Colors.white.withValues(alpha: 0.2),
                     ),
                     Expanded(
                       child: Padding(
-                        padding: const EdgeInsets.only(left: 20),
+                        padding: const EdgeInsets.only(left: 16),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               'STATUS',
                               style: TextStyle(
-                                fontSize: 10,
+                                fontSize: 9,
                                 fontWeight: FontWeight.w800,
                                 color: Colors.white.withValues(alpha: 0.7),
                                 letterSpacing: 1.5,
@@ -251,7 +252,7 @@ class _ValidasiTransaksiScreenState extends State<ValidasiTransaksiScreen> {
                             const Text(
                               'PERLU VALIDASI',
                               style: TextStyle(
-                                  fontSize: 15,
+                                  fontSize: 13,
                                   fontWeight: FontWeight.w900,
                                   color: Color(0xFFF59E0B)),
                             ),

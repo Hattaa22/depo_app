@@ -264,27 +264,7 @@ class _DataProdukScreenState extends State<DataProdukScreen> {
                       fontWeight: FontWeight.w700,
                       color: Color(0xFF1E293B))),
               const SizedBox(height: 20),
-              Obx(() => DropdownButtonFormField<String>(
-                    initialValue: kategoriId.value,
-                    decoration: InputDecoration(
-                      labelText: 'Kategori',
-                      prefixIcon: const Icon(Icons.category_outlined,
-                          color: Color(0xFF94A3B8), size: 20),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                      filled: true,
-                      fillColor: const Color(0xFFF8FAFC),
-                    ),
-                    items: produk.kategoriList
-                        .map((k) => DropdownMenuItem(
-                              value: k.id,
-                              child: Text(k.nama),
-                            ))
-                        .toList(),
-                    onChanged: (v) {
-                      if (v != null) kategoriId.value = v;
-                    },
-                  )),
+              Obx(() => _categoryDropdown(produk, kategoriId)),
               const SizedBox(height: 12),
               _field(namaCtrl, 'Nama Produk', Icons.inventory_2_outlined),
               const SizedBox(height: 12),
@@ -384,6 +364,93 @@ class _DataProdukScreenState extends State<DataProdukScreen> {
         filled: true,
         fillColor: const Color(0xFFF8FAFC),
       ),
+    );
+  }
+
+  Widget _categoryDropdown(ProdukController produk, RxString kategoriId) {
+    return DropdownButtonFormField<String>(
+      initialValue: kategoriId.value,
+      isExpanded: true,
+      borderRadius: BorderRadius.circular(18),
+      elevation: 8,
+      menuMaxHeight: 320,
+      icon: const Icon(Icons.keyboard_arrow_down_rounded),
+      dropdownColor: Colors.white,
+      decoration: InputDecoration(
+        labelText: 'Kategori',
+        prefixIcon: Container(
+          margin: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: _primary.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: const Icon(Icons.category_outlined,
+              color: _primary, size: 20),
+        ),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: _primary, width: 2),
+        ),
+        filled: true,
+        fillColor: const Color(0xFFF8FAFC),
+      ),
+      selectedItemBuilder: (context) => produk.kategoriList
+          .map((k) => Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  k.nama,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF1E293B),
+                  ),
+                ),
+              ))
+          .toList(),
+      items: produk.kategoriList
+          .map((k) => DropdownMenuItem(
+                value: k.id,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 34,
+                        height: 34,
+                        decoration: BoxDecoration(
+                          color: _primary.withValues(alpha: 0.09),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Icon(Icons.label_outline_rounded,
+                            color: _primary, size: 18),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          k.nama,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ))
+          .toList(),
+      onChanged: (v) {
+        if (v != null) kategoriId.value = v;
+      },
     );
   }
 

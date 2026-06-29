@@ -39,7 +39,7 @@ class DatabaseSeeder extends Seeder
             'id' => $managerId,
             'role' => 'manager',
             'email' => 'manager@depoair.com',
-            'password_hash' => Hash::make('Password123'),
+            'password_hash' => Hash::make('Managerdepo1'),
             'nama' => 'Ahmad Manager',
             'no_hp' => '081298765432',
             'alamat' => 'Kantor Depo',

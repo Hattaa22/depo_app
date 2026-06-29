@@ -59,14 +59,14 @@ class AppConstants {
   // Formatter
   static const String currencyLocale = 'id_ID';
   static const String currencySymbol = 'Rp';
-  static const String dateFormat = 'dd MMM yyyy';
-  static const String dateTimeFormat = 'dd MMM yyyy, HH:mm';
+  static const String dateFormat = 'EEEE, dd MMMM yyyy';
+  static const String dateTimeFormat = 'EEEE, dd MMMM yyyy, HH:mm';
   static const String timeFormat = 'HH:mm';
   static const String dateOnlyFormat = 'yyyy-MM-dd';
 
   // Test Credentials (untuk development & testing)
   static const String testManagerEmail = 'manager@depoair.com';
-  static const String testManagerPassword = 'Password123';
+  static const String testManagerPassword = 'Managerdepo1';
   static const String testCrewUsername = '081234567890';
   static const String testCrewPassword = '123456';
 }

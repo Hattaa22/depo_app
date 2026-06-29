@@ -174,20 +174,32 @@ class AuthController extends Controller
 
     public function changeProfile(Request $request)
     {
-        $request->validate([
-            'nama' => ['required', 'string', 'max:100'],
-        ]);
-
         $user = DB::table('users')->where('id', $this->auth($request)['sub'])->first();
         if (! $user) {
             return response()->json(['message' => 'User tidak ditemukan'], 404);
         }
 
+        $request->validate([
+            'noHp' => ['required', 'string', 'max:20', 'unique:users,no_hp,'.$user->id],
+        ], [
+            'noHp.required' => 'Nomor telepon wajib diisi',
+            'noHp.unique' => 'Nomor telepon sudah digunakan oleh crew lain',
+        ]);
+
+        if ($user->role !== 'crew') {
+            return response()->json(['message' => 'Perubahan nomor telepon hanya tersedia untuk crew'], 403);
+        }
+
+        $noHp = trim((string) $request->input('noHp'));
+
         DB::table('users')->where('id', $user->id)->update([
-            'nama' => (string) $request->input('nama'),
+            'no_hp' => $noHp,
             'updated_at' => now(),
         ]);
 
-        return response()->json(['message' => 'Profil berhasil diperbarui']);
+        return response()->json([
+            'message' => 'Nomor telepon berhasil diperbarui',
+            'userData' => $this->userData((array) DB::table('users')->where('id', $user->id)->first()),
+        ]);
     }
 }

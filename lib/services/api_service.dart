@@ -124,10 +124,11 @@ class ApiService {
     });
   }
 
-  Future<void> changeProfile(String nama) async {
-    await _dio.put('/auth/change-profile', data: {
-      'nama': nama,
+  Future<Map<String, dynamic>> changePhoneNumber(String noHp) async {
+    final res = await _dio.put('/auth/change-profile', data: {
+      'noHp': noHp,
     });
+    return res.data as Map<String, dynamic>;
   }
 
   Future<AuthResponse> refreshToken(RefreshTokenRequest request) async {

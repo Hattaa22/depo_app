@@ -152,7 +152,7 @@ class CrewNavigationDrawer extends StatelessWidget {
         leading: const Icon(Icons.logout, color: AppTheme.errorColor),
         title:
             const Text('Keluar', style: TextStyle(color: AppTheme.errorColor)),
-        onTap: () => Get.find<AuthController>().logout(),
+        onTap: () => Get.find<AuthController>().confirmLogout(),
       ),
     );
   }
@@ -267,7 +267,7 @@ class ManagerNavigationDrawer extends StatelessWidget {
         leading: const Icon(Icons.logout, color: AppTheme.errorColor),
         title:
             const Text('Keluar', style: TextStyle(color: AppTheme.errorColor)),
-        onTap: () => Get.find<AuthController>().logout(),
+        onTap: () => Get.find<AuthController>().confirmLogout(),
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../controllers/auth_controller.dart';
 import '../../../controllers/crew_main_controller.dart';
+import '../../../widgets/app_dialog.dart';
 
 class PengaturanScreen extends StatelessWidget {
   const PengaturanScreen({super.key});
@@ -152,11 +153,12 @@ class PengaturanScreen extends StatelessWidget {
                                 ),
                                 child: Column(
                                   children: [
-                                    // Change Name
+                                    // Change phone
                                     _buildSettingItem(
-                                      icon: Icons.badge_rounded,
-                                      title: 'Ubah Nama',
-                                      onTap: () => _showGantiNamaDialog(),
+                                      icon: Icons.phone_android_rounded,
+                                      title: 'Ubah Nomor Telepon',
+                                      onTap: () =>
+                                          _showGantiNomorTeleponDialog(),
                                     ),
                                     const Divider(
                                         height: 1, color: Color(0xFFF1F5F9)),
@@ -184,29 +186,29 @@ class PengaturanScreen extends StatelessWidget {
 
                           // Logout Button
                           GestureDetector(
-                            onTap: () => auth.logout(),
+                            onTap: () => auth.confirmLogout(),
                             child: Container(
                               width: double.infinity,
                               padding: const EdgeInsets.symmetric(vertical: 20),
                               decoration: BoxDecoration(
-                                color: const Color(0xFFFEF2F2),
+                                color: Colors.white,
                                 borderRadius: BorderRadius.circular(16),
                                 border:
-                                    Border.all(color: const Color(0xFFFEE2E2)),
+                                    Border.all(color: const Color(0xFFE2E8F0)),
                               ),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: const [
                                   Icon(
                                     Icons.logout_rounded,
-                                    color: Color(0xFFDC2626),
+                                    color: Color(0xFF64748B),
                                     size: 20,
                                   ),
                                   SizedBox(width: 8),
                                   Text(
                                     'Keluar Akun',
                                     style: TextStyle(
-                                      color: Color(0xFFDC2626),
+                                      color: Color(0xFF64748B),
                                       fontSize: 16,
                                       fontWeight: FontWeight.w800,
                                     ),
@@ -374,47 +376,72 @@ class PengaturanScreen extends StatelessWidget {
         return ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: _primary,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           ),
-          onPressed: isLoading ? null : () async {
-            final oldPin = oldCtrl.text;
-            final newPin = newCtrl.text;
-            if (oldPin.isEmpty || newPin.isEmpty) {
-              Get.snackbar('Error', 'PIN tidak boleh kosong', backgroundColor: Colors.red, colorText: Colors.white);
-              return;
-            }
-            if (newPin.length != 6) {
-              Get.snackbar('Error', 'PIN harus 6 digit', backgroundColor: Colors.red, colorText: Colors.white);
-              return;
-            }
-            final success = await Get.find<AuthController>().changePin(oldPin, newPin);
-            if (success) {
-              Get.back();
-              Future.delayed(const Duration(milliseconds: 300), () {
-                Get.snackbar('Berhasil', 'PIN berhasil diubah', backgroundColor: const Color(0xFF10B981), colorText: Colors.white);
-              });
-            }
-          },
-          child: isLoading 
-              ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-              : const Text('Simpan', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          onPressed: isLoading
+              ? null
+              : () async {
+                  final oldPin = oldCtrl.text;
+                  final newPin = newCtrl.text;
+                  if (oldPin.isEmpty || newPin.isEmpty) {
+                    Get.snackbar('Error', 'PIN tidak boleh kosong',
+                        backgroundColor: Colors.red, colorText: Colors.white);
+                    return;
+                  }
+                  if (newPin.length != 6) {
+                    Get.snackbar('Error', 'PIN harus 6 digit',
+                        backgroundColor: Colors.red, colorText: Colors.white);
+                    return;
+                  }
+                  final success = await Get.find<AuthController>()
+                      .changePin(oldPin, newPin);
+                  if (success) {
+                    Get.back();
+                    Future.delayed(const Duration(milliseconds: 300), () {
+                      Get.snackbar('Berhasil', 'PIN berhasil diubah',
+                          backgroundColor: const Color(0xFF10B981),
+                          colorText: Colors.white);
+                    });
+                  }
+                },
+          child: isLoading
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                      color: Colors.white, strokeWidth: 2))
+              : const Text('Simpan',
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold)),
         );
       }),
     );
   }
 
-  void _showGantiNamaDialog() {
-    final namaCtrl = TextEditingController(text: Get.find<AuthController>().userData['nama'] ?? '');
+  void _showGantiNomorTeleponDialog() {
+    final noHpCtrl = TextEditingController(
+      text: Get.find<AuthController>().userData['noHp'] ?? '',
+    );
     Get.defaultDialog(
-      title: 'Ubah Nama',
+      title: 'Ubah Nomor Telepon',
       titleStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
-            controller: namaCtrl,
-            decoration: const InputDecoration(labelText: 'Nama Lengkap'),
+            controller: noHpCtrl,
+            keyboardType: TextInputType.phone,
+            decoration: const InputDecoration(
+              labelText: 'Nomor Telepon Baru',
+              prefixIcon: Icon(Icons.phone_android_rounded),
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Nomor ini akan digunakan untuk login berikutnya.',
+            style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
           ),
         ],
       ),
@@ -427,25 +454,41 @@ class PengaturanScreen extends StatelessWidget {
         return ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: _primary,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           ),
-          onPressed: isLoading ? null : () async {
-            final namaBaru = namaCtrl.text.trim();
-            if (namaBaru.isEmpty) {
-              Get.snackbar('Error', 'Nama tidak boleh kosong', backgroundColor: Colors.red, colorText: Colors.white);
-              return;
-            }
-            final success = await Get.find<AuthController>().changeProfile(namaBaru);
-            if (success) {
-              Get.back();
-              Future.delayed(const Duration(milliseconds: 300), () {
-                Get.snackbar('Berhasil', 'Profil berhasil diperbarui', backgroundColor: const Color(0xFF10B981), colorText: Colors.white);
-              });
-            }
-          },
-          child: isLoading 
-              ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-              : const Text('Simpan', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          onPressed: isLoading
+              ? null
+              : () async {
+                  final nomorBaru = noHpCtrl.text.trim();
+                  if (nomorBaru.isEmpty) {
+                    AppDialog.error(
+                      title: 'Gagal',
+                      message: 'Nomor telepon tidak boleh kosong',
+                    );
+                    return;
+                  }
+                  final success = await Get.find<AuthController>()
+                      .changePhoneNumber(nomorBaru);
+                  if (success) {
+                    Get.back();
+                    Future.delayed(const Duration(milliseconds: 300), () {
+                      AppDialog.success(
+                        title: 'Berhasil',
+                        message: 'Nomor telepon berhasil diperbarui',
+                      );
+                    });
+                  }
+                },
+          child: isLoading
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                      color: Colors.white, strokeWidth: 2))
+              : const Text('Simpan',
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold)),
         );
       }),
     );

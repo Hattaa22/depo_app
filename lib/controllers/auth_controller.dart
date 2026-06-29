@@ -4,6 +4,7 @@ import '../services/api_service.dart';
 import '../services/auth_service.dart';
 import '../config/routes.dart';
 import '../utils/api_error_helper.dart';
+import '../widgets/app_dialog.dart';
 
 class AuthController extends GetxController {
   final AuthService _authService;
@@ -113,6 +114,13 @@ class AuthController extends GetxController {
     }
   }
 
+  Future<void> confirmLogout() async {
+    final confirmed = await AppDialog.confirmLogout();
+    if (confirmed) {
+      await logout();
+    }
+  }
+
   Future<bool> changePassword(String passwordLama, String passwordBaru) async {
     isLoading.value = true;
     errorMessage.value = '';
@@ -159,27 +167,29 @@ class AuthController extends GetxController {
     }
   }
 
-  Future<bool> changeProfile(String nama) async {
+  Future<bool> changePhoneNumber(String noHp) async {
     isLoading.value = true;
     errorMessage.value = '';
     try {
       if (!await _pastikanServerOnline()) return false;
       final api = Get.find<ApiService>();
-      await api.changeProfile(nama);
+      final response = await api.changePhoneNumber(noHp);
       
       // Update local userData
-      userData['nama'] = nama;
+      final updatedUser = response['userData'];
+      if (updatedUser is Map<String, dynamic>) {
+        userData.value = updatedUser;
+      } else {
+        userData['noHp'] = noHp;
+      }
       await _authService.saveUserData(userData);
       
       return true;
     } catch (e) {
       errorMessage.value = ApiErrorHelper.message(e);
-      Get.snackbar(
-        'Gagal mengubah profil',
-        errorMessage.value,
-        backgroundColor: const Color(0xFFE63946),
-        colorText: Colors.white,
-        duration: const Duration(seconds: 6),
+      AppDialog.error(
+        title: 'Gagal',
+        message: errorMessage.value,
       );
       return false;
     } finally {

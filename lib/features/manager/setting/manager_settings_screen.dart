@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../config/app_theme.dart';
 import '../../../config/routes.dart';
 import '../../../controllers/auth_controller.dart';
+import '../../../widgets/app_dialog.dart';
 import '../../../widgets/header_back_button.dart';
 import '../../../widgets/manager_nav_helper.dart';
 
@@ -268,86 +270,216 @@ class _ManagerSettingsScreenState extends State<ManagerSettingsScreen> {
     final confirmCtrl = TextEditingController();
     final auth = Get.find<AuthController>();
     final obscure = true.obs;
+    final obscureNew = true.obs;
+    final obscureConfirm = true.obs;
 
-    Get.defaultDialog(
-      title: 'Ubah Password',
-      titleStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Obx(() => TextField(
-                  controller: oldCtrl,
-                  obscureText: obscure.value,
-                  decoration: InputDecoration(
-                    labelText: 'Password Lama',
-                    suffixIcon: IconButton(
-                      icon: Icon(obscure.value
-                          ? Icons.visibility_off
-                          : Icons.visibility),
-                      onPressed: () => obscure.value = !obscure.value,
+    Get.dialog(
+      Dialog(
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        child: LayoutBuilder(
+          builder: (context, _) {
+            return ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 420),
+              child: SingleChildScrollView(
+                padding: EdgeInsets.only(
+                  left: 22,
+                  right: 22,
+                  top: 22,
+                  bottom: 22 + MediaQuery.of(context).viewInsets.bottom,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: _primary.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(Icons.lock_reset_rounded,
+                              color: _primary),
+                        ),
+                        const SizedBox(width: 12),
+                        const Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Ubah Password',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppTheme.textPrimary,
+                                ),
+                              ),
+                              SizedBox(height: 2),
+                              Text(
+                                'Perbarui password manager Anda',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: AppTheme.textSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                )),
-            const SizedBox(height: 12),
-            TextField(
-              controller: newCtrl,
-              obscureText: true,
-              decoration: const InputDecoration(labelText: 'Password Baru'),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: confirmCtrl,
-              obscureText: true,
-              decoration:
-                  const InputDecoration(labelText: 'Konfirmasi Password Baru'),
-            ),
-          ],
+                    const SizedBox(height: 22),
+                    Obx(() => _passwordField(
+                          oldCtrl,
+                          'Password Lama',
+                          obscure.value,
+                          () => obscure.value = !obscure.value,
+                        )),
+                    const SizedBox(height: 14),
+                    Obx(() => _passwordField(
+                          newCtrl,
+                          'Password Baru',
+                          obscureNew.value,
+                          () => obscureNew.value = !obscureNew.value,
+                        )),
+                    const SizedBox(height: 14),
+                    Obx(() => _passwordField(
+                          confirmCtrl,
+                          'Konfirmasi Password Baru',
+                          obscureConfirm.value,
+                          () => obscureConfirm.value = !obscureConfirm.value,
+                        )),
+                    const SizedBox(height: 22),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () => Get.back(),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: const Color(0xFF64748B),
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              side: const BorderSide(
+                                color: Color(0xFFE2E8F0),
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                            ),
+                            child: const Text('Batal'),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Obx(() => ElevatedButton(
+                                onPressed: auth.isLoading.value
+                                    ? null
+                                    : () async {
+                                        if (oldCtrl.text.isEmpty ||
+                                            newCtrl.text.isEmpty ||
+                                            confirmCtrl.text.isEmpty) {
+                                          AppDialog.error(
+                                            title: 'Gagal',
+                                            message: 'Semua field wajib diisi',
+                                          );
+                                          return;
+                                        }
+                                        if (newCtrl.text != confirmCtrl.text) {
+                                          AppDialog.error(
+                                            title: 'Gagal',
+                                            message:
+                                                'Konfirmasi password tidak sesuai',
+                                          );
+                                          return;
+                                        }
+                                        if (newCtrl.text.length < 6) {
+                                          AppDialog.error(
+                                            title: 'Gagal',
+                                            message:
+                                                'Password baru minimal 6 karakter',
+                                          );
+                                          return;
+                                        }
+                                        final ok = await auth.changePassword(
+                                          oldCtrl.text,
+                                          newCtrl.text,
+                                        );
+                                        if (ok) {
+                                          Get.back();
+                                          AppDialog.success(
+                                            title: 'Berhasil',
+                                            message: 'Password berhasil diubah',
+                                          );
+                                        }
+                                      },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFFE0F2FE),
+                                  foregroundColor: const Color(0xFF0369A1),
+                                  elevation: 0,
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 14),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                ),
+                                child: auth.isLoading.value
+                                    ? const SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: Color(0xFF0369A1),
+                                        ),
+                                      )
+                                    : const Text(
+                                        'Simpan',
+                                        style: TextStyle(
+                                          color: Color(0xFF0369A1),
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                              )),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
         ),
       ),
-      cancel: TextButton(
-        onPressed: () => Get.back(),
-        child: const Text('Batal', style: TextStyle(color: Color(0xFF64748B))),
+    );
+  }
+
+  Widget _passwordField(
+    TextEditingController controller,
+    String label,
+    bool obscure,
+    VoidCallback toggle,
+  ) {
+    return TextField(
+      controller: controller,
+      obscureText: obscure,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: const Icon(Icons.lock_outline_rounded),
+        suffixIcon: IconButton(
+          icon: Icon(obscure ? Icons.visibility_off : Icons.visibility),
+          onPressed: toggle,
+        ),
+        filled: true,
+        fillColor: const Color(0xFFF8FAFC),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: _primary, width: 2),
+        ),
       ),
-      confirm: Obx(() => ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: _primary,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
-            ),
-            onPressed: auth.isLoading.value
-                ? null
-                : () async {
-                    if (oldCtrl.text.isEmpty ||
-                        newCtrl.text.isEmpty ||
-                        confirmCtrl.text.isEmpty) {
-                      Get.snackbar('Error', 'Semua field wajib diisi');
-                      return;
-                    }
-                    if (newCtrl.text != confirmCtrl.text) {
-                      Get.snackbar('Error', 'Konfirmasi password tidak sesuai');
-                      return;
-                    }
-                    if (newCtrl.text.length < 6) {
-                      Get.snackbar('Error', 'Password baru minimal 6 karakter');
-                      return;
-                    }
-                    final ok =
-                        await auth.changePassword(oldCtrl.text, newCtrl.text);
-                    if (ok) Get.back();
-                  },
-            child: auth.isLoading.value
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                        strokeWidth: 2, color: Colors.white),
-                  )
-                : const Text('Simpan',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold)),
-          )),
     );
   }
 
@@ -355,18 +487,19 @@ class _ManagerSettingsScreenState extends State<ManagerSettingsScreen> {
     return SizedBox(
       width: double.infinity,
       child: OutlinedButton.icon(
-        onPressed: () => Get.find<AuthController>().logout(),
-        icon: const Icon(Icons.logout_rounded, color: Color(0xFFEF4444)),
+        onPressed: () => Get.find<AuthController>().confirmLogout(),
+        icon: const Icon(Icons.logout_rounded, color: Color(0xFF64748B)),
         label: const Text(
           'Keluar dari Akun',
           style: TextStyle(
-            color: Color(0xFFEF4444),
+            color: Color(0xFF64748B),
             fontWeight: FontWeight.w600,
           ),
         ),
         style: OutlinedButton.styleFrom(
+          backgroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 14),
-          side: const BorderSide(color: Color(0xFFFECACA)),
+          side: const BorderSide(color: Color(0xFFE2E8F0)),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         ),

@@ -54,7 +54,11 @@ class DashboardController extends Controller
             'totalPelanggan' => (int) DB::table('pelanggan')->count(),
             'totalPendapatanHarian' => (float) DB::table('transaksi')->where('status', 'selesai')->whereDate('created_at', $today)->sum('total_harga'),
             'totalTransaksiHari' => (int) DB::table('transaksi')->where('status', 'selesai')->whereDate('created_at', $today)->count(),
-            'breakdown' => ['harian' => [], 'bulanan' => [], 'semua' => []],
+            'breakdown' => [
+                'harian' => $this->categoryBreakdown($today, $today),
+                'bulanan' => $this->categoryBreakdown($monthStart, $today),
+                'semua' => $this->categoryBreakdown('2000-01-01', $today),
+            ],
         ]);
     }
 }

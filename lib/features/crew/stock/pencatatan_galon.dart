@@ -402,7 +402,7 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
                 // Absolute Floating Button inside tab context
                 Positioned(
                   right: 24,
-                  bottom: 100, // Stay above BottomBar
+                  bottom: 10,
                   child: FloatingActionButton.extended(
                     onPressed: () => _showCatatDialog(galon),
                     backgroundColor: _primary,
@@ -453,141 +453,146 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
     final color = _galonColor(g.status);
     final statusLabel = Formatters.statusGalon(g.status.name);
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFF1F5F9)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.01),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
+    return GestureDetector(
+      onTap: () => _showBorrowingDetails(g),
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFFF1F5F9)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.01),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
             ),
-            child: Icon(Icons.water_drop, color: color, size: 22),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Galon #${g.kodeGalon}',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFF1E293B),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.water_drop, color: color, size: 22),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Galon #${g.kodeGalon}',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF1E293B),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  g.jenis.name.toUpperCase(),
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: Color(0xFF94A3B8),
+                  const SizedBox(height: 2),
+                  Text(
+                    g.jenis.name.toUpperCase(),
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: Color(0xFF94A3B8),
+                    ),
                   ),
-                ),
-                if (g.status == StatusGalon.dipinjam &&
-                    g.pelangganNama != null) ...[
-                  Padding(
-                    padding: const EdgeInsets.only(top: 4),
-                    child: GestureDetector(
-                      onTap: () => _showBorrowingDetails(g),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              const Icon(Icons.person_outline,
-                                  size: 12, color: _primary),
-                              const SizedBox(width: 4),
-                              Expanded(
-                                child: Text(
-                                  g.pelangganNama!,
-                                  style: const TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w600,
-                                    color: _primary,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                          if (g.tanggalPinjam != null) ...[
-                            const SizedBox(height: 2),
+                  if (g.status == StatusGalon.dipinjam &&
+                      g.pelangganNama != null) ...[
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: GestureDetector(
+                        onTap: () => _showBorrowingDetails(g),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
                             Row(
                               children: [
-                                const Icon(Icons.calendar_today,
-                                    size: 10, color: Color(0xFF64748B)),
+                                const Icon(Icons.person_outline,
+                                    size: 12, color: _primary),
                                 const SizedBox(width: 4),
                                 Expanded(
                                   child: Text(
-                                    '${_formatTanggal(g.tanggalPinjam!)} • ${_hitungDurasi(g.tanggalPinjam!)}',
+                                    g.pelangganNama!,
                                     style: const TextStyle(
-                                      fontSize: 9,
-                                      color: Color(0xFF64748B),
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w600,
+                                      color: _primary,
                                     ),
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                               ],
                             ),
+                            if (g.tanggalPinjam != null) ...[
+                              const SizedBox(height: 2),
+                              Row(
+                                children: [
+                                  const Icon(Icons.calendar_today,
+                                      size: 10, color: Color(0xFF64748B)),
+                                  const SizedBox(width: 4),
+                                  Expanded(
+                                    child: Text(
+                                      '${_formatTanggal(g.tanggalPinjam!)} • ${_hitungDurasi(g.tanggalPinjam!)}',
+                                      style: const TextStyle(
+                                        fontSize: 9,
+                                        color: Color(0xFF64748B),
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ],
-                        ],
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ],
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              statusLabel,
-              style: TextStyle(
-                fontSize: 9,
-                fontWeight: FontWeight.w800,
-                color: color,
               ),
             ),
-          ),
-          const SizedBox(width: 8),
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert, color: Color(0xFF94A3B8)),
-            onSelected: (status) async {
-              await galon.updateStatusGalon(g.id, status);
-              galon.loadSummary();
-            },
-            itemBuilder: (_) => [
-              const PopupMenuItem(
-                  value: 'tersedia', child: Text('Tandai Tersedia')),
-              const PopupMenuItem(
-                  value: 'dipinjam', child: Text('Tandai Dipinjam')),
-              const PopupMenuItem(value: 'rusak', child: Text('Tandai Rusak')),
-              const PopupMenuItem(
-                  value: 'hilang', child: Text('Tandai Hilang')),
-            ],
-          ),
-        ],
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                statusLabel,
+                style: TextStyle(
+                  fontSize: 9,
+                  fontWeight: FontWeight.w800,
+                  color: color,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            PopupMenuButton<String>(
+              icon: const Icon(Icons.more_vert, color: Color(0xFF94A3B8)),
+              onSelected: (status) async {
+                await galon.updateStatusGalon(g.id, status);
+                galon.loadSummary();
+              },
+              itemBuilder: (_) => [
+                const PopupMenuItem(
+                    value: 'tersedia', child: Text('Tandai Tersedia')),
+                const PopupMenuItem(
+                    value: 'dipinjam', child: Text('Tandai Dipinjam')),
+                const PopupMenuItem(
+                    value: 'rusak', child: Text('Tandai Rusak')),
+                const PopupMenuItem(
+                    value: 'hilang', child: Text('Tandai Hilang')),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1414,128 +1419,303 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
 
   // ── BORROWING DETAILS HELPER ───────────────────────────────────────────────
   void _showBorrowingDetails(Galon g) {
-    Get.defaultDialog(
-      title: 'Detail Peminjaman',
-      titleStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
-      titlePadding: const EdgeInsets.only(top: 20, bottom: 16),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Info Galon
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF8FAFC),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Informasi Galon',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF64748B),
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text('Kode: ${g.kodeGalon}',
-                    style: const TextStyle(
-                        fontSize: 12, fontWeight: FontWeight.w600)),
-                const SizedBox(height: 2),
-                Text(g.jenis.name.toUpperCase(),
-                    style: const TextStyle(
-                        fontSize: 11, color: Color(0xFF64748B))),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
+    final color = _galonColor(g.status);
+    final borrowedAt = g.tanggalPinjam;
+    final mutationAt = g.mutasiCreatedAt;
+    final actor = g.mutasiCrewNama?.trim();
 
-          // Info Pelanggan
-          _detailRow('Pelanggan', g.pelangganNama ?? '-'),
-          const SizedBox(height: 12),
-          _detailRow('No. HP', g.pelangganNoHp ?? '-'),
-          const SizedBox(height: 12),
-          _detailRow('Alamat', g.pelangganAlamat ?? '-'),
-          const SizedBox(height: 16),
-
-          // Info Tanggal
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: const Color(0xFFE0F2FE),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Tanggal Peminjaman',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: _primary,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  g.tanggalPinjam != null
-                      ? '${_formatTanggal(g.tanggalPinjam!)} (${_hitungDurasi(g.tanggalPinjam!)})'
-                      : '-',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: _primary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 8),
-
-          if (g.catatan != null && g.catatan!.isNotEmpty) ...[
-            const SizedBox(height: 8),
-            _detailRow('Catatan', g.catatan!),
-          ],
-        ],
-      ),
-      confirm: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: _primary,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+    Get.bottomSheet(
+      Container(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.86,
         ),
-        onPressed: () => Get.back(),
-        child: const Text('Tutup', style: TextStyle(color: Colors.white)),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
+        ),
+        child: SafeArea(
+          top: false,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 42,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE2E8F0),
+                      borderRadius: BorderRadius.circular(99),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Row(
+                  children: [
+                    Container(
+                      width: 52,
+                      height: 52,
+                      decoration: BoxDecoration(
+                        color: color.withValues(alpha: 0.12),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.water_drop_rounded,
+                        color: color,
+                        size: 28,
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Galon #${g.kodeGalon}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w900,
+                              color: Color(0xFF0F172A),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 6,
+                            children: [
+                              _detailPill(
+                                Formatters.statusGalon(g.status.name),
+                                color,
+                              ),
+                              _detailPill(
+                                g.jenis.name.toUpperCase(),
+                                const Color(0xFF64748B),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => Get.back(),
+                      icon: const Icon(Icons.close_rounded),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 18),
+                _detailSection(
+                  title: 'Data Peminjam',
+                  icon: Icons.person_outline_rounded,
+                  children: [
+                    _detailTile('Pelanggan', g.pelangganNama ?? '-'),
+                    _detailTile('No. HP', g.pelangganNoHp ?? '-'),
+                    _detailTile('Alamat', g.pelangganAlamat ?? '-'),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                _detailSection(
+                  title: 'Waktu Peminjaman',
+                  icon: Icons.schedule_rounded,
+                  accentColor: _primary,
+                  children: [
+                    _detailTile(
+                      'Tanggal pinjam',
+                      borrowedAt != null ? _formatTanggal(borrowedAt) : '-',
+                    ),
+                    _detailTile(
+                      'Durasi berjalan',
+                      borrowedAt != null ? _hitungDurasi(borrowedAt) : '-',
+                    ),
+                    _detailTile(
+                      'Terakhir diperbarui',
+                      g.updatedAt != null ? _formatTanggal(g.updatedAt!) : '-',
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                _detailSection(
+                  title: 'Riwayat Petugas',
+                  icon: Icons.verified_user_outlined,
+                  accentColor: const Color(0xFF10B981),
+                  children: [
+                    _detailTile(
+                      'Petugas terakhir',
+                      actor != null && actor.isNotEmpty ? actor : '-',
+                    ),
+                    _detailTile(
+                      'Peran',
+                      actor != null && actor.toLowerCase().contains('manager')
+                          ? 'Manager'
+                          : actor != null && actor.isNotEmpty
+                              ? 'Crew'
+                              : '-',
+                    ),
+                    _detailTile(
+                      'Jenis mutasi',
+                      _formatMutasiLabel(g.mutasiJenis ?? '-'),
+                    ),
+                    _detailTile(
+                      'Perubahan status',
+                      _formatStatusChange(g.mutasiStatusDari, g.mutasiStatusKe),
+                    ),
+                    _detailTile(
+                      'Waktu mutasi',
+                      mutationAt != null ? _formatTanggal(mutationAt) : '-',
+                    ),
+                  ],
+                ),
+                if (g.catatan != null && g.catatan!.trim().isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  _detailSection(
+                    title: 'Catatan',
+                    icon: Icons.notes_rounded,
+                    accentColor: const Color(0xFFF59E0B),
+                    children: [
+                      _detailTile('Isi catatan', g.catatan!.trim()),
+                    ],
+                  ),
+                ],
+                const SizedBox(height: 18),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _primary,
+                      minimumSize: const Size(double.infinity, 48),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    onPressed: () => Get.back(),
+                    child: const Text(
+                      'Tutup',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      isScrollControlled: true,
+    );
+  }
+
+  Widget _detailPill(String label, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 10,
+          fontWeight: FontWeight.w800,
+          color: color,
+        ),
       ),
     );
   }
 
-  Widget _detailRow(String label, String value) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 10,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF94A3B8),
-          ),
+  Widget _detailSection({
+    required String title,
+    required IconData icon,
+    required List<Widget> children,
+    Color accentColor = _primary,
+  }) {
+    return SizedBox(
+      width: double.infinity,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon, size: 18, color: accentColor),
+                const SizedBox(width: 8),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF0F172A),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            ...children,
+            const Divider(height: 1, color: Color(0xFFE2E8F0)),
+          ],
         ),
-        const SizedBox(height: 2),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF1E293B),
-          ),
-        ),
-      ],
+      ),
     );
+  }
+
+  Widget _detailTile(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 9),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 116,
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontSize: 11,
+                color: Color(0xFF64748B),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              value.isEmpty ? '-' : value,
+              style: const TextStyle(
+                fontSize: 11,
+                color: Color(0xFF0F172A),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatMutasiLabel(String value) {
+    if (value == '-' || value.isEmpty) return '-';
+    return value
+        .split('_')
+        .map((part) => part.isEmpty
+            ? part
+            : '${part[0].toUpperCase()}${part.substring(1)}')
+        .join(' ');
+  }
+
+  String _formatStatusChange(String? from, String? to) {
+    if ((from == null || from.isEmpty) && (to == null || to.isEmpty)) {
+      return '-';
+    }
+    if (from == null || from.isEmpty) {
+      return _formatMutasiLabel(to ?? '-');
+    }
+    if (to == null || to.isEmpty) {
+      return _formatMutasiLabel(from);
+    }
+    return '${_formatMutasiLabel(from)} ke ${_formatMutasiLabel(to)}';
   }
 
   String _formatTanggal(DateTime date) {

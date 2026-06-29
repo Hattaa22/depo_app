@@ -14,7 +14,7 @@ class ApiFlowTest extends TestCase
     {
         $response = $this->postJson('/api/v1/auth/login/manager', [
             'username' => 'manager@depoair.com',
-            'password' => 'Password123',
+            'password' => 'Managerdepo1',
         ]);
 
         $response->assertOk()->assertJsonStructure([

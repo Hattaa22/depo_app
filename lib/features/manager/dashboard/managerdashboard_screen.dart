@@ -177,7 +177,7 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
 
           // Logout button
           GestureDetector(
-            onTap: () => Get.find<AuthController>().logout(),
+            onTap: () => Get.find<AuthController>().confirmLogout(),
             child: Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(

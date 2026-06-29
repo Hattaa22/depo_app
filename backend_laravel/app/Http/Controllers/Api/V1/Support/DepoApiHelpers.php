@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Support;
 
 use App\Services\MidtransService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -196,6 +197,43 @@ trait DepoApiHelpers
             'pendapatanBersih' => $pendapatan - $pengeluaran,
             'totalPengiriman' => $pengiriman,
         ];
+    }
+
+    private function categoryBreakdown(string $start, string $end): array
+    {
+        $pemasukan = DB::table('kategori as k')
+            ->join('produk as p', 'p.kategori_id', '=', 'k.id')
+            ->join('transaksi_items as ti', 'ti.produk_id', '=', 'p.id')
+            ->join('transaksi as t', 't.id', '=', 'ti.transaksi_id')
+            ->where('k.is_aktif', 1)
+            ->where('t.status', 'selesai')
+            ->whereDate('t.created_at', '>=', $start)
+            ->whereDate('t.created_at', '<=', $end)
+            ->groupBy('k.id', 'k.nama', 'k.tipe', 'k.ikon')
+            ->selectRaw('k.id, k.nama, k.tipe, k.ikon, COALESCE(SUM(ti.subtotal), 0) as total, COALESCE(SUM(ti.jumlah), 0) as jumlah')
+            ->get();
+
+        $pengeluaran = DB::table('kategori as k')
+            ->join('pengeluaran as p', 'p.kategori_id', '=', 'k.id')
+            ->where('k.is_aktif', 1)
+            ->where('p.tanggal', '>=', $start)
+            ->where('p.tanggal', '<=', $end)
+            ->groupBy('k.id', 'k.nama', 'k.tipe', 'k.ikon')
+            ->selectRaw('k.id, k.nama, k.tipe, k.ikon, COALESCE(SUM(p.nominal), 0) as total, COUNT(p.id) as jumlah')
+            ->get();
+
+        return $pemasukan->merge($pengeluaran)
+            ->map(fn ($row) => [
+                'id' => $row->id,
+                'nama' => $row->nama,
+                'tipe' => $row->tipe ?: 'pemasukan',
+                'ikon' => $row->ikon ?: 'category',
+                'total' => (float) $row->total,
+                'jumlah' => (int) $row->jumlah,
+            ])
+            ->sortByDesc('total')
+            ->values()
+            ->all();
     }
 
     private function pengirimanCrewData(?string $start = null, ?string $end = null, ?string $crewId = null): array
@@ -500,7 +538,11 @@ trait DepoApiHelpers
     private function dateValue(mixed $value): mixed
     {
         if ($value instanceof \DateTimeInterface) {
-            return $value->format(DATE_ATOM);
+            return Carbon::instance($value)->timezone('Asia/Jakarta')->toAtomString();
+        }
+
+        if (is_string($value) && preg_match('/^\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2}/', $value)) {
+            return Carbon::parse($value, 'Asia/Jakarta')->timezone('Asia/Jakarta')->toAtomString();
         }
 
         return $value;
