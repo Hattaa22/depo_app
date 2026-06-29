@@ -19,146 +19,135 @@ class ManagerDataPelangganScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: _bgLight,
-      body: Stack(
+      body: Column(
         children: [
-          Column(
-            children: [
-              // ── HEADER ────────────────────────────────────────────────────
-              _buildHeader(context, pelanggan),
+          // ── HEADER ────────────────────────────────────────────────────
+          _buildHeader(context, pelanggan),
 
-              // ── SEARCH BAR ────────────────────────────────────────────────
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.04),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
+          // ── SEARCH BAR ────────────────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: TextField(
+                controller: searchCtrl,
+                decoration: InputDecoration(
+                  hintText: 'Cari pelanggan...',
+                  hintStyle:
+                      const TextStyle(color: Color(0xFF94A3B8), fontSize: 14),
+                  prefixIcon: const Icon(Icons.search_rounded,
+                      color: Color(0xFF94A3B8)),
+                  suffixIcon: Obx(() {
+                    return searchQuery.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear_rounded,
+                                color: Color(0xFF64748B)),
+                            onPressed: () {
+                              searchCtrl.clear();
+                              searchQuery.value = '';
+                              pelanggan.loadPelanggan();
+                            },
+                          )
+                        : const SizedBox.shrink();
+                  }),
+                  border: InputBorder.none,
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                ),
+                onChanged: (v) {
+                  searchQuery.value = v;
+                  if (v.length >= 2) {
+                    pelanggan.cariPelanggan(v);
+                  } else if (v.isEmpty) {
+                    pelanggan.loadPelanggan();
+                  }
+                },
+              ),
+            ),
+          ),
+
+          // ── CUSTOMER LIST ─────────────────────────────────────────────
+          Expanded(
+            child: Obx(() {
+              if (pelanggan.isLoading.value) {
+                return const Center(
+                  child: CircularProgressIndicator(color: _primary),
+                );
+              }
+              if (pelanggan.errorMessage.value.isNotEmpty) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.error_outline_rounded,
+                            color: Color(0xFFEF4444), size: 48),
+                        const SizedBox(height: 12),
+                        Text(
+                          pelanggan.errorMessage.value,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(color: Color(0xFF64748B)),
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton.icon(
+                          onPressed: () => pelanggan.loadPelanggan(),
+                          icon: const Icon(Icons.refresh_rounded),
+                          label: const Text('Coba Lagi'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: _primary,
+                            foregroundColor: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+              if (pelanggan.pelangganList.isEmpty) {
+                return const Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.people_outline_rounded,
+                          size: 64, color: Color(0xFFCBD5E1)),
+                      SizedBox(height: 12),
+                      Text(
+                        'Belum ada data pelanggan.',
+                        style:
+                            TextStyle(fontSize: 14, color: Color(0xFF94A3B8)),
                       ),
                     ],
                   ),
-                  child: TextField(
-                    controller: searchCtrl,
-                    decoration: InputDecoration(
-                      hintText: 'Cari pelanggan...',
-                      hintStyle: const TextStyle(
-                          color: Color(0xFF94A3B8), fontSize: 14),
-                      prefixIcon: const Icon(Icons.search_rounded,
-                          color: Color(0xFF94A3B8)),
-                      suffixIcon: Obx(() {
-                        return searchQuery.isNotEmpty
-                            ? IconButton(
-                                icon: const Icon(Icons.clear_rounded,
-                                    color: Color(0xFF64748B)),
-                                onPressed: () {
-                                  searchCtrl.clear();
-                                  searchQuery.value = '';
-                                  pelanggan.loadPelanggan();
-                                },
-                              )
-                            : const SizedBox.shrink();
-                      }),
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 16),
-                    ),
-                    onChanged: (v) {
-                      searchQuery.value = v;
-                      if (v.length >= 2) {
-                        pelanggan.cariPelanggan(v);
-                      } else if (v.isEmpty) {
-                        pelanggan.loadPelanggan();
-                      }
-                    },
-                  ),
+                );
+              }
+              return RefreshIndicator(
+                onRefresh: () => pelanggan.loadPelanggan(),
+                color: _primary,
+                child: ListView.builder(
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+                  itemCount: pelanggan.pelangganList.length,
+                  itemBuilder: (_, i) {
+                    final p = pelanggan.pelangganList[i];
+                    return _buildCustomerCard(p);
+                  },
                 ),
-              ),
-
-              // ── CUSTOMER LIST ─────────────────────────────────────────────
-              Expanded(
-                child: Obx(() {
-                  if (pelanggan.isLoading.value) {
-                    return const Center(
-                      child: CircularProgressIndicator(color: _primary),
-                    );
-                  }
-                  if (pelanggan.errorMessage.value.isNotEmpty) {
-                    return Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(24.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.error_outline_rounded,
-                                color: Color(0xFFEF4444), size: 48),
-                            const SizedBox(height: 12),
-                            Text(
-                              pelanggan.errorMessage.value,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(color: Color(0xFF64748B)),
-                            ),
-                            const SizedBox(height: 16),
-                            ElevatedButton.icon(
-                              onPressed: () => pelanggan.loadPelanggan(),
-                              icon: const Icon(Icons.refresh_rounded),
-                              label: const Text('Coba Lagi'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: _primary,
-                                foregroundColor: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }
-                  if (pelanggan.pelangganList.isEmpty) {
-                    return const Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.people_outline_rounded,
-                              size: 64, color: Color(0xFFCBD5E1)),
-                          SizedBox(height: 12),
-                          Text(
-                            'Belum ada data pelanggan.',
-                            style: TextStyle(
-                                fontSize: 14, color: Color(0xFF94A3B8)),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-                  return RefreshIndicator(
-                    onRefresh: () => pelanggan.loadPelanggan(),
-                    color: _primary,
-                    child: ListView.builder(
-                      padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
-                      itemCount: pelanggan.pelangganList.length,
-                      itemBuilder: (_, i) {
-                        final p = pelanggan.pelangganList[i];
-                        return _buildCustomerCard(p);
-                      },
-                    ),
-                  );
-                }),
-              ),
-            ],
-          ),
-
-          // ── ADD BUTTON ────────────────────────────────────────────────────
-          Positioned(
-            left: 24,
-            right: 24,
-            bottom: MediaQuery.of(context).padding.bottom + 16,
-            child: _buildAddButton(pelanggan),
+              );
+            }),
           ),
         ],
       ),
+      bottomNavigationBar: _buildAddButton(pelanggan),
     );
   }
 
@@ -460,36 +449,37 @@ class ManagerDataPelangganScreen extends StatelessWidget {
 
   // ── ADD BUTTON ──────────────────────────────────────────────────────────────
   Widget _buildAddButton(PelangganController pelanggan) {
-    return GestureDetector(
-      onTap: () => _showTambahDialog(pelanggan),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 18),
-        decoration: BoxDecoration(
-          color: _primary,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: _primary.withValues(alpha: 0.4),
-              blurRadius: 20,
-              offset: const Offset(0, 8),
+    return Container(
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        border: Border(top: BorderSide(color: Color(0xFFE2E8F0))),
+      ),
+      child: SizedBox(
+        width: double.infinity,
+        height: 52,
+        child: ElevatedButton.icon(
+          onPressed: () => _showTambahDialog(pelanggan),
+          icon: const Icon(
+            Icons.person_add_rounded,
+            color: Colors.white,
+            size: 20,
+          ),
+          label: const Text(
+            'Tambah Pelanggan Baru',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
             ),
-          ],
-        ),
-        child: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.person_add_alt_1_rounded, color: Colors.white, size: 22),
-            SizedBox(width: 10),
-            Text(
-              'Tambah Pelanggan Baru',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                letterSpacing: -0.3,
-              ),
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: _primary,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
             ),
-          ],
+            elevation: 0,
+          ),
         ),
       ),
     );

@@ -31,4 +31,13 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'midtrans' => [
+        'client_key' => env('MIDTRANS_CLIENT_KEY'),
+        'server_key' => env('MIDTRANS_SERVER_KEY'),
+        'is_production' => (bool) env('MIDTRANS_IS_PRODUCTION', false),
+        'snap_base_url' => env('MIDTRANS_SNAP_BASE_URL'),
+        'api_base_url' => env('MIDTRANS_API_BASE_URL'),
+        'allow_simulation' => (bool) env('MIDTRANS_ALLOW_SIMULATION', false),
+    ],
+
 ];

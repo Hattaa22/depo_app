@@ -152,11 +152,19 @@ class PengaturanScreen extends StatelessWidget {
                                 ),
                                 child: Column(
                                   children: [
-                                    // Change Password
+                                    // Change Name
+                                    _buildSettingItem(
+                                      icon: Icons.badge_rounded,
+                                      title: 'Ubah Nama',
+                                      onTap: () => _showGantiNamaDialog(),
+                                    ),
+                                    const Divider(
+                                        height: 1, color: Color(0xFFF1F5F9)),
+                                    // Change PIN
                                     _buildSettingItem(
                                       icon: Icons.lock_reset_rounded,
-                                      title: 'Ubah Password',
-                                      onTap: () => _showGantiPasswordDialog(),
+                                      title: 'Ubah PIN',
+                                      onTap: () => _showGantiPinDialog(),
                                     ),
                                     const Divider(
                                         height: 1, color: Color(0xFFF1F5F9)),
@@ -330,11 +338,11 @@ class PengaturanScreen extends StatelessWidget {
   }
 
   // ── DIALOGS ────────────────────────────────────────────────────────────────
-  void _showGantiPasswordDialog() {
+  void _showGantiPinDialog() {
     final oldCtrl = TextEditingController();
     final newCtrl = TextEditingController();
     Get.defaultDialog(
-      title: 'Ubah Password',
+      title: 'Ubah PIN',
       titleStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       content: Column(
@@ -343,13 +351,17 @@ class PengaturanScreen extends StatelessWidget {
           TextField(
             controller: oldCtrl,
             obscureText: true,
-            decoration: const InputDecoration(labelText: 'Password Lama'),
+            keyboardType: TextInputType.number,
+            maxLength: 6,
+            decoration: const InputDecoration(labelText: 'PIN Lama'),
           ),
           const SizedBox(height: 8),
           TextField(
             controller: newCtrl,
             obscureText: true,
-            decoration: const InputDecoration(labelText: 'Password Baru'),
+            keyboardType: TextInputType.number,
+            maxLength: 6,
+            decoration: const InputDecoration(labelText: 'PIN Baru (min 4 digit)'),
           ),
         ],
       ),
@@ -357,19 +369,85 @@ class PengaturanScreen extends StatelessWidget {
         onPressed: () => Get.back(),
         child: const Text('Batal', style: TextStyle(color: Color(0xFF64748B))),
       ),
-      confirm: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: _primary,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        ),
-        onPressed: () {
-          // Placeholder implementation
-          Get.back();
-          Get.snackbar('Berhasil', 'Password Anda berhasil diperbarui.');
-        },
-        child: const Text('Simpan',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+      confirm: Obx(() {
+        final isLoading = Get.find<AuthController>().isLoading.value;
+        return ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: _primary,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          ),
+          onPressed: isLoading ? null : () async {
+            final oldPin = oldCtrl.text;
+            final newPin = newCtrl.text;
+            if (oldPin.isEmpty || newPin.isEmpty) {
+              Get.snackbar('Error', 'PIN tidak boleh kosong', backgroundColor: Colors.red, colorText: Colors.white);
+              return;
+            }
+            if (newPin.length < 4) {
+              Get.snackbar('Error', 'PIN minimal 4 digit', backgroundColor: Colors.red, colorText: Colors.white);
+              return;
+            }
+            final success = await Get.find<AuthController>().changePin(oldPin, newPin);
+            if (success) {
+              Get.back();
+              Future.delayed(const Duration(milliseconds: 300), () {
+                Get.snackbar('Berhasil', 'PIN berhasil diubah', backgroundColor: const Color(0xFF10B981), colorText: Colors.white);
+              });
+            }
+          },
+          child: isLoading 
+              ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+              : const Text('Simpan', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        );
+      }),
+    );
+  }
+
+  void _showGantiNamaDialog() {
+    final namaCtrl = TextEditingController(text: Get.find<AuthController>().userData['nama'] ?? '');
+    Get.defaultDialog(
+      title: 'Ubah Nama',
+      titleStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: namaCtrl,
+            decoration: const InputDecoration(labelText: 'Nama Lengkap'),
+          ),
+        ],
       ),
+      cancel: TextButton(
+        onPressed: () => Get.back(),
+        child: const Text('Batal', style: TextStyle(color: Color(0xFF64748B))),
+      ),
+      confirm: Obx(() {
+        final isLoading = Get.find<AuthController>().isLoading.value;
+        return ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: _primary,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          ),
+          onPressed: isLoading ? null : () async {
+            final namaBaru = namaCtrl.text.trim();
+            if (namaBaru.isEmpty) {
+              Get.snackbar('Error', 'Nama tidak boleh kosong', backgroundColor: Colors.red, colorText: Colors.white);
+              return;
+            }
+            final success = await Get.find<AuthController>().changeProfile(namaBaru);
+            if (success) {
+              Get.back();
+              Future.delayed(const Duration(milliseconds: 300), () {
+                Get.snackbar('Berhasil', 'Profil berhasil diperbarui', backgroundColor: const Color(0xFF10B981), colorText: Colors.white);
+              });
+            }
+          },
+          child: isLoading 
+              ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+              : const Text('Simpan', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        );
+      }),
     );
   }
 

@@ -14,6 +14,7 @@ class GalonController extends GetxController {
   final currentPage = 1.obs;
   final totalPage = 1.obs;
   final errorMessage = ''.obs;
+  final isFetchingMore = false.obs;
   String? _lastStatusFilter;
 
   @override
@@ -23,19 +24,48 @@ class GalonController extends GetxController {
     loadSummary();
   }
 
-  Future<void> loadGalon({int page = 1, String? status}) async {
+  Future<void> loadGalon({int page = 1, String? status, bool refresh = true}) async {
     _lastStatusFilter = status;
-    isLoading.value = true;
+    
+    if (refresh) {
+      isLoading.value = true;
+      galonList.clear();
+      currentPage.value = 1;
+    } else {
+      isFetchingMore.value = true;
+    }
+    
     errorMessage.value = '';
+    
     try {
       final result = await _apiService.getSemuaGalon(page, 20, status);
-      galonList.value = result.data;
+      
+      if (refresh) {
+        galonList.value = result.data;
+      } else {
+        galonList.addAll(result.data);
+      }
+      
       currentPage.value = result.page;
       totalPage.value = result.totalPages;
     } catch (e) {
-      errorMessage.value = ApiErrorHelper.message(e);
+      if (refresh) {
+        errorMessage.value = ApiErrorHelper.message(e);
+      } else {
+        Get.snackbar('Error', 'Gagal memuat lebih banyak galon: ${ApiErrorHelper.message(e)}');
+      }
     } finally {
-      isLoading.value = false;
+      if (refresh) {
+        isLoading.value = false;
+      } else {
+        isFetchingMore.value = false;
+      }
+    }
+  }
+
+  void loadMore() {
+    if (!isLoading.value && !isFetchingMore.value && currentPage.value < totalPage.value) {
+      loadGalon(page: currentPage.value + 1, status: _lastStatusFilter, refresh: false);
     }
   }
 

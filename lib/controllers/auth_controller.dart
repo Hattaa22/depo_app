@@ -120,17 +120,62 @@ class AuthController extends GetxController {
       if (!await _pastikanServerOnline()) return false;
       final api = Get.find<ApiService>();
       await api.changePassword(passwordLama, passwordBaru);
-      Get.snackbar(
-        'Berhasil',
-        'Password berhasil diubah',
-        backgroundColor: const Color(0xFF10B981),
-        colorText: Colors.white,
-      );
       return true;
     } catch (e) {
       errorMessage.value = ApiErrorHelper.message(e);
       Get.snackbar(
         'Gagal mengubah password',
+        errorMessage.value,
+        backgroundColor: const Color(0xFFE63946),
+        colorText: Colors.white,
+        duration: const Duration(seconds: 6),
+      );
+      return false;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<bool> changePin(String pinLama, String pinBaru) async {
+    isLoading.value = true;
+    errorMessage.value = '';
+    try {
+      if (!await _pastikanServerOnline()) return false;
+      final api = Get.find<ApiService>();
+      await api.changePin(pinLama, pinBaru);
+      return true;
+    } catch (e) {
+      errorMessage.value = ApiErrorHelper.message(e);
+      Get.snackbar(
+        'Gagal mengubah PIN',
+        errorMessage.value,
+        backgroundColor: const Color(0xFFE63946),
+        colorText: Colors.white,
+        duration: const Duration(seconds: 6),
+      );
+      return false;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<bool> changeProfile(String nama) async {
+    isLoading.value = true;
+    errorMessage.value = '';
+    try {
+      if (!await _pastikanServerOnline()) return false;
+      final api = Get.find<ApiService>();
+      await api.changeProfile(nama);
+      
+      // Update local userData
+      userData['nama'] = nama;
+      await _authService.saveUserData(userData);
+      
+      return true;
+    } catch (e) {
+      errorMessage.value = ApiErrorHelper.message(e);
+      Get.snackbar(
+        'Gagal mengubah profil',
         errorMessage.value,
         backgroundColor: const Color(0xFFE63946),
         colorText: Colors.white,

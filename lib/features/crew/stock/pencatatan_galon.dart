@@ -25,17 +25,33 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
   // Keypad variables
   bool _isOut = true; // true = Pinjam (Out), false = Kembali (In)
   String _amount = "0";
-  String?
-      _selectedPelangganId; // ID Pelanggan yang meminjam/mengembalikan galon
+  String? _selectedPelangganId; // ID Pelanggan yang meminjam/mengembalikan galon
+  DateTime? _selectedTanggal; // Tanggal peminjaman/pengembalian
+
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_onScroll);
     final galon = Get.find<GalonController>();
     galon.loadGalon();
     galon.loadSummary();
     // Muat daftar pelanggan untuk dropdown peminjam
     Get.find<PelangganController>().loadPelanggan();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 100) {
+      Get.find<GalonController>().loadMore();
+    }
   }
 
   void _onKeypadTap(String value) {
@@ -68,6 +84,31 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
     });
   }
 
+  Future<void> _pilihTanggal() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedTanggal ?? DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: _primary,
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: Color(0xFF1E293B),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      setState(() => _selectedTanggal = picked);
+    }
+  }
+
   Future<void> _onKonfirmasiBulk(GalonController galon) async {
     final val = int.tryParse(_amount) ?? 0;
     if (val <= 0) {
@@ -92,12 +133,13 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
     }
 
     final ok = _isOut
-        ? await galon.pinjamGalon(val, pelangganId: _selectedPelangganId)
-        : await galon.kembalikanGalon(val, pelangganId: _selectedPelangganId);
+        ? await galon.pinjamGalon(val, pelangganId: _selectedPelangganId, tanggal: _selectedTanggal)
+        : await galon.kembalikanGalon(val, pelangganId: _selectedPelangganId, tanggal: _selectedTanggal);
     if (ok && mounted) {
       setState(() {
         _amount = '0';
         _selectedPelangganId = null;
+        _selectedTanggal = null;
       });
     }
   }
@@ -135,8 +177,6 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
                 ),
                 child: Obx(() {
                   final summaryVal = galon.summary.value;
-                  final int dipinjam = summaryVal?.dipinjam ?? 0;
-                  final int tersedia = summaryVal?.tersedia ?? 0;
                   return Row(
                     children: [
                       Expanded(
@@ -150,7 +190,47 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text(
-                                'GALON DI PELANGGAN',
+                                'GALON TERSEDIA',
+                                style: TextStyle(
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w800,
+                                  color: Color(0xFF94A3B8),
+                                  letterSpacing: 1.2,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  const Icon(Icons.warehouse_rounded,
+                                      color: Color(0xFF10B981), size: 16),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    '${summaryVal?.tersedia ?? 0}',
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w800,
+                                      color: Color(0xFF1E293B),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              right: BorderSide(color: Color(0xFFF1F5F9)),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'GALON DIPINJAM',
                                 style: TextStyle(
                                   fontSize: 9,
                                   fontWeight: FontWeight.w800,
@@ -165,7 +245,7 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
                                       color: _primary, size: 16),
                                   const SizedBox(width: 8),
                                   Text(
-                                    '$dipinjam',
+                                    '${summaryVal?.dipinjam ?? 0}',
                                     style: const TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.w800,
@@ -184,21 +264,22 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              'GALON DI DEPO',
+                              'GALON RUSAK',
                               style: TextStyle(
-                                  fontSize: 9,
-                                  fontWeight: FontWeight.w800,
-                                  color: Color(0xFF94A3B8),
-                                  letterSpacing: 1.2),
+                                fontSize: 9,
+                                fontWeight: FontWeight.w800,
+                                color: Color(0xFF94A3B8),
+                                letterSpacing: 1.2,
+                              ),
                             ),
                             const SizedBox(height: 4),
                             Row(
                               children: [
-                                const Icon(Icons.warehouse_rounded,
-                                    color: Color(0xFF10B981), size: 16),
+                                const Icon(Icons.broken_image_rounded,
+                                    color: Color(0xFFEF4444), size: 16),
                                 const SizedBox(width: 8),
                                 Text(
-                                  '$tersedia',
+                                  '${summaryVal?.rusak ?? 0}',
                                   style: const TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.w800,
@@ -353,14 +434,26 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
 
             return Stack(
               children: [
-                ListView.builder(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  itemCount: list.length,
-                  itemBuilder: (_, i) {
-                    final g = list[i];
-                    return _buildGalonItemCard(g, galon);
-                  },
+                Column(
+                  children: [
+                    Expanded(
+                      child: ListView.builder(
+                        controller: _scrollController,
+                        padding:
+                            const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        itemCount: list.length,
+                        itemBuilder: (_, i) {
+                          final g = list[i];
+                          return _buildGalonItemCard(g, galon);
+                        },
+                      ),
+                    ),
+                    if (galon.isFetchingMore.value)
+                      const Padding(
+                        padding: EdgeInsets.only(bottom: 16),
+                        child: CircularProgressIndicator(color: _primary),
+                      ),
+                  ],
                 ),
 
                 // Absolute Floating Button inside tab context
@@ -460,7 +553,7 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Merek: ${g.merek.isNotEmpty ? g.merek : "Aqua"} • ${g.jenis.name.toUpperCase()}',
+                  g.jenis.name.toUpperCase(),
                   style: const TextStyle(
                     fontSize: 11,
                     color: Color(0xFF94A3B8),
@@ -593,9 +686,53 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
 
           const SizedBox(height: 24),
 
-          // ── PILIH PELANGGAN (saat pinjam) ────────────────────────────
           // ── PILIH PELANGGAN (untuk pinjam dan kembali) ────────────────────
           ..._buildPelangganSelector(),
+
+          const SizedBox(height: 16),
+
+          // Tanggal Picker
+          GestureDetector(
+            onTap: _pilihTanggal,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: const Color(0xFFE2E8F0)),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.calendar_today_rounded,
+                    size: 20,
+                    color: _selectedTanggal != null
+                        ? _primary
+                        : const Color(0xFF94A3B8),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    _selectedTanggal != null
+                        ? _formatTanggal(_selectedTanggal!)
+                        : 'Pilih Tanggal (opsional)',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: _selectedTanggal != null
+                          ? const Color(0xFF1E293B)
+                          : const Color(0xFF94A3B8),
+                    ),
+                  ),
+                  const Spacer(),
+                  const Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 16,
+                    color: Color(0xFF94A3B8),
+                  ),
+                ],
+              ),
+            ),
+          ),
 
           const SizedBox(height: 24),
 
@@ -867,10 +1004,10 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
           _selectedPelangganId = null;
         }
         return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(24),
             border: Border.all(
               color: _selectedPelangganId != null
                   ? _primary
@@ -895,6 +1032,7 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
               ),
               icon: const Icon(Icons.keyboard_arrow_down_rounded,
                   color: _primary),
+              borderRadius: BorderRadius.circular(16),
               items: list.map((p) {
                 return DropdownMenuItem<String>(
                   value: p.id,
@@ -1220,8 +1358,7 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
                     style: const TextStyle(
                         fontSize: 12, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 2),
-                Text(
-                    'Merek: ${g.merek.isNotEmpty ? g.merek : 'Depo'} • ${g.jenis.name.toUpperCase()}',
+                Text(g.jenis.name.toUpperCase(),
                     style: const TextStyle(
                         fontSize: 11, color: Color(0xFF64748B))),
               ],

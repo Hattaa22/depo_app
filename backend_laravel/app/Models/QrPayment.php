@@ -17,10 +17,16 @@ class QrPayment extends Model
 
     protected $fillable = [
         'payment_id',
+        'midtrans_order_id',
         'transaksi_id',
+        'gateway',
         'jumlah',
         'qr_content',
+        'snap_token',
+        'redirect_url',
         'status',
+        'payment_type',
+        'gateway_response',
         'nama_depot',
         'expires_at',
         'paid_at',
@@ -30,6 +36,7 @@ class QrPayment extends Model
         'jumlah' => 'decimal:2',
         'expires_at' => 'datetime',
         'paid_at' => 'datetime',
+        'gateway_response' => 'array',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];

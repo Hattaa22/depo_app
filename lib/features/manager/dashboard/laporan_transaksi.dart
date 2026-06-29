@@ -823,8 +823,6 @@ class _LaporanTransaksiScreenState extends State<LaporanTransaksiScreen> {
   }
 
   Widget _buildHeader(BuildContext context) {
-    final laporan = Get.find<LaporanController>();
-
     return Container(
       padding: EdgeInsets.only(
         top: MediaQuery.of(context).padding.top + 16,
@@ -876,25 +874,6 @@ class _LaporanTransaksiScreenState extends State<LaporanTransaksiScreen> {
                   ),
                 ),
               ],
-            ),
-          ),
-          GestureDetector(
-            onTap: () => laporan.exportLaporan(
-              Formatters.dateOnly(_mulai),
-              Formatters.dateOnly(_akhir),
-              'excel',
-            ),
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(
-                Icons.download_rounded,
-                color: Colors.white,
-                size: 20,
-              ),
             ),
           ),
         ],

@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../../config/api_config.dart';
 import '../../../config/app_theme.dart';
 import '../../../config/routes.dart';
 import '../../../services/api_service.dart';
@@ -31,6 +30,7 @@ class _PembayaranQrScreenState extends State<PembayaranQrScreen> {
 
   Timer? _pollingTimer;
   final _qrisString = ''.obs;
+  final _redirectUrl = ''.obs;
   final _paymentId = ''.obs;
   final _isLoading = true.obs;
   final _isPolling = false.obs;
@@ -39,13 +39,6 @@ class _PembayaranQrScreenState extends State<PembayaranQrScreen> {
   final _errorMessage = ''.obs;
   final _expiredAt = ''.obs;
   final _jumlah = 0.0.obs;
-
-  /// URL halaman web pembayaran QRIS (dapat di-scan & dibayar via browser)
-  String get _scanWebUrl {
-    final baseUrl = ApiConfig.baseUrl;
-    // baseUrl ends with /v1, paymentId in _paymentId
-    return '$baseUrl/pembayaran/qris/${_paymentId.value}/scan-web';
-  }
 
   @override
   void initState() {
@@ -63,6 +56,7 @@ class _PembayaranQrScreenState extends State<PembayaranQrScreen> {
       final payment = await _api.buatPembayaranQris(widget.transaksiId);
       _paymentId.value = payment.paymentId;
       _qrisString.value = payment.qrContent;
+      _redirectUrl.value = payment.redirectUrl ?? payment.qrContent;
       _jumlah.value = payment.jumlah;
       _expiredAt.value = Formatters.dateTime(DateTime.parse(payment.expiresAt));
     } catch (e) {
@@ -92,10 +86,12 @@ class _PembayaranQrScreenState extends State<PembayaranQrScreen> {
     }
   }
 
-  /// Buka halaman scan-web di browser (untuk scan QRIS asli atau simulasi)
+  /// Buka halaman checkout Midtrans Snap di browser.
   Future<void> _bukaHalamanWeb() async {
-    if (_paymentId.value.isEmpty) return;
-    final url = Uri.parse(_scanWebUrl);
+    final paymentUrl =
+        _redirectUrl.value.isNotEmpty ? _redirectUrl.value : _qrisString.value;
+    if (paymentUrl.isEmpty) return;
+    final url = Uri.parse(paymentUrl);
     try {
       if (await canLaunchUrl(url)) {
         await launchUrl(url, mode: LaunchMode.externalApplication);
@@ -113,224 +109,6 @@ class _PembayaranQrScreenState extends State<PembayaranQrScreen> {
     } catch (e) {
       Get.snackbar('Error', 'Tidak dapat membuka browser. Coba lagi.');
     }
-  }
-
-  void _tampilkanSimulasiPelanggan() {
-    final amount =
-        _jumlah.value > 0 ? _jumlah.value : widget.totalHarga.toDouble();
-    final isPaying = false.obs;
-
-    Get.bottomSheet(
-      Container(
-        padding: const EdgeInsets.all(24),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(28),
-            topRight: Radius.circular(28),
-          ),
-        ),
-        child: Obx(() {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.only(bottom: 20),
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE0F2FE),
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: const Icon(
-                      Icons.phone_android_rounded,
-                      color: Color(0xFF0284C7),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  const Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Simulasi HP Pelanggan',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF1E293B),
-                          ),
-                        ),
-                        Text(
-                          'Simulasi scan QRIS & Bayar via e-Wallet',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Color(0xFF64748B),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF8FAFC),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0xFFF1F5F9)),
-                ),
-                child: Column(
-                  children: [
-                    const Text(
-                      'TOTAL TAGIHAN',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 1.2,
-                        color: Color(0xFF94A3B8),
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      Formatters.currency(amount),
-                      style: const TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w800,
-                        color: Color(0xFF0284C7),
-                      ),
-                    ),
-                    const Divider(height: 24, thickness: 1),
-                    const Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Penerima:',
-                          style:
-                              TextStyle(color: Color(0xFF64748B), fontSize: 13),
-                        ),
-                        Text(
-                          'Depo Air Minum',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF1E293B),
-                            fontSize: 13,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'ID Pembayaran:',
-                          style:
-                              TextStyle(color: Color(0xFF64748B), fontSize: 13),
-                        ),
-                        Text(
-                          _paymentId.value.length > 8
-                              ? '${_paymentId.value.substring(0, 8)}...'
-                              : _paymentId.value,
-                          style: const TextStyle(
-                            fontFamily: 'monospace',
-                            color: Color(0xFF475569),
-                            fontSize: 13,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-              if (isPaying.value)
-                const Column(
-                  children: [
-                    CircularProgressIndicator(),
-                    SizedBox(height: 16),
-                    Text(
-                      'Memproses pembayaran simulasi...',
-                      style: TextStyle(color: Color(0xFF64748B)),
-                    ),
-                  ],
-                )
-              else
-                Column(
-                  children: [
-                    ElevatedButton(
-                      onPressed: () async {
-                        isPaying.value = true;
-                        try {
-                          await _api.simulasikanBayarQris(_paymentId.value);
-                          Get.back();
-                          _cekStatus();
-                        } catch (e) {
-                          Get.snackbar(
-                            'Gagal',
-                            'Simulasi pembayaran gagal: $e',
-                            backgroundColor: const Color(0xFFE63946),
-                            colorText: Colors.white,
-                          );
-                        } finally {
-                          isPaying.value = false;
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF10B981),
-                        foregroundColor: Colors.white,
-                        minimumSize: const Size(double.infinity, 54),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        elevation: 0,
-                      ),
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.check_circle_outline_rounded),
-                          SizedBox(width: 8),
-                          Text(
-                            'Bayar Sekarang (Simulasi)',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    TextButton(
-                      onPressed: () => Get.back(),
-                      style: TextButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 44),
-                      ),
-                      child: const Text(
-                        'Batal',
-                        style: TextStyle(color: Color(0xFF64748B)),
-                      ),
-                    ),
-                  ],
-                ),
-              const SizedBox(height: 12),
-            ],
-          );
-        }),
-      ),
-      isDismissible: true,
-      enableDrag: true,
-    );
   }
 
   void _onPembayaranBerhasil() {
@@ -584,11 +362,11 @@ class _PembayaranQrScreenState extends State<PembayaranQrScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            // Tombol: Buka di Browser (Scan langsung & Simulasi)
+            // Tombol: Buka checkout Midtrans
             ElevatedButton.icon(
               onPressed: _bukaHalamanWeb,
               icon: const Icon(Icons.open_in_browser_rounded),
-              label: const Text('Buka di Browser (Scan & Simulasi)'),
+              label: const Text('Buka Checkout Midtrans'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF0284C7),
                 foregroundColor: Colors.white,
@@ -601,17 +379,16 @@ class _PembayaranQrScreenState extends State<PembayaranQrScreen> {
             ),
             const SizedBox(height: 8),
             const Text(
-              'Buka halaman ini di browser untuk scan QR secara langsung menggunakan e-wallet asli, atau klik tombol Simulasi Bayar untuk uji coba sandbox.',
+              'Scan QR di atas atau buka checkout Midtrans untuk menyelesaikan pembayaran QRIS sandbox.',
               style: TextStyle(
                   fontSize: 11, color: Color(0xFF64748B), height: 1.4),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
-            // Tombol: Simulasi via Flutter (tanpa buka browser)
             OutlinedButton.icon(
-              onPressed: _tampilkanSimulasiPelanggan,
-              icon: const Icon(Icons.phone_android_rounded, size: 18),
-              label: const Text('Simulasi HP Pelanggan (In-App)'),
+              onPressed: _cekStatus,
+              icon: const Icon(Icons.refresh_rounded, size: 18),
+              label: const Text('Cek Status Pembayaran'),
               style: OutlinedButton.styleFrom(
                 foregroundColor: const Color(0xFF0284C7),
                 side: const BorderSide(color: Color(0xFF0284C7)),

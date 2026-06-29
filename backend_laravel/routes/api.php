@@ -12,10 +12,12 @@ Route::prefix('v1')->controller(DepoApiController::class)->group(function () {
     Route::get('/pembayaran/qris/test-simulasi', 'qrisTestSimulasi');
     Route::get('/pembayaran/qris/{paymentId}/status-public', 'qrisStatusPublic');
     Route::post('/pembayaran/qris/{paymentId}/simulate-pay', 'qrisSimulatePay');
+    Route::post('/pembayaran/midtrans/notification', 'midtransNotification');
 
     Route::middleware('api.token')->group(function () {
         Route::post('/auth/logout', 'logout');
         Route::put('/auth/change-password', 'changePassword');
+        Route::put('/auth/change-profile', 'changeProfile');
 
         Route::get('/crew', 'crewIndex');
         Route::post('/crew', 'crewStore');

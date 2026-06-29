@@ -131,6 +131,10 @@ class AuthService {
     }
   }
 
+  Future<void> saveUserData(Map<String, dynamic> userData) async {
+    await _localStorage.setString(AppConstants.userDataKey, jsonEncode(userData));
+  }
+
   Future<void> _saveSession(AuthResponse response) async {
     await Future.wait([
       _localStorage.setSecure(

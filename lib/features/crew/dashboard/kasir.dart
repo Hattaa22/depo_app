@@ -5,6 +5,7 @@ import '../../../controllers/kasir_controller.dart';
 import '../../../controllers/pelanggan_controller.dart';
 import '../../../controllers/transaksi_controller.dart';
 import '../../../config/routes.dart';
+import '../../../models/crew.dart';
 import '../../../models/produk.dart';
 import '../../../utils/formatters.dart';
 import 'kasir_components.dart';
@@ -348,31 +349,8 @@ class _KasirScreenState extends State<KasirScreen> {
                   color: Color(0xFF64748B)),
             ),
             const SizedBox(height: 8),
-            DropdownButtonFormField<String>(
-              initialValue: kasir.crewPengirimDipilih.value?.id,
-              decoration: InputDecoration(
-                isDense: true,
-                prefixIcon:
-                    const Icon(Icons.delivery_dining_outlined, size: 20),
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              ),
-              hint: const Text('Pilih crew pengirim'),
-              items: crewCtrl.crewList
-                  .where((c) => c.isAktif)
-                  .map((c) => DropdownMenuItem<String>(
-                        value: c.id,
-                        child: Text(c.nama.isNotEmpty ? c.nama : c.username),
-                      ))
-                  .toList(),
-              onChanged: (id) {
-                final selected =
-                    crewCtrl.crewList.firstWhereOrNull((c) => c.id == id);
-                kasir.pilihCrewPengirim(selected);
-              },
-            ),
+            _buildCrewPengirimPicker(kasir, crewCtrl),
+            const SizedBox(height: 14),
             const Text(
               'Ongkir per galon',
               style: TextStyle(
@@ -422,6 +400,306 @@ class _KasirScreenState extends State<KasirScreen> {
             ],
           ],
         ],
+      ),
+    );
+  }
+
+  Widget _buildCrewPengirimPicker(
+    KasirController kasir,
+    CrewController crewCtrl,
+  ) {
+    final selected = kasir.crewPengirimDipilih.value;
+    final hasSelection = selected != null;
+    final title = hasSelection
+        ? (selected.nama.isNotEmpty ? selected.nama : selected.username)
+        : 'Pilih crew pengirim';
+    final subtitle = hasSelection
+        ? [
+            if (selected.username.isNotEmpty) '@${selected.username}',
+            if (selected.noHp.isNotEmpty) selected.noHp,
+          ].join('  •  ')
+        : 'Crew aktif yang bertugas mengantar galon';
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(14),
+        onTap: () => _showCrewPengirimSheet(kasir, crewCtrl),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: hasSelection ? const Color(0xFFF0F9FF) : Colors.white,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: hasSelection ? _primary : const Color(0xFFE2E8F0),
+              width: hasSelection ? 1.4 : 1,
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: hasSelection
+                      ? _primary.withValues(alpha: 0.12)
+                      : const Color(0xFFF1F5F9),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  hasSelection
+                      ? Icons.delivery_dining_rounded
+                      : Icons.person_search_rounded,
+                  color: hasSelection ? _primary : const Color(0xFF94A3B8),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF0F172A),
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      subtitle.isEmpty
+                          ? 'Data kontak belum tersedia'
+                          : subtitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: Color(0xFF64748B),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              const Icon(
+                Icons.keyboard_arrow_down_rounded,
+                color: Color(0xFF64748B),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showCrewPengirimSheet(
+    KasirController kasir,
+    CrewController crewCtrl,
+  ) {
+    final query = ''.obs;
+
+    Get.bottomSheet(
+      Container(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.82,
+        ),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 42,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE2E8F0),
+                    borderRadius: BorderRadius.circular(99),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Row(
+                  children: [
+                    Container(
+                      width: 42,
+                      height: 42,
+                      decoration: BoxDecoration(
+                        color: _primary.withValues(alpha: 0.12),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.delivery_dining_rounded,
+                        color: _primary,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Pilih Crew Pengirim',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFF0F172A),
+                            ),
+                          ),
+                          Text(
+                            'Pilih crew aktif untuk transaksi dikirim',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Color(0xFF64748B),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  onChanged: (value) => query.value = value.toLowerCase(),
+                  decoration: InputDecoration(
+                    hintText: 'Cari nama, username, atau nomor HP',
+                    prefixIcon: const Icon(Icons.search_rounded),
+                    filled: true,
+                    fillColor: const Color(0xFFF8FAFC),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Flexible(
+                  child: Obx(() {
+                    final keyword = query.value;
+                    final crews =
+                        crewCtrl.crewList.where((c) => c.isAktif).where((c) {
+                      final haystack =
+                          '${c.nama} ${c.username} ${c.noHp}'.toLowerCase();
+                      return keyword.isEmpty || haystack.contains(keyword);
+                    }).toList();
+
+                    if (crews.isEmpty) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 32),
+                        child: Text(
+                          'Tidak ada crew aktif yang cocok.',
+                          style: TextStyle(color: Color(0xFF64748B)),
+                        ),
+                      );
+                    }
+
+                    return ListView.separated(
+                      shrinkWrap: true,
+                      itemCount: crews.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 8),
+                      itemBuilder: (_, index) {
+                        final crew = crews[index];
+                        final selected =
+                            kasir.crewPengirimDipilih.value?.id == crew.id;
+                        return _buildCrewOptionTile(
+                          crew: crew,
+                          selected: selected,
+                          onTap: () {
+                            kasir.pilihCrewPengirim(crew);
+                            Get.back();
+                          },
+                        );
+                      },
+                    );
+                  }),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      isScrollControlled: true,
+    );
+  }
+
+  Widget _buildCrewOptionTile({
+    required Crew crew,
+    required bool selected,
+    required VoidCallback onTap,
+  }) {
+    final name = crew.nama.isNotEmpty ? crew.nama : crew.username;
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: selected ? const Color(0xFFF0F9FF) : const Color(0xFFF8FAFC),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: selected ? _primary : const Color(0xFFE2E8F0),
+          ),
+        ),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 20,
+              backgroundColor: selected
+                  ? _primary.withValues(alpha: 0.14)
+                  : const Color(0xFFE2E8F0),
+              child: Text(
+                name.isNotEmpty ? name.characters.first.toUpperCase() : '?',
+                style: TextStyle(
+                  color: selected ? _primary : const Color(0xFF475569),
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF0F172A),
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    [
+                      if (crew.username.isNotEmpty) '@${crew.username}',
+                      if (crew.noHp.isNotEmpty) crew.noHp,
+                    ].join('  •  '),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: Color(0xFF64748B),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (selected)
+              const Icon(Icons.check_circle_rounded, color: _primary),
+          ],
+        ),
       ),
     );
   }

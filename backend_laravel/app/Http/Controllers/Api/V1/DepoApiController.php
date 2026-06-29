@@ -3,12 +3,16 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Services\MidtransService;
 use App\Services\ApiTokenService;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use Throwable;
 
 class DepoApiController extends Controller
 {
@@ -132,18 +136,39 @@ class DepoApiController extends Controller
 
     public function changePassword(Request $request)
     {
-        $request->validate([
-            'passwordLama' => ['required', 'string'],
-            'passwordBaru' => ['required', 'string', 'min:6'],
-        ]);
-
         $user = DB::table('users')->where('id', $this->auth($request)['sub'])->first();
         if (! $user) {
             return response()->json(['message' => 'User tidak ditemukan'], 404);
         }
 
+        if ($user->role === 'crew') {
+            $request->validate([
+                'pinLama' => ['required', 'string'],
+                'pinBaru' => ['required', 'string', 'min:4'],
+            ]);
+
+            $hashToCheck = $user->pin_hash ?: $user->password_hash;
+            if (! Hash::check((string) $request->input('pinLama'), $hashToCheck)) {
+                return response()->json(['message' => 'PIN lama tidak sesuai'], 400);
+            }
+
+            $newHash = Hash::make((string) $request->input('pinBaru'));
+            DB::table('users')->where('id', $user->id)->update([
+                'pin_hash' => $newHash,
+                'password_hash' => $newHash,
+                'updated_at' => now(),
+            ]);
+
+            return response()->json(['message' => 'PIN berhasil diubah']);
+        }
+
+        $request->validate([
+            'passwordLama' => ['required', 'string'],
+            'passwordBaru' => ['required', 'string', 'min:6'],
+        ]);
+
         if (! Hash::check((string) $request->input('passwordLama'), $user->password_hash)) {
-            return response()->json(['message' => 'Password lama tidak sesuai'], 401);
+            return response()->json(['message' => 'Password lama tidak sesuai'], 400);
         }
 
         DB::table('users')->where('id', $user->id)->update([
@@ -152,6 +177,25 @@ class DepoApiController extends Controller
         ]);
 
         return response()->json(['message' => 'Password berhasil diubah']);
+    }
+
+    public function changeProfile(Request $request)
+    {
+        $request->validate([
+            'nama' => ['required', 'string', 'max:100'],
+        ]);
+
+        $user = DB::table('users')->where('id', $this->auth($request)['sub'])->first();
+        if (! $user) {
+            return response()->json(['message' => 'User tidak ditemukan'], 404);
+        }
+
+        DB::table('users')->where('id', $user->id)->update([
+            'nama' => (string) $request->input('nama'),
+            'updated_at' => now(),
+        ]);
+
+        return response()->json(['message' => 'Profil berhasil diperbarui']);
     }
 
     public function crewIndex(Request $request)
@@ -507,7 +551,18 @@ class DepoApiController extends Controller
     {
         $query = DB::table('galon as g')
             ->leftJoin('pelanggan as p', 'p.id', '=', 'g.pelanggan_id')
-            ->select('g.*', 'p.nama as pelanggan_nama', 'p.no_hp as pelanggan_no_hp', 'p.alamat as pelanggan_alamat');
+            ->select(
+                'g.*',
+                'p.nama as pelanggan_nama',
+                'p.no_hp as pelanggan_no_hp',
+                'p.alamat as pelanggan_alamat',
+                DB::raw('(select gm.crew_id from galon_mutasi gm where gm.galon_id = g.id order by gm.created_at desc limit 1) as mutasi_crew_id'),
+                DB::raw('(select gm.crew_nama from galon_mutasi gm where gm.galon_id = g.id order by gm.created_at desc limit 1) as mutasi_crew_nama'),
+                DB::raw('(select gm.jenis_mutasi from galon_mutasi gm where gm.galon_id = g.id order by gm.created_at desc limit 1) as mutasi_jenis'),
+                DB::raw('(select gm.status_dari from galon_mutasi gm where gm.galon_id = g.id order by gm.created_at desc limit 1) as mutasi_status_dari'),
+                DB::raw('(select gm.status_ke from galon_mutasi gm where gm.galon_id = g.id order by gm.created_at desc limit 1) as mutasi_status_ke'),
+                DB::raw('(select gm.created_at from galon_mutasi gm where gm.galon_id = g.id order by gm.created_at desc limit 1) as mutasi_created_at')
+            );
         if ($request->filled('status')) {
             $query->where('g.status', $request->query('status'));
         }
@@ -538,11 +593,11 @@ class DepoApiController extends Controller
             $id = (string) Str::uuid();
             $code = $count === 1 && $request->filled('kodeGalon')
                 ? (string) $request->input('kodeGalon')
-                : 'G-'.now()->format('YmdHis').'-'.($i + 1);
+                : $this->nextGalonCode($i);
             DB::table('galon')->insert([
                 'id' => $id,
                 'kode_galon' => $code,
-                'merek' => $request->input('merek', 'Depo'),
+                'merek' => 'Depo',
                 'jenis' => $request->input('jenis', 'isi'),
                 'status' => $request->input('status', 'tersedia'),
                 'pelanggan_id' => $request->input('pelangganId'),
@@ -568,7 +623,7 @@ class DepoApiController extends Controller
         $nextStatus = $request->input('status', $current->status);
         DB::table('galon')->where('id', $id)->update([
             'kode_galon' => $request->input('kodeGalon', $current->kode_galon),
-            'merek' => $request->input('merek', $current->merek),
+            'merek' => 'Depo',
             'jenis' => $request->input('jenis', $current->jenis),
             'status' => $nextStatus,
             'pelanggan_id' => $request->has('pelangganId') ? $request->input('pelangganId') : $current->pelanggan_id,
@@ -608,6 +663,7 @@ class DepoApiController extends Controller
             'catatan' => $request->input('catatan'),
             'crew_id' => $this->auth($request)['sub'],
             'crew_nama' => $this->auth($request)['username'],
+            'tanggal' => $request->input('tanggal'),
         ]));
     }
 
@@ -618,6 +674,7 @@ class DepoApiController extends Controller
             'catatan' => $request->input('catatan'),
             'crew_id' => $this->auth($request)['sub'],
             'crew_nama' => $this->auth($request)['username'],
+            'tanggal' => $request->input('tanggal'),
         ]));
     }
 
@@ -925,7 +982,7 @@ class DepoApiController extends Controller
         return response()->noContent();
     }
 
-    public function qrisCreate(Request $request)
+    public function qrisCreate(Request $request, MidtransService $midtrans)
     {
         $trx = DB::table('transaksi')->where('id', $request->input('transaksiId'))->first();
         if (! $trx) {
@@ -934,20 +991,61 @@ class DepoApiController extends Controller
         if ($trx->metode_pembayaran !== 'qris') {
             return response()->json(['message' => 'Transaksi bukan metode QRIS'], 400);
         }
+        if (! $midtrans->isConfigured()) {
+            return response()->json(['message' => 'MIDTRANS_SERVER_KEY belum dikonfigurasi'], 500);
+        }
+
         $existing = DB::table('qr_payments')->where('transaksi_id', $trx->id)->where('status', 'pending')->first();
-        if ($existing && now()->lessThan($existing->expires_at)) {
+        if ($existing && now()->lessThan($existing->expires_at) && ($existing->redirect_url ?? $existing->qr_content ?? null)) {
             return response()->json($this->qrisResponse($existing));
         }
+
         $paymentId = 'DEPO-'.strtoupper(substr($trx->id, 0, 8)).'-'.round(microtime(true) * 1000);
-        $qr = "DEPO_QRIS_SIM|paymentId=$paymentId|transaksiId=$trx->id|amount=".round((float) $trx->total_harga).'|merchant=Depo Air Minum';
-        DB::table('qr_payments')->insert([
+        $expiresAt = now()->addMinutes(15);
+        $snapPayload = $this->midtransSnapPayload($trx, $paymentId);
+
+        try {
+            $snap = $midtrans->createSnapTransaction($snapPayload);
+        } catch (RequestException $e) {
+            Log::error('Gagal membuat transaksi Snap Midtrans', [
+                'transaksi_id' => $trx->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            if ($e->response?->status() === 401) {
+                return response()->json([
+                    'message' => 'Midtrans menolak transaksi. Periksa kembali Server Key sandbox di backend.',
+                ], 502);
+            }
+
+            return response()->json(['message' => 'Gagal menghubungi Midtrans. Coba lagi beberapa saat.'], 502);
+        } catch (Throwable $e) {
+            Log::error('Gagal membuat transaksi Snap Midtrans', [
+                'transaksi_id' => $trx->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json(['message' => 'Gagal membuat pembayaran Midtrans'], 502);
+        }
+
+        $redirectUrl = (string) ($snap['redirect_url'] ?? '');
+        if ($redirectUrl === '') {
+            return response()->json(['message' => 'Midtrans tidak mengembalikan URL pembayaran'], 502);
+        }
+
+        $this->insertQrPayment([
             'payment_id' => $paymentId,
+            'midtrans_order_id' => $paymentId,
             'transaksi_id' => $trx->id,
+            'gateway' => 'midtrans',
             'jumlah' => $trx->total_harga,
-            'qr_content' => $qr,
+            'qr_content' => $redirectUrl,
+            'snap_token' => $snap['token'] ?? null,
+            'redirect_url' => $redirectUrl,
             'status' => 'pending',
-            'nama_depot' => 'Depo Air Minum (Simulasi)',
-            'expires_at' => now()->addMinutes(15),
+            'nama_depot' => 'Depo Air Minum',
+            'gateway_response' => json_encode($snap),
+            'expires_at' => $expiresAt,
             'created_at' => now(),
         ]);
         DB::table('transaksi')->where('id', $trx->id)->update(['qr_payment_id' => $paymentId, 'updated_at' => now()]);
@@ -955,11 +1053,28 @@ class DepoApiController extends Controller
         return response()->json($this->qrisResponse(DB::table('qr_payments')->where('payment_id', $paymentId)->first()), 201);
     }
 
-    public function qrisStatus(string $paymentId)
+    public function qrisStatus(string $paymentId, MidtransService $midtrans)
     {
         $row = DB::table('qr_payments')->where('payment_id', $paymentId)->first();
         if (! $row) {
             return response()->json(['message' => 'Pembayaran QR tidak ditemukan'], 404);
+        }
+        if ($row->status === 'pending' && now()->greaterThan($row->expires_at)) {
+            DB::table('qr_payments')->where('payment_id', $paymentId)->update(['status' => 'expired', 'updated_at' => now()]);
+            $row = DB::table('qr_payments')->where('payment_id', $paymentId)->first();
+        } elseif ($row->status === 'pending' && $midtrans->isConfigured()) {
+            try {
+                $payload = $midtrans->getTransactionStatus($row->midtrans_order_id ?? $row->payment_id);
+                if ($payload !== []) {
+                    $this->applyMidtransPaymentStatus($row, $payload, $midtrans);
+                    $row = DB::table('qr_payments')->where('payment_id', $paymentId)->first();
+                }
+            } catch (Throwable $e) {
+                Log::warning('Gagal sinkron status Midtrans', [
+                    'payment_id' => $paymentId,
+                    'error' => $e->getMessage(),
+                ]);
+            }
         }
 
         return response()->json([
@@ -984,6 +1099,10 @@ class DepoApiController extends Controller
 
     public function qrisSimulatePay(string $paymentId)
     {
+        if (! config('services.midtrans.allow_simulation')) {
+            return response()->json(['message' => 'Simulasi pembayaran dinonaktifkan'], 403);
+        }
+
         $row = DB::table('qr_payments')->where('payment_id', $paymentId)->first();
         if (! $row) {
             return response()->json(['message' => 'Pembayaran QR tidak ditemukan'], 404);
@@ -1004,6 +1123,24 @@ class DepoApiController extends Controller
             'testOrderId' => $id,
             'testAmount' => 15000,
         ]);
+    }
+
+    public function midtransNotification(Request $request, MidtransService $midtrans)
+    {
+        $payload = $request->all();
+        if (! $midtrans->verifyNotificationSignature($payload)) {
+            return response()->json(['message' => 'Signature Midtrans tidak valid'], 403);
+        }
+
+        $orderId = (string) ($payload['order_id'] ?? '');
+        $row = $this->findQrPaymentByOrderId($orderId);
+        if (! $row) {
+            return response()->json(['message' => 'Pembayaran tidak ditemukan'], 404);
+        }
+
+        $this->applyMidtransPaymentStatus($row, $payload, $midtrans);
+
+        return response()->json(['success' => true]);
     }
 
     private function produkBaseQuery()
@@ -1108,7 +1245,7 @@ class DepoApiController extends Controller
                 DB::table('galon')->where('id', $galon->id)->update([
                     'status' => $to,
                     'pelanggan_id' => $aksi === 'pinjam' ? ($meta['pelanggan_id'] ?? null) : null,
-                    'tanggal_pinjam' => $aksi === 'pinjam' ? now() : null,
+                    'tanggal_pinjam' => $aksi === 'pinjam' ? ($meta['tanggal'] ?? now()) : null,
                     'catatan' => $aksi === 'pinjam' ? ($meta['catatan'] ?? null) : null,
                     'updated_at' => now(),
                 ]);
@@ -1147,6 +1284,16 @@ class DepoApiController extends Controller
         $columns = Schema::getColumnListing('galon_mutasi');
         $row = ['id' => (string) Str::uuid(), 'created_at' => now()] + $data;
         DB::table('galon_mutasi')->insert(collect($row)->only($columns)->all());
+    }
+
+    private function nextGalonCode(int $offset = 0): string
+    {
+        $max = DB::table('galon')
+            ->where('kode_galon', 'regexp', '^G-[0-9]+$')
+            ->selectRaw("MAX(CAST(SUBSTRING(kode_galon, 3) AS UNSIGNED)) as max_number")
+            ->value('max_number');
+
+        return 'G-'.str_pad((string) (((int) $max) + 1 + $offset), 3, '0', STR_PAD_LEFT);
     }
 
     private function galonSummary(): array
@@ -1280,12 +1427,103 @@ class DepoApiController extends Controller
         return [
             'paymentId' => $row->payment_id,
             'transaksiId' => $row->transaksi_id,
-            'qrContent' => $row->qr_content,
+            'qrContent' => $row->redirect_url ?? $row->qr_content,
+            'snapToken' => $row->snap_token ?? null,
+            'redirectUrl' => $row->redirect_url ?? $row->qr_content,
             'jumlah' => (float) $row->jumlah,
             'status' => $row->status,
             'expiresAt' => $row->expires_at,
             'namaDepot' => $row->nama_depot ?: 'Depo Air Minum',
         ];
+    }
+
+    private function midtransSnapPayload(object $trx, string $paymentId): array
+    {
+        $pelanggan = $trx->pelanggan_id
+            ? DB::table('pelanggan')->where('id', $trx->pelanggan_id)->first()
+            : null;
+
+        $payload = [
+            'transaction_details' => [
+                'order_id' => $paymentId,
+                'gross_amount' => (int) round((float) $trx->total_harga),
+            ],
+            'enabled_payments' => ['qris'],
+            'expiry' => [
+                'unit' => 'minutes',
+                'duration' => 15,
+            ],
+            'custom_field1' => $trx->id,
+        ];
+
+        if ($pelanggan) {
+            $payload['customer_details'] = [
+                'first_name' => $pelanggan->nama,
+                'phone' => $pelanggan->no_hp,
+                'billing_address' => [
+                    'first_name' => $pelanggan->nama,
+                    'phone' => $pelanggan->no_hp,
+                    'address' => $pelanggan->alamat,
+                ],
+            ];
+        }
+
+        return $payload;
+    }
+
+    private function insertQrPayment(array $data): void
+    {
+        $columns = Schema::getColumnListing('qr_payments');
+        DB::table('qr_payments')->insert(collect($data)->only($columns)->all());
+    }
+
+    private function findQrPaymentByOrderId(string $orderId): ?object
+    {
+        if ($orderId === '') {
+            return null;
+        }
+
+        $query = DB::table('qr_payments')->where('payment_id', $orderId);
+        if (Schema::hasColumn('qr_payments', 'midtrans_order_id')) {
+            $query->orWhere('midtrans_order_id', $orderId);
+        }
+
+        return $query->first();
+    }
+
+    private function applyMidtransPaymentStatus(object $row, array $payload, MidtransService $midtrans): void
+    {
+        $status = $midtrans->mapPaymentStatus($payload);
+        $update = [
+            'status' => $status,
+            'updated_at' => now(),
+        ];
+
+        if (Schema::hasColumn('qr_payments', 'payment_type')) {
+            $update['payment_type'] = $payload['payment_type'] ?? null;
+        }
+        if (Schema::hasColumn('qr_payments', 'gateway_response')) {
+            $update['gateway_response'] = json_encode($payload);
+        }
+
+        if ($status === 'paid') {
+            $update['paid_at'] = $row->paid_at ?: now();
+        }
+
+        DB::table('qr_payments')->where('payment_id', $row->payment_id)->update($update);
+
+        if ($status === 'paid') {
+            DB::table('transaksi')->where('id', $row->transaksi_id)->update([
+                'qr_paid_at' => $row->paid_at ?: now(),
+                'status' => 'menungguValidasi',
+                'updated_at' => now(),
+            ]);
+        } elseif (in_array($status, ['expired', 'failed'], true)) {
+            DB::table('transaksi')->where('id', $row->transaksi_id)->update([
+                'status' => 'dibatalkan',
+                'updated_at' => now(),
+            ]);
+        }
     }
 
     private function userData(array $user): array

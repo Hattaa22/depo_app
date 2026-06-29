@@ -344,7 +344,7 @@ class _AssetGalonScreenState extends State<AssetGalonScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(24),
                 border: Border.all(color: const Color(0xFFE2E8F0)),
               ),
               child: Row(
@@ -595,10 +595,10 @@ class _AssetGalonScreenState extends State<AssetGalonScreen> {
           _selectedPelangganId = null;
         }
         return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(24),
             border: Border.all(
               color: _selectedPelangganId != null
                   ? _primary
@@ -623,6 +623,7 @@ class _AssetGalonScreenState extends State<AssetGalonScreen> {
               ),
               icon: const Icon(Icons.keyboard_arrow_down_rounded,
                   color: _primary),
+              borderRadius: BorderRadius.circular(16),
               items: list.map((p) {
                 return DropdownMenuItem<String>(
                   value: p.id,

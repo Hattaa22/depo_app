@@ -109,6 +109,19 @@ class ApiService {
     });
   }
 
+  Future<void> changePin(String pinLama, String pinBaru) async {
+    await _dio.put('/auth/change-password', data: {
+      'pinLama': pinLama,
+      'pinBaru': pinBaru,
+    });
+  }
+
+  Future<void> changeProfile(String nama) async {
+    await _dio.put('/auth/change-profile', data: {
+      'nama': nama,
+    });
+  }
+
   Future<AuthResponse> refreshToken(RefreshTokenRequest request) async {
     final res = await _dio.post('/auth/refresh', data: request.toJson());
     return AuthResponse.fromJson(res.data as Map<String, dynamic>);
@@ -483,6 +496,8 @@ class QrisPaymentResponse {
   final String paymentId;
   final String transaksiId;
   final String qrContent;
+  final String? snapToken;
+  final String? redirectUrl;
   final double jumlah;
   final String status;
   final String expiresAt;
@@ -492,6 +507,8 @@ class QrisPaymentResponse {
     required this.paymentId,
     required this.transaksiId,
     required this.qrContent,
+    this.snapToken,
+    this.redirectUrl,
     required this.jumlah,
     required this.status,
     required this.expiresAt,
@@ -503,6 +520,8 @@ class QrisPaymentResponse {
         paymentId: json['paymentId'] as String,
         transaksiId: json['transaksiId'] as String,
         qrContent: json['qrContent'] as String,
+        snapToken: json['snapToken'] as String?,
+        redirectUrl: json['redirectUrl'] as String?,
         jumlah: parseDouble(json['jumlah']),
         status: json['status'] as String? ?? 'pending',
         expiresAt: json['expiresAt'] as String,
