@@ -457,7 +457,7 @@ Flow Utama:
    SECTION 3 - INFORMASI:
    - Versi Aplikasi: 1.0.0
    - Build: 001
-   - Server: 127.0.0.1:3000 (bisa edit)
+   - Server: 127.0.0.1:8000/api/v1 (bisa edit melalui API_BASE_URL)
    - Database: Connected ✓
    
    SECTION 4 - AKSI:

@@ -195,9 +195,9 @@ Sistem mencakup fitur-fitur untuk **dua role utama**:
                     [HTTPS REST API]
                            │
 ┌──────────────────────────┼────────────────────────────────────┐
-│                     SERVER (Node.js)                           │
+│                     SERVER (Laravel/PHP)                           │
 │  ┌──────────────────────────────────────────────────────┐    │
-│  │ Express Server                                       │    │
+│  │ Laravel Router                                       │    │
 │  │ • Route Handler (Auth, Transaction, etc)             │    │
 │  │ • Middleware (JWT Validation, Error Handler)         │    │
 │  │ • Business Logic Layer                               │    │
@@ -271,16 +271,16 @@ Sistem mencakup fitur-fitur untuk **dua role utama**:
 └────────────────────────────────────────────────────────────┘
                    [HTTPS REST API Channel]
 ┌────────────────────────────────────────────────────────────┐
-│                    SERVER SIDE (Node.js)                    │
+│                    SERVER SIDE (Laravel/PHP)                    │
 │  ┌─────────────────────────────────────────────────────┐  │
-│  │ API ROUTES & MIDDLEWARE (Express)                   │  │
+│  │ API ROUTES & MIDDLEWARE (Laravel)                   │  │
 │  │ • Authentication Routes  • Product Routes           │  │
 │  │ • Transaction Routes     • Report Routes            │  │
 │  │ • Payment Routes         • User Management Routes   │  │
 │  └─────────────────────────────────────────────────────┘  │
 │                           │                                │
 │  ┌─────────────────────────────────────────────────────┐  │
-│  │ SERVICE LAYER (Business Logic - Node.js)           │  │
+│  │ SERVICE LAYER (Business Logic - Laravel/PHP)           │  │
 │  │ • AuthService       • TransactionService            │  │
 │  │ • UserService       • PaymentService (QRIS)         │  │
 │  │ • ProductService    • ReportService                 │  │
@@ -700,7 +700,7 @@ Frontend (Flutter):
   • Custom validation rules
   • Real-time validation feedback
 
-Backend (Node.js):
+Backend (Laravel/PHP):
   • Schema validation (input body)
   • Type checking
   • Business rule validation
@@ -759,8 +759,8 @@ HTTP Status Codes:
 
 | Component | Technology | Version | Purpose |
 |-----------|-----------|---------|---------|
-| **Framework** | Express.js | 4.21.2 | Web framework for Node.js |
-| **Runtime** | Node.js | 18.0+ | JavaScript runtime |
+| **Framework** | Laravel | 4.21.2 | Web framework for Laravel/PHP |
+| **Runtime** | Laravel/PHP | 18.0+ | JavaScript runtime |
 | **Language** | JavaScript | ES6+ | Backend programming language |
 | **Database** | MySQL | 8.0+ | Relational database |
 | **DB Driver** | mysql2 | 3.22.4 | MySQL connection pool |
@@ -786,7 +786,7 @@ HTTP Status Codes:
 | **Android Studio** | Android emulator |
 | **Xcode** | iOS development |
 | **Docker** (optional) | Containerization |
-| **PM2** (optional) | Node.js process manager |
+| **PM2** (optional) | Laravel queue/process manager |
 | **Nginx** (optional) | Reverse proxy |
 
 ---
@@ -1126,7 +1126,7 @@ pending → validated_approved → completed
         │              │              │
 ┌───────▼──────┐ ┌──────▼──────┐ ┌───▼────────┐
 │  App Node 1  │ │  App Node 2 │ │ App Node 3 │
-│  (Express)   │ │  (Express)  │ │ (Express)  │
+│  (Laravel)   │ │  (Laravel)  │ │ (Laravel)  │
 └───────┬──────┘ └──────┬──────┘ └───┬────────┘
         │               │            │
         │    ┌──────────┼────────────┘
@@ -1153,7 +1153,7 @@ pending → validated_approved → completed
 - API specification
 
 ### Phase 2: Backend Development (Week 3-5)
-- Setup Node.js environment
+- Setup Laravel environment
 - Implement authentication
 - Implement transaction module
 - Implement payment module
@@ -1182,7 +1182,7 @@ pending → validated_approved → completed
 
 ## 9. KESIMPULAN
 
-Sistem **"Depo Air Management System"** dirancang dengan arsitektur yang scalable, secure, dan user-friendly. Sistem ini menggunakan teknologi modern seperti Flutter untuk frontend, Node.js untuk backend, dan MySQL untuk database.
+Sistem **"Depo Air Management System"** dirancang dengan arsitektur yang scalable, secure, dan user-friendly. Sistem ini menggunakan teknologi modern seperti Flutter untuk frontend, Laravel/PHP untuk backend, dan MySQL untuk database.
 
 Dengan fitur-fitur yang komprehensif, sistem ini mampu mengatasi tantangan operasional depot air minum modern termasuk:
 - Efisiensi operasional
@@ -1200,7 +1200,7 @@ Sistem ini diharapkan dapat meningkatkan produktivitas depot air minum dan membe
 ## REFERENSI
 
 1. Flutter Documentation - https://flutter.dev
-2. Express.js Documentation - https://expressjs.com
+2. Laravel Documentation - https://laravel.com/docs
 3. MySQL Documentation - https://dev.mysql.com
 4. JWT Authentication - https://jwt.io
 5. REST API Best Practices - https://restfulapi.net

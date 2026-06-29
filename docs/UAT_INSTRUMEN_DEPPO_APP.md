@@ -23,10 +23,10 @@ Format test case:
 ---
 
 ## 3. Lingkungan UAT
-- Backend: Node.js + Express, port `3000`
+- Backend: Laravel API, port `8000`
 - Database: MySQL
 - Mobile app: Flutter android/iOS
-- Metode koneksi: `ngrok` atau LAN dengan IP PC
+- Backend API Laravel aktif dan dapat diakses melalui `API_BASE_URL`
 
 ---
 

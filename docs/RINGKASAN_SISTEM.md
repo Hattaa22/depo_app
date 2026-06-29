@@ -8,7 +8,7 @@
 **Nama Sistem:** Depo Air Management System  
 **Tujuan:** Sistem informasi manajemen depot air minum berbasis mobile  
 **Platform:** Cross-platform (Android & iOS) menggunakan Flutter  
-**Backend:** REST API dengan Node.js + Express  
+**Backend:** REST API dengan Laravel API  
 **Database:** MySQL 8.0+  
 **Status:** Development/Production Ready  
 
@@ -117,8 +117,8 @@ Depot air minum tradisional menghadapi tantangan:
 ```
 FRONTEND                    BACKEND              DATABASE
 ┌─────────────────┐       ┌──────────────┐     ┌────────┐
-│ Flutter 3.6.2+  │       │ Node.js 18+  │     │ MySQL  │
-│ • GetX (State)  │────→  │ Express 4.21 │ ←→  │ 8.0+   │
+│ Flutter 3.6.2+  │       │ PHP 8.2+  │     │ MySQL  │
+│ • GetX (State)  │────→  │ Laravel API │ ←→  │ 8.0+   │
 │ • Dio (HTTP)    │  API  │ • Routes     │     │InnoDB  │
 │ • SQLite        │       │ • Middleware │     │utf8mb4 │
 │ • SecureStorage │       │ • Services   │     │        │
@@ -162,12 +162,12 @@ Backend:
                     │ [HTTPS REST API]
                     │
 ┌───────────────────┴─────────────────────────────────┐
-│         SERVER LAYER (Express.js Routes)             │
+│         SERVER LAYER (Laravel Routes)             │
 │    Request Handling | Middleware | Error Handling   │
 └───────────────────┬─────────────────────────────────┘
                     │
 ┌───────────────────┴─────────────────────────────────┐
-│      SERVICE LAYER (Business Logic - Node.js)        │
+│      SERVICE LAYER (Business Logic - Laravel/PHP)        │
 │  Auth | Transaction | Payment | Validation | Report  │
 └───────────────────┬─────────────────────────────────┘
                     │

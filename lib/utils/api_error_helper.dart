@@ -1,22 +1,17 @@
 import 'package:dio/dio.dart';
 import '../config/api_config.dart';
 
-/// Pesan error API yang mudah dibaca pengguna.
 class ApiErrorHelper {
   static String message(Object error) {
     if (error is DioException) {
       switch (error.type) {
         case DioExceptionType.connectionError:
         case DioExceptionType.unknown:
-          return connectionHelp();
         case DioExceptionType.connectionTimeout:
         case DioExceptionType.receiveTimeout:
           return connectionHelp();
         case DioExceptionType.badResponse:
           final code = error.response?.statusCode;
-          // 502/503/504 berarti server backend tidak terjangkau lewat
-          // proxy/tunnel (mis. ngrok mati atau npm start belum jalan),
-          // bukan error logika dari aplikasi kita sendiri.
           if (code == 502 || code == 503 || code == 504) {
             return connectionHelp();
           }
@@ -41,11 +36,9 @@ class ApiErrorHelper {
   static String connectionHelp() {
     return 'HP tidak bisa menjangkau server:\n'
         '${ApiConfig.baseUrl}\n\n'
-        '1. Terminal PC: cd backend → npm start\n'
-        '2. HP & PC harus WiFi yang sama (bukan data seluler saja)\n'
-        '3. Cek IP PC (ipconfig), sesuaikan lanHost di lib/config/api_config.dart\n'
-        '   (sekarang: ${ApiConfig.lanHost})\n'
-        '4. Izinkan firewall Windows port ${ApiConfig.port}\n'
-        '5. Stop lalu flutter run (bukan hot reload saja)';
+        '1. Jalankan Laravel API: cd backend_laravel lalu php artisan serve --host=127.0.0.1 --port=8000\n'
+        '2. Pastikan API_BASE_URL mengarah ke backend yang aktif\n'
+        '3. Izinkan firewall Windows untuk port backend\n'
+        '4. Stop lalu jalankan ulang aplikasi Flutter';
   }
 }

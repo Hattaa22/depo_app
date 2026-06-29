@@ -61,17 +61,17 @@
           │
           ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                     SERVER LAYER (Node.js)                      │
+│                     SERVER LAYER (Laravel)                      │
 │                                                                   │
 │  ┌─────────────────────────────────────────────────────────┐   │
-│  │  Express.js HTTP Server                                │   │
+│  │  Laravel HTTP Kernel and API Routes                                │   │
 │  │  - Routes (Auth, Transaction, Product, etc)            │   │
 │  │  - Middleware (Logger, Error Handler, Rate Limit)      │   │
 │  │  - JWT Verification Middleware                         │   │
 │  └──────────────────────┬─────────────────────────────────┘   │
 │                         │                                      │
 │  ┌──────────────────────┴────────────────────────────────┐    │
-│  │      SERVICE LAYER (Business Logic - Node.js)        │    │
+│  │      SERVICE LAYER (Business Logic - Laravel)        │    │
 │  │                                                       │    │
 │  │  AuthService         TransactionService              │    │
 │  │  UserService         PaymentService (QRIS)           │    │
@@ -154,8 +154,8 @@ USER
          │
          ▼
     ┌──────────────────────┐
-    │ Express Server       │
-    │ Route Handler        │
+    │ Laravel Router       │
+    │ API Controller        │
     └──────┬───────────────┘
            │
            ▼
@@ -372,20 +372,20 @@ Get.find<TransaksiController>()
 
 ---
 
-## 3. KOMPONEN BACKEND (Node.js)
+## 3. KOMPONEN BACKEND (Laravel)
 
 ### 3.1 Struktur Directory
 
 ```
-backend/
-├── server.js                        # Main entry point
-├── package.json                     # Dependencies
+backend_laravel/
+├── artisan                          # CLI entry point
+├── composer.json                    # PHP dependencies
 ├── .env                             # Environment variables
 ├── .env.example                     # Environment template
 ├── config/
-│   ├── database.js                 # MySQL connection pool
-│   ├── auth.js                     # JWT config
-│   └── constants.js                # Constants
+│   ├── database.php                # MySQL connection config
+│   ├── auth.php                    # Auth config
+│   └── cors.php                    # CORS config
 ├── routes/                          # API Routes
 │   ├── auth.js                     # /api/auth/*
 │   ├── transactions.js             # /api/transaksi/*
@@ -448,7 +448,7 @@ backend/
     └── ...
 ```
 
-### 3.2 Express Server Structure
+### 3.2 Laravel Router Structure
 
 ```javascript
 // server.js structure
@@ -961,7 +961,7 @@ function validateCreateTransaction(data) {
 └─────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────┐
-│  SERVER-SIDE CACHING (Node.js)          │
+│  SERVER-SIDE CACHING (Laravel)          │
 ├─────────────────────────────────────────┤
 │                                         │
 │  ┌──────────────────────────────────┐  │
@@ -1059,7 +1059,7 @@ GET /api/transaksi?limit=20&offset=0
 ```
 API Request
     ↓
-Route Handler
+API Controller
     ↓
 Try/Catch Block
     ├─ Success → Response 200
@@ -1128,7 +1128,7 @@ Dokumentasi arsitektur teknis ini menjelaskan:
 
 1. **Arsitektur Sistem** - Client-server dengan tiga layer (presentation, business logic, data)
 2. **Frontend Components** - Flutter dengan GetX state management
-3. **Backend Components** - Node.js Express dengan service-based architecture
+3. **Backend Components** - Laravel API dengan controller, middleware, model, dan service layer
 4. **Database Layer** - MySQL dengan connection pooling dan optimization
 5. **Security** - JWT authentication, password hashing, input validation
 6. **Performance** - Caching strategies, query optimization, pagination

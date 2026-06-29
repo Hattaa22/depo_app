@@ -693,7 +693,7 @@ Manager Login
 **HTTP Client:** Dio  
 **Storage:** SQLite, SharedPreferences, Secure Storage  
 **QR Payment:** QRIS Integration  
-**Backend:** Express.js (Node.js)  
+**Backend:** Laravel (Laravel/PHP)  
 **Database:** JSON File-based  
 **Authentication:** JWT
 

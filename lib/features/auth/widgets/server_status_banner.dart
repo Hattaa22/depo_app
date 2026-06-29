@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import '../../../config/api_config.dart';
 import '../../../services/api_service.dart';
 
-/// Panel diagnosa koneksi backend (cegah timeout login tanpa petunjuk).
 class ServerStatusBanner extends StatefulWidget {
   const ServerStatusBanner({super.key});
 
@@ -99,8 +98,8 @@ class _ServerStatusBannerState extends State<ServerStatusBanner> {
           if (_ok == false) ...[
             const SizedBox(height: 8),
             Text(
-              'Jalankan: cd backend → npm start\n'
-              'HP & PC satu WiFi • IP: ${ApiConfig.lanHost}',
+              'Jalankan: cd backend_laravel lalu php artisan serve --host=127.0.0.1 --port=8000\n'
+              'Pastikan API_BASE_URL sesuai dengan server aktif',
               style: TextStyle(fontSize: 11, color: fg, height: 1.4),
             ),
           ],

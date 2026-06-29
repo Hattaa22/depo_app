@@ -6,7 +6,7 @@ class AppConstants {
   static const int connectTimeout = 15000;
   static const int receiveTimeout = 15000;
 
-  /// false = login & data dari API lokal (backend/server.js)
+  /// false = login & data dari Laravel API
   static const bool useMockAuth = false;
 
   // Storage Keys
