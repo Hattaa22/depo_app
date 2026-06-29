@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../controllers/crew_main_controller.dart';
 import '../features/auth/login_peran_screen.dart';
 import '../features/auth/login_crew_screen.dart';
 import '../features/auth/login_manager_screen.dart';
 import '../features/crew/dashboard/crew_main_screen.dart';
-import '../features/crew/dashboard/kasir.dart';
 import '../features/crew/dashboard/pembayaran_qr.dart';
 import '../features/crew/dashboard/data_pelanggan.dart';
-import '../features/crew/history/riwayat_transaksi.dart';
-import '../features/crew/stock/pencatatan_galon.dart';
-import '../features/crew/setting/pengaturan.dart';
 import '../features/manager/dashboard/managerdashboard_screen.dart';
 import '../features/manager/dashboard/data_pelanggan.dart';
 import '../features/manager/dashboard/laporan_transaksi.dart';
@@ -110,16 +107,25 @@ class AppRoutes {
   static const String managerDataPengeluaran = '/manager/setting/pengeluaran';
   static const String managerCabangDepo = '/manager/setting/cabang';
 
+  static GetPage _crewShellPage(String name, int tabIndex) {
+    return GetPage(
+      name: name,
+      page: () {
+        Get.find<CrewMainController>().changeTab(tabIndex);
+        return const CrewMainScreen();
+      },
+    );
+  }
+
   static List<GetPage> get pages => [
         GetPage(name: pilihPeran, page: () => const PilihPeranScreen()),
         GetPage(name: loginCrew, page: () => const LoginCrewScreen()),
         GetPage(name: loginManager, page: () => const LoginManagerScreen()),
 
         // Crew Routes
-        GetPage(name: crewDashboard, page: () => const CrewMainScreen()),
-        GetPage(name: crewKasir, page: () => const KasirScreen()),
-        GetPage(
-            name: crewTransaksi, page: () => const RiwayatTransaksiScreen()),
+        _crewShellPage(crewDashboard, 0),
+        _crewShellPage(crewKasir, CrewMainController.tabKasir),
+        _crewShellPage(crewTransaksi, 1),
         GetPage(
           name: crewPembayaranQr,
           page: () {
@@ -133,9 +139,9 @@ class AppRoutes {
         GetPage(
             name: crewDataPelanggan,
             page: () => const CrewDataPelangganScreen()),
-        GetPage(name: crewRiwayat, page: () => const RiwayatTransaksiScreen()),
-        GetPage(name: crewGalon, page: () => const PencatatanGalonScreen()),
-        GetPage(name: crewPengaturan, page: () => const PengaturanScreen()),
+        _crewShellPage(crewRiwayat, 1),
+        _crewShellPage(crewGalon, 3),
+        _crewShellPage(crewPengaturan, 4),
 
         // Manager Routes
         GetPage(

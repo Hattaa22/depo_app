@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../controllers/crew_controller.dart';
+import '../../../controllers/crew_main_controller.dart';
 import '../../../controllers/kasir_controller.dart';
 import '../../../controllers/pelanggan_controller.dart';
 import '../../../controllers/transaksi_controller.dart';
@@ -32,25 +33,37 @@ class _KasirScreenState extends State<KasirScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Get.find<KasirController>().refreshData();
+      final pelangganCtrl = Get.find<PelangganController>();
+      final crewCtrl = Get.find<CrewController>();
+      if (pelangganCtrl.pelangganList.isEmpty) {
+        pelangganCtrl.loadPelanggan();
+      }
+      if (crewCtrl.crewList.isEmpty) {
+        crewCtrl.loadCrew();
+      }
     });
 
     _transaksiWorker =
         ever(Get.find<TransaksiController>().transaksiTerbaru, (t) {
       if (t == null) return;
-      final kasir = Get.find<KasirController>();
-      kasir.reset();
-      kasir.refreshData();
-      if (t.metodePembayaran.name == 'qris') {
-        Get.toNamed(AppRoutes.crewPembayaranQr, arguments: {
-          'totalHarga': t.totalHarga.round(),
-          'transaksiId': t.id,
-        });
-      } else {
-        Get.snackbar('Berhasil', 'Transaksi berhasil!',
-            backgroundColor: const Color(0xFF10B981), colorText: Colors.white);
-      }
-      // Reset setelah diproses agar tidak terpicu ganda
-      Get.find<TransaksiController>().transaksiTerbaru.value = null;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        final kasir = Get.find<KasirController>();
+        kasir.reset();
+        kasir.refreshData();
+        if (t.metodePembayaran.name == 'qris') {
+          Get.toNamed(AppRoutes.crewPembayaranQr, arguments: {
+            'totalHarga': t.totalHarga.round(),
+            'transaksiId': t.id,
+          });
+        } else {
+          Get.snackbar('Berhasil', 'Transaksi berhasil!',
+              backgroundColor: const Color(0xFF10B981),
+              colorText: Colors.white);
+        }
+        // Reset setelah diproses agar tidak terpicu ganda
+        Get.find<TransaksiController>().transaksiTerbaru.value = null;
+      });
     });
   }
 
@@ -66,14 +79,6 @@ class _KasirScreenState extends State<KasirScreen> {
     final pelangganCtrl = Get.find<PelangganController>();
     final transaksi = Get.find<TransaksiController>();
     final crewCtrl = Get.find<CrewController>();
-
-    // Pastikan data pelanggan & produk sudah dimuat
-    if (pelangganCtrl.pelangganList.isEmpty) {
-      pelangganCtrl.loadPelanggan();
-    }
-    if (crewCtrl.crewList.isEmpty) {
-      crewCtrl.loadCrew();
-    }
 
     return Scaffold(
       backgroundColor: _bg,
@@ -168,7 +173,7 @@ class _KasirScreenState extends State<KasirScreen> {
       child: Row(
         children: [
           GestureDetector(
-            onTap: () => Navigator.of(context).pop(),
+            onTap: () => _handleBackFromKasir(context),
             child: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
@@ -292,6 +297,21 @@ class _KasirScreenState extends State<KasirScreen> {
     );
   }
 
+  void _handleBackFromKasir(BuildContext context) {
+    if (Get.currentRoute == AppRoutes.crewDashboard &&
+        Get.isRegistered<CrewMainController>()) {
+      Get.find<CrewMainController>().changeTab(0);
+      return;
+    }
+
+    final navigator = Navigator.of(context);
+    if (navigator.canPop()) {
+      navigator.pop();
+    } else {
+      Get.offAllNamed(AppRoutes.crewDashboard);
+    }
+  }
+
   Widget _buildTipePembelian(KasirController kasir, CrewController crewCtrl) {
     final isDikirim = kasir.isDikirim;
 
@@ -410,15 +430,8 @@ class _KasirScreenState extends State<KasirScreen> {
   ) {
     final selected = kasir.crewPengirimDipilih.value;
     final hasSelection = selected != null;
-    final title = hasSelection
-        ? (selected.nama.isNotEmpty ? selected.nama : selected.username)
-        : 'Pilih crew pengirim';
-    final subtitle = hasSelection
-        ? [
-            if (selected.username.isNotEmpty) '@${selected.username}',
-            if (selected.noHp.isNotEmpty) selected.noHp,
-          ].join('  •  ')
-        : 'Crew aktif yang bertugas mengantar galon';
+    final displayText =
+        selected != null ? selected.nama : 'Pilih crew pengirim';
 
     return Material(
       color: Colors.transparent,
@@ -460,7 +473,7 @@ class _KasirScreenState extends State<KasirScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      title,
+                      displayText,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
@@ -469,18 +482,21 @@ class _KasirScreenState extends State<KasirScreen> {
                         color: Color(0xFF0F172A),
                       ),
                     ),
-                    const SizedBox(height: 3),
-                    Text(
-                      subtitle.isEmpty
-                          ? 'Data kontak belum tersedia'
-                          : subtitle,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 11,
-                        color: Color(0xFF64748B),
+                    const SizedBox(height: 2),
+                    if (hasSelection)
+                      Text(
+                        selected.noHp,
+                        style: const TextStyle(
+                            fontSize: 12, color: Color(0xFF64748B)),
+                      )
+                    else
+                      const Text(
+                        'Crew aktif yang bertugas mengantar galon',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Color(0xFF64748B),
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),
@@ -570,7 +586,7 @@ class _KasirScreenState extends State<KasirScreen> {
                 TextField(
                   onChanged: (value) => query.value = value.toLowerCase(),
                   decoration: InputDecoration(
-                    hintText: 'Cari nama, username, atau nomor HP',
+                    hintText: 'Cari nama atau nomor HP',
                     prefixIcon: const Icon(Icons.search_rounded),
                     filled: true,
                     fillColor: const Color(0xFFF8FAFC),
@@ -587,9 +603,8 @@ class _KasirScreenState extends State<KasirScreen> {
                     final keyword = query.value;
                     final crews =
                         crewCtrl.crewList.where((c) => c.isAktif).where((c) {
-                      final haystack =
-                          '${c.nama} ${c.username} ${c.noHp}'.toLowerCase();
-                      return keyword.isEmpty || haystack.contains(keyword);
+                      final q = '${c.nama} ${c.noHp}'.toLowerCase();
+                      return keyword.isEmpty || q.contains(keyword);
                     }).toList();
 
                     if (crews.isEmpty) {
@@ -636,7 +651,7 @@ class _KasirScreenState extends State<KasirScreen> {
     required bool selected,
     required VoidCallback onTap,
   }) {
-    final name = crew.nama.isNotEmpty ? crew.nama : crew.username;
+    final name = crew.nama;
 
     return InkWell(
       onTap: onTap,
@@ -682,16 +697,9 @@ class _KasirScreenState extends State<KasirScreen> {
                   ),
                   const SizedBox(height: 3),
                   Text(
-                    [
-                      if (crew.username.isNotEmpty) '@${crew.username}',
-                      if (crew.noHp.isNotEmpty) crew.noHp,
-                    ].join('  •  '),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 11,
-                      color: Color(0xFF64748B),
-                    ),
+                    crew.noHp,
+                    style:
+                        const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
                   ),
                 ],
               ),
@@ -1278,14 +1286,17 @@ class _KasirScreenState extends State<KasirScreen> {
                             leading: const Icon(Icons.money),
                             onTap: () {
                               Get.back();
-                              transaksi.buatTransaksi(
-                                pelangganId: pelangganId,
-                                items: items,
-                                metodePembayaran: 'tunai',
-                                tipePembelian: tipe,
-                                ongkirPerGalon: ongkirRate,
-                                pengirimCrewId: pengirimCrewId,
-                              );
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                if (!mounted) return;
+                                transaksi.buatTransaksi(
+                                  pelangganId: pelangganId,
+                                  items: items,
+                                  metodePembayaran: 'tunai',
+                                  tipePembelian: tipe,
+                                  ongkirPerGalon: ongkirRate,
+                                  pengirimCrewId: pengirimCrewId,
+                                );
+                              });
                             },
                           ),
                           ListTile(
@@ -1293,14 +1304,17 @@ class _KasirScreenState extends State<KasirScreen> {
                             leading: const Icon(Icons.qr_code),
                             onTap: () {
                               Get.back();
-                              transaksi.buatTransaksi(
-                                pelangganId: pelangganId,
-                                items: items,
-                                metodePembayaran: 'qris',
-                                tipePembelian: tipe,
-                                ongkirPerGalon: ongkirRate,
-                                pengirimCrewId: pengirimCrewId,
-                              );
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                if (!mounted) return;
+                                transaksi.buatTransaksi(
+                                  pelangganId: pelangganId,
+                                  items: items,
+                                  metodePembayaran: 'qris',
+                                  tipePembelian: tipe,
+                                  ongkirPerGalon: ongkirRate,
+                                  pengirimCrewId: pengirimCrewId,
+                                );
+                              });
                             },
                           ),
                         ],

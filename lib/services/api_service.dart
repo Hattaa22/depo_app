@@ -11,10 +11,18 @@ import '../utils/numeric_parser.dart';
 // =================== REQUEST/RESPONSE MODELS ===================
 
 class LoginRequest {
-  final String username;
+  final String identifier; // can be noHp or email
   final String password;
-  LoginRequest({required this.username, required this.password});
-  Map<String, dynamic> toJson() => {'username': username, 'password': password};
+  final String? noHp;
+
+  LoginRequest({required this.identifier, required this.password, this.noHp});
+
+  Map<String, dynamic> toJson() => {
+        'username':
+            identifier, // Backend uses username key still, which maps to email or noHp
+        'password': password,
+        if (noHp != null) 'noHp': noHp,
+      };
 }
 
 class RefreshTokenRequest {
@@ -165,6 +173,15 @@ class ApiService {
 
   Future<void> deleteCrew(String id) async {
     await _dio.delete('/crew/$id');
+  }
+
+  Future<void> crewResetPin(String id) async {
+    await _dio.post('/crew/$id/reset-pin');
+  }
+
+  Future<bool> crewUpdateStatus(String id, bool isAktif) async {
+    final res = await _dio.put('/crew/$id/status', data: {'isAktif': isAktif});
+    return res.data['isAktif'] as bool;
   }
 
   // ── PELANGGAN ─────────────────────────────────────────────────────────────
@@ -443,7 +460,7 @@ class ApiService {
     return QrisPaymentStatusResponse(
       paymentId: paymentId,
       transaksiId: data['transaksiId'] as String? ?? '',
-      status: data['status'] as String? ?? 'paid',
+      status: data['status'] as String? ?? 'settlement',
       jumlah: 0,
       paidAt: data['paidAt'] as String?,
       expiresAt: null,
@@ -496,6 +513,7 @@ class QrisPaymentResponse {
   final String paymentId;
   final String transaksiId;
   final String qrContent;
+  final String? qrImageUrl;
   final String? snapToken;
   final String? redirectUrl;
   final double jumlah;
@@ -507,6 +525,7 @@ class QrisPaymentResponse {
     required this.paymentId,
     required this.transaksiId,
     required this.qrContent,
+    this.qrImageUrl,
     this.snapToken,
     this.redirectUrl,
     required this.jumlah,
@@ -520,6 +539,7 @@ class QrisPaymentResponse {
         paymentId: json['paymentId'] as String,
         transaksiId: json['transaksiId'] as String,
         qrContent: json['qrContent'] as String,
+        qrImageUrl: json['qrImageUrl'] as String?,
         snapToken: json['snapToken'] as String?,
         redirectUrl: json['redirectUrl'] as String?,
         jumlah: parseDouble(json['jumlah']),
@@ -556,6 +576,17 @@ class QrisPaymentStatusResponse {
         expiresAt: json['expiresAt'] as String?,
       );
 
-  bool get isPaid => status == 'paid' || paidAt != null;
-  bool get isExpired => status == 'expired';
+  bool get isPaid =>
+      {'paid', 'settlement', 'capture', 'success'}
+          .contains(status.toLowerCase()) ||
+      paidAt != null;
+
+  bool get isExpired => {
+        'expired',
+        'expire',
+        'failed',
+        'failure',
+        'cancel',
+        'deny'
+      }.contains(status.toLowerCase());
 }

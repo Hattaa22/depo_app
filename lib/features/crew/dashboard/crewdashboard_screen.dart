@@ -9,11 +9,29 @@ import '../../../config/routes.dart';
 import '../../../models/transaksi.dart';
 import '../../../utils/formatters.dart';
 
-class CrewDashboardScreen extends StatelessWidget {
+class CrewDashboardScreen extends StatefulWidget {
   const CrewDashboardScreen({super.key});
 
+  @override
+  State<CrewDashboardScreen> createState() => _CrewDashboardScreenState();
+}
+
+class _CrewDashboardScreenState extends State<CrewDashboardScreen> {
   static const Color _primary = Color(0xFF1392EC);
   static const Color _bgLight = Color(0xFFF8FAFC);
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final auth = Get.find<AuthController>();
+      final crewId = auth.userData['id']?.toString();
+      Get.find<TransaksiController>().loadTransaksi(crewId: crewId);
+      Get.find<AnalisisController>().loadDashboardCrew();
+      Get.find<GalonController>().loadSummary();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,11 +42,6 @@ class CrewDashboardScreen extends StatelessWidget {
     final mainController = Get.find<CrewMainController>();
 
     // Load data saat screen dibuka — filter transaksi hanya milik crew ini
-    final crewId = auth.userData['id']?.toString();
-    transaksi.loadTransaksi(crewId: crewId);
-    analisis.loadDashboardCrew();
-    galon.loadSummary();
-
     return Scaffold(
       backgroundColor: _bgLight,
       extendBody: true,
@@ -47,7 +60,7 @@ class CrewDashboardScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // ── HEADER ──────────────────────────────────────────────
-              _buildHeader(context, nama),
+              _buildHeader(context, nama, mainController),
 
               // ── STAT CARDS ──────────────────────────────────────────
               Transform.translate(
@@ -137,7 +150,7 @@ class CrewDashboardScreen extends StatelessWidget {
                             icon: Icons.receipt_long_outlined,
                             label: 'Transaksi',
                             isPrimary: false,
-                            onTap: () => Get.toNamed(AppRoutes.crewTransaksi),
+                            onTap: () => mainController.changeTab(1),
                           ),
                         ),
                       ],
@@ -230,7 +243,11 @@ class CrewDashboardScreen extends StatelessWidget {
   // ─────────────────────────────────────────────────────────────────────────
   // HEADER
   // ─────────────────────────────────────────────────────────────────────────
-  Widget _buildHeader(BuildContext context, String nama) {
+  Widget _buildHeader(
+    BuildContext context,
+    String nama,
+    CrewMainController mainController,
+  ) {
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
@@ -286,7 +303,7 @@ class CrewDashboardScreen extends StatelessWidget {
               ),
               // Tombol navigasi drawer / pengaturan
               GestureDetector(
-                onTap: () => Get.toNamed(AppRoutes.crewPengaturan),
+                onTap: () => mainController.changeTab(4),
                 child: CircleAvatar(
                   radius: 20,
                   backgroundColor: Colors.white.withValues(alpha: 0.2),

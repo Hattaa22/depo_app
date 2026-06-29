@@ -80,8 +80,11 @@ class CrewController extends GetxController {
     isLoading.value = true;
     try {
       await _apiService.deleteCrew(id);
+      
+      // Hapus secara lokal agar langsung hilang dari UI tanpa menunggu reload API
+      crewList.removeWhere((c) => c.id == id);
+      
       Get.snackbar('Berhasil', 'Crew berhasil dihapus');
-      await loadCrew();
     } catch (e) {
       errorMessage.value = ApiErrorHelper.message(e);
       Get.snackbar('Error', errorMessage.value,
@@ -91,18 +94,44 @@ class CrewController extends GetxController {
     }
   }
 
-  Future<void> resetPasswordCrew(String id) async {
+  Future<Crew> getCrewDetail(String id) async {
+    try {
+      return await _apiService.getCrewById(id);
+    } catch (e) {
+      throw Exception(ApiErrorHelper.message(e));
+    }
+  }
+
+  Future<bool> resetPin(String id) async {
     isLoading.value = true;
     try {
-      // Endpoint reset password crew
-      await _apiService.updateCrew(id, {'resetPassword': true, 'pin': '1234'});
-      Get.snackbar('Berhasil', 'PIN crew berhasil direset ke 1234');
+      await _apiService.crewResetPin(id);
+      return true;
     } catch (e) {
       errorMessage.value = ApiErrorHelper.message(e);
       Get.snackbar('Error', errorMessage.value,
-          backgroundColor: Color(0xFFE63946), colorText: Color(0xFFFFFFFF));
+          backgroundColor: const Color(0xFFE63946), colorText: const Color(0xFFFFFFFF));
+      return false;
     } finally {
       isLoading.value = false;
     }
+  }
+
+  Future<bool> updateStatus(String id, bool isAktif) async {
+    isLoading.value = true;
+    try {
+      return await _apiService.crewUpdateStatus(id, isAktif);
+    } catch (e) {
+      errorMessage.value = ApiErrorHelper.message(e);
+      Get.snackbar('Error', errorMessage.value,
+          backgroundColor: const Color(0xFFE63946), colorText: const Color(0xFFFFFFFF));
+      return false;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> resetPasswordCrew(String id) async {
+    resetPin(id);
   }
 }

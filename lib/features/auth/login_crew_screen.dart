@@ -14,19 +14,31 @@ class LoginCrewScreen extends StatefulWidget {
 class _LoginCrewScreenState extends State<LoginCrewScreen> {
   static const Color _primary = Color(0xFF1392EC);
   static const Color _primaryDark = Color(0xFF0B5FA0);
-  static const int _pinLength = 4;
+  static const int _pinLength = 6;
 
+  final _noHpCtrl = TextEditingController();
   String _pin = '';
   bool _isShaking = false;
 
   final _auth = Get.find<AuthController>();
 
+  @override
+  void dispose() {
+    _noHpCtrl.dispose();
+    super.dispose();
+  }
+
   void _onLogin() {
+    if (_noHpCtrl.text.trim().isEmpty) {
+      Get.snackbar('Error', 'Nomor telepon wajib diisi',
+          backgroundColor: Colors.red.shade600, colorText: Colors.white);
+      return;
+    }
     if (_pin.length < _pinLength) {
       _triggerShake();
       return;
     }
-    _auth.loginCrew('', _pin.trim());
+    _auth.loginCrew(_noHpCtrl.text.trim(), _pin.trim());
   }
 
   void _triggerShake() {
@@ -59,6 +71,7 @@ class _LoginCrewScreenState extends State<LoginCrewScreen> {
     final isSmall = screenH < 680;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: const Color(0xFFF2F6FC),
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
@@ -139,7 +152,7 @@ class _LoginCrewScreenState extends State<LoginCrewScreen> {
                   ),
                   const SizedBox(height: 4),
                   const Text(
-                    'Masukkan PIN 4 digit Anda',
+                    'Masukkan Nomor Telepon & PIN 6 digit Anda',
                     style: TextStyle(
                         color: Color(0xFFBFDBFE),
                         fontSize: 13,
@@ -154,9 +167,36 @@ class _LoginCrewScreenState extends State<LoginCrewScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
+                  // Input No HP
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 40),
+                    child: TextField(
+                      controller: _noHpCtrl,
+                      keyboardType: TextInputType.phone,
+                      textAlign: TextAlign.center,
+                      decoration: InputDecoration(
+                        hintText: 'Nomor Telepon',
+                        hintStyle: const TextStyle(color: Color(0xFF94A3B8)),
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                        prefixIcon: const Icon(Icons.phone_android, color: _primary),
+                      ),
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  
                   // Dot indicators
                   Column(
                     children: [
+                      const SizedBox(height: 8),
                       const Text(
                         'Masukkan PIN',
                         style: TextStyle(

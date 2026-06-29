@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 /// Contoh:
 /// flutter build apk --dart-define=API_BASE_URL=https://api.domain.com/api/v1
 class ApiConfig {
-  static const String _localWifiApiUrl = 'http://192.168.1.80:8000/api/v1';
+  static const String _localWifiApiUrl = 'http://192.168.110.180:8000/api/v1';
   static const String apiBaseUrl = String.fromEnvironment('API_BASE_URL');
   static const bool allowHttpApi = bool.fromEnvironment('ALLOW_HTTP_API');
 
@@ -41,6 +41,21 @@ class ApiConfig {
   }
 
   static bool _isLocalWifiUrl(Uri uri) {
-    return uri.host == '192.168.1.80';
+    final parts = uri.host.split('.');
+    if (parts.length != 4) {
+      return uri.host == 'localhost';
+    }
+
+    final octets = parts.map(int.tryParse).toList();
+    if (octets.any((part) => part == null || part < 0 || part > 255)) {
+      return false;
+    }
+
+    final first = octets[0]!;
+    final second = octets[1]!;
+    return first == 10 ||
+        first == 127 ||
+        (first == 172 && second >= 16 && second <= 31) ||
+        (first == 192 && second == 168);
   }
 }

@@ -23,30 +23,28 @@ class DatabaseSeeder extends Seeder
         $managerId = 'manager_001';
 
         DB::table('users')->insert([
-            [
-                'id' => $crewId,
-                'role' => 'crew',
-                'username' => 'crew001',
-                'password_hash' => Hash::make('1234'),
-                'pin_hash' => Hash::make('1234'),
-                'nama' => 'Budi Santoso',
-                'no_hp' => '081234567890',
-                'alamat' => 'Jl. Crew No. 1',
-                'is_aktif' => 1,
-                'created_at' => $now,
-            ],
-            [
-                'id' => $managerId,
-                'role' => 'manager',
-                'username' => 'manager@depoair.com',
-                'email' => 'manager@depoair.com',
-                'password_hash' => Hash::make('Password123'),
-                'nama' => 'Ahmad Manager',
-                'no_hp' => '081298765432',
-                'alamat' => 'Kantor Depo',
-                'is_aktif' => 1,
-                'created_at' => $now,
-            ],
+            'id' => $crewId,
+            'role' => 'crew',
+            'email' => 'crew@depoair.com',
+            'password_hash' => Hash::make('123456'),
+            'pin_hash' => Hash::make('123456'),
+            'nama' => 'Budi Santoso',
+            'no_hp' => '081234567890',
+            'alamat' => 'Jl. Crew No. 1',
+            'is_aktif' => 1,
+            'created_at' => $now,
+        ]);
+
+        DB::table('users')->insert([
+            'id' => $managerId,
+            'role' => 'manager',
+            'email' => 'manager@depoair.com',
+            'password_hash' => Hash::make('Password123'),
+            'nama' => 'Ahmad Manager',
+            'no_hp' => '081298765432',
+            'alamat' => 'Kantor Depo',
+            'is_aktif' => 1,
+            'created_at' => $now,
         ]);
 
         $katIsi = (string) Str::uuid();

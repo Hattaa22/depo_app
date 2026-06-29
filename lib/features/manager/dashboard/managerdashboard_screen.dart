@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../controllers/analisis_controller.dart';
 import '../../../controllers/auth_controller.dart';
+import '../../../controllers/manager_main_controller.dart';
 import '../../../config/routes.dart';
 import '../../../utils/formatters.dart';
 import '../../../widgets/manager_nav_helper.dart';
@@ -14,8 +15,6 @@ class ManagerDashboardScreen extends StatefulWidget {
 }
 
 class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
-  int _selectedIndex = ManagerNavHelper.home;
-
   static const Color _primary = Color(0xFF1392EC);
   static const Color _bgLight = Color(0xFFF8FAFC);
 
@@ -31,6 +30,7 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
   Widget build(BuildContext context) {
     final auth = Get.find<AuthController>();
     final analisis = Get.find<AnalisisController>();
+    final managerMain = Get.find<ManagerMainController>();
 
     return Scaffold(
       backgroundColor: _bgLight,
@@ -105,11 +105,12 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
           ),
         );
       }),
-      bottomNavigationBar: ManagerNavHelper.bottomBar(
-        activeIndex: _selectedIndex,
-        fromDashboard: true,
-        onDashboardIndexChange: (index) =>
-            setState(() => _selectedIndex = index),
+      bottomNavigationBar: Obx(
+        () => ManagerNavHelper.bottomBar(
+          activeIndex: managerMain.selectedIndex.value,
+          fromDashboard: true,
+          onDashboardIndexChange: managerMain.changeIndex,
+        ),
       ),
     );
   }

@@ -30,6 +30,7 @@ class _PembayaranQrScreenState extends State<PembayaranQrScreen> {
 
   Timer? _pollingTimer;
   final _qrisString = ''.obs;
+  final _qrImageUrl = ''.obs;
   final _redirectUrl = ''.obs;
   final _paymentId = ''.obs;
   final _isLoading = true.obs;
@@ -56,11 +57,22 @@ class _PembayaranQrScreenState extends State<PembayaranQrScreen> {
       final payment = await _api.buatPembayaranQris(widget.transaksiId);
       _paymentId.value = payment.paymentId;
       _qrisString.value = payment.qrContent;
+      _qrImageUrl.value = payment.qrImageUrl ?? '';
       _redirectUrl.value = payment.redirectUrl ?? payment.qrContent;
       _jumlah.value = payment.jumlah;
-      _expiredAt.value = Formatters.dateTime(DateTime.parse(payment.expiresAt));
+      final expiredAt = DateTime.tryParse(payment.expiresAt);
+      _expiredAt.value = expiredAt != null
+          ? Formatters.dateTime(expiredAt)
+          : payment.expiresAt;
     } catch (e) {
       _errorMessage.value = ApiErrorHelper.message(e);
+      Get.snackbar(
+        'Gagal membuat QRIS',
+        _errorMessage.value,
+        backgroundColor: const Color(0xFFE63946),
+        colorText: Colors.white,
+        duration: const Duration(seconds: 5),
+      );
     } finally {
       _isLoading.value = false;
     }
@@ -305,11 +317,7 @@ class _PembayaranQrScreenState extends State<PembayaranQrScreen> {
                   ),
                 ],
               ),
-              child: QrImageView(
-                data: _qrisString.value,
-                size: 240,
-                backgroundColor: Colors.white,
-              ),
+              child: _buildQrisImage(),
             ),
             const SizedBox(height: 8),
             // Payment badge
@@ -379,7 +387,7 @@ class _PembayaranQrScreenState extends State<PembayaranQrScreen> {
             ),
             const SizedBox(height: 8),
             const Text(
-              'Scan QR di atas atau buka checkout Midtrans untuk menyelesaikan pembayaran QRIS sandbox.',
+              'Scan QR di atas atau buka checkout Midtrans untuk menyelesaikan simulasi pembayaran QRIS sandbox.',
               style: TextStyle(
                   fontSize: 11, color: Color(0xFF64748B), height: 1.4),
               textAlign: TextAlign.center,
@@ -402,6 +410,28 @@ class _PembayaranQrScreenState extends State<PembayaranQrScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildQrisImage() {
+    if (_qrImageUrl.value.isNotEmpty) {
+      return Image.network(
+        _qrImageUrl.value,
+        width: 240,
+        height: 240,
+        fit: BoxFit.contain,
+        errorBuilder: (_, __, ___) => QrImageView(
+          data: _qrisString.value,
+          size: 240,
+          backgroundColor: Colors.white,
+        ),
+      );
+    }
+
+    return QrImageView(
+      data: _qrisString.value,
+      size: 240,
+      backgroundColor: Colors.white,
     );
   }
 }

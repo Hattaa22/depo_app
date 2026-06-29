@@ -11,11 +11,10 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->string('id', 100)->primary();
             $table->enum('role', ['manager', 'crew']);
-            $table->string('username', 100)->unique();
             $table->string('password_hash');
             $table->string('nama', 150);
-            $table->string('email', 150)->nullable();
-            $table->string('no_hp', 20)->nullable();
+            $table->string('email', 150)->unique()->nullable();
+            $table->string('no_hp', 20)->unique()->nullable();
             $table->text('alamat')->nullable();
             $table->string('foto_url')->nullable();
             $table->string('pin_hash')->nullable();
@@ -106,7 +105,7 @@ return new class extends Migration
             $table->string('pengirim_crew_id', 100)->nullable();
             $table->decimal('total_harga', 14, 2)->default(0);
             $table->enum('metode_pembayaran', ['tunai', 'qris', 'transfer']);
-            $table->enum('status', ['pending', 'paid', 'expired', 'cancelled'])->default('pending');
+            $table->string('status', 50)->default('pending');
             $table->string('status_validasi', 50)->default('pending');
             $table->decimal('bayar', 14, 2)->nullable();
             $table->decimal('kembalian', 14, 2)->nullable();

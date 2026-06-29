@@ -189,7 +189,7 @@ class _DataCrewScreenState extends State<DataCrewScreen> {
                           return Padding(
                             padding: const EdgeInsets.only(top: 4.0),
                             child: Text(
-                                '@${c.username}\nKirim: $totalKirim | Di Depo: $totalDiDepo\nOngkir: Rp$totalOngkir'),
+                                '${c.noHp}\nKirim: $totalKirim | Di Depo: $totalDiDepo\nOngkir: Rp$totalOngkir'),
                           );
                         },
                       ),

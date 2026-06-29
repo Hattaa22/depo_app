@@ -16,6 +16,7 @@ import 'controllers/crew_main_controller.dart';
 import 'controllers/galon_controller.dart';
 import 'controllers/kasir_controller.dart';
 import 'controllers/laporan_controller.dart';
+import 'controllers/manager_main_controller.dart';
 import 'controllers/pelanggan_controller.dart';
 import 'controllers/produk_controller.dart';
 import 'controllers/pengeluaran_controller.dart';
@@ -60,6 +61,10 @@ Future<void> main() async {
   );
   Get.put<CrewMainController>(
     CrewMainController(),
+    permanent: true,
+  );
+  Get.put<ManagerMainController>(
+    ManagerMainController(),
     permanent: true,
   );
   Get.put<TransaksiController>(

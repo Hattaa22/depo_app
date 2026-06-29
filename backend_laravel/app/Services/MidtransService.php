@@ -11,11 +11,24 @@ class MidtransService
 {
     public function createSnapTransaction(array $payload): array
     {
+        Log::info('Request Snap Midtrans', [
+            'order_id' => $payload['transaction_details']['order_id'] ?? null,
+            'gross_amount' => $payload['transaction_details']['gross_amount'] ?? null,
+            'is_production' => (bool) config('services.midtrans.is_production'),
+        ]);
+
         $response = $this->client()
             ->post($this->snapBaseUrl().'/snap/v1/transactions', $payload)
             ->throw();
 
-        return $response->json();
+        $json = $response->json();
+        Log::info('Response Snap Midtrans', [
+            'order_id' => $payload['transaction_details']['order_id'] ?? null,
+            'has_token' => isset($json['token']),
+            'has_redirect_url' => isset($json['redirect_url']),
+        ]);
+
+        return $json;
     }
 
     public function getTransactionStatus(string $orderId): array
@@ -58,23 +71,7 @@ class MidtransService
         $fraudStatus = (string) ($payload['fraud_status'] ?? '');
 
         if ($transactionStatus === 'capture') {
-            return $fraudStatus === 'challenge' ? 'challenge' : 'paid';
-        }
-
-        if ($transactionStatus === 'settlement') {
-            return 'paid';
-        }
-
-        if ($transactionStatus === 'pending') {
-            return 'pending';
-        }
-
-        if ($transactionStatus === 'expire') {
-            return 'expired';
-        }
-
-        if (in_array($transactionStatus, ['cancel', 'deny', 'failure'], true)) {
-            return 'failed';
+            return $fraudStatus === 'challenge' ? 'challenge' : 'capture';
         }
 
         return $transactionStatus !== '' ? $transactionStatus : 'pending';

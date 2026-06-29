@@ -15,9 +15,19 @@ class CrewMainScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final CrewMainController controller = Get.find<CrewMainController>();
 
-    return Scaffold(
-      body: Obx(() => IndexedStack(
-            index: controller.selectedIndex.value,
+    return Obx(() {
+      final selectedIndex = controller.selectedIndex.value;
+
+      return PopScope(
+        canPop: selectedIndex == 0,
+        onPopInvokedWithResult: (didPop, _) {
+          if (!didPop && controller.selectedIndex.value != 0) {
+            controller.changeTab(0);
+          }
+        },
+        child: Scaffold(
+          body: IndexedStack(
+            index: selectedIndex,
             children: const [
               CrewDashboardScreen(),
               RiwayatTransaksiScreen(),
@@ -25,13 +35,13 @@ class CrewMainScreen extends StatelessWidget {
               PencatatanGalonScreen(),
               PengaturanScreen(),
             ],
-          )),
-      bottomNavigationBar: Obx(() => BottomBar(
-            initialIndex: controller.selectedIndex.value,
-            onTabChanged: (index) {
-              controller.changeTab(index);
-            },
-          )),
-    );
+          ),
+          bottomNavigationBar: BottomBar(
+            initialIndex: selectedIndex,
+            onTabChanged: controller.changeTab,
+          ),
+        ),
+      );
+    });
   }
 }

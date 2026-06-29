@@ -32,10 +32,10 @@ class _RiwayatTransaksiScreenState extends State<RiwayatTransaksiScreen> {
   @override
   void initState() {
     super.initState();
-    // Load data transaksi khusus crew yang login
-    final transaksi = Get.find<TransaksiController>();
-    final crewId = Get.find<AuthController>().userData['id']?.toString();
-    transaksi.loadTransaksi(crewId: crewId);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _loadTransaksiForSelectedFilter();
+    });
     _searchController.addListener(() {
       setState(() {});
     });
@@ -55,20 +55,12 @@ class _RiwayatTransaksiScreenState extends State<RiwayatTransaksiScreen> {
     );
     if (picked == null) return;
 
-    final transaksi = Get.find<TransaksiController>();
-    final crewId = Get.find<AuthController>().userData['id']?.toString();
-    final startStr = Formatters.dateOnly(picked.start);
-    final endStr = Formatters.dateOnly(picked.end);
-    await transaksi.loadTransaksi(
-      crewId: crewId,
-      tanggalMulai: startStr,
-      tanggalAkhir: endStr,
-    );
     if (!mounted) return;
     setState(() {
       _rentangKustom = picked;
       _selectedFilterIndex = 3;
     });
+    await _loadTransaksiForSelectedFilter();
   }
 
   void _onFilterChipTap(int index) {
@@ -76,10 +68,36 @@ class _RiwayatTransaksiScreenState extends State<RiwayatTransaksiScreen> {
       _selectedFilterIndex = index;
       if (index != 3) _rentangKustom = null;
     });
-    if (index != 3) {
-      final crewId = Get.find<AuthController>().userData['id']?.toString();
-      Get.find<TransaksiController>().loadTransaksi(crewId: crewId);
+    _loadTransaksiForSelectedFilter();
+  }
+
+  Future<void> _loadTransaksiForSelectedFilter() {
+    final crewId = Get.find<AuthController>().userData['id']?.toString();
+    final now = DateTime.now();
+    final todayStart = DateTime(now.year, now.month, now.day);
+    DateTime? start;
+    DateTime? end;
+
+    if (_rentangKustom != null) {
+      start = _rentangKustom!.start;
+      end = _rentangKustom!.end;
+    } else if (_selectedFilterIndex == 0) {
+      start = todayStart;
+      end = todayStart;
+    } else if (_selectedFilterIndex == 1) {
+      final yesterdayStart = todayStart.subtract(const Duration(days: 1));
+      start = yesterdayStart;
+      end = yesterdayStart;
+    } else if (_selectedFilterIndex == 2) {
+      start = todayStart.subtract(const Duration(days: 7));
+      end = todayStart;
     }
+
+    return Get.find<TransaksiController>().loadTransaksi(
+      crewId: crewId,
+      tanggalMulai: start != null ? Formatters.dateOnly(start) : null,
+      tanggalAkhir: end != null ? Formatters.dateOnly(end) : null,
+    );
   }
 
   @override
@@ -93,11 +111,7 @@ class _RiwayatTransaksiScreenState extends State<RiwayatTransaksiScreen> {
         children: [
           RefreshIndicator(
             color: _primary,
-            onRefresh: () {
-              final crewId =
-                  Get.find<AuthController>().userData['id']?.toString();
-              return transaksi.loadTransaksi(crewId: crewId);
-            },
+            onRefresh: _loadTransaksiForSelectedFilter,
             child: CustomScrollView(
               slivers: [
                 // ── HEADER ──────────────────────────────────────────────
@@ -255,17 +269,18 @@ class _RiwayatTransaksiScreenState extends State<RiwayatTransaksiScreen> {
                         .toList();
                   } else if (_selectedFilterIndex == 0) {
                     list = list
-                        .where((tx) => tx.createdAt.isAfter(todayStart))
+                        .where((tx) => !tx.createdAt.isBefore(todayStart))
                         .toList();
                   } else if (_selectedFilterIndex == 1) {
                     list = list
                         .where((tx) =>
-                            tx.createdAt.isAfter(yesterdayStart) &&
+                            !tx.createdAt.isBefore(yesterdayStart) &&
                             tx.createdAt.isBefore(todayStart))
                         .toList();
                   } else if (_selectedFilterIndex == 2) {
                     list = list
-                        .where((tx) => tx.createdAt.isAfter(sevenDaysAgoStart))
+                        .where(
+                            (tx) => !tx.createdAt.isBefore(sevenDaysAgoStart))
                         .toList();
                   }
 

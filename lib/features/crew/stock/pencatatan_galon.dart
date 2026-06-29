@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../controllers/galon_controller.dart';
+import '../../../controllers/galon_ui_controller.dart';
 import '../../../controllers/pelanggan_controller.dart';
 import '../../../controllers/crew_main_controller.dart';
 import '../../../config/constants.dart';
@@ -18,32 +19,38 @@ class PencatatanGalonScreen extends StatefulWidget {
 class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
   static const Color _primary = Color(0xFF1392EC);
   static const Color _bgLight = Color(0xFFF8FAFC);
+  static const String _uiTag = 'crew_pencatatan_galon';
 
-  int _selectedSegment = 0; // 0 = Daftar Galon, 1 = Log Cepat (Keypad Logger)
-  String _filterValue = 'semua';
-
-  // Keypad variables
-  bool _isOut = true; // true = Pinjam (Out), false = Kembali (In)
-  String _amount = "0";
-  String? _selectedPelangganId; // ID Pelanggan yang meminjam/mengembalikan galon
-  DateTime? _selectedTanggal; // Tanggal peminjaman/pengembalian
-
+  late final GalonUiController _ui;
   final ScrollController _scrollController = ScrollController();
+
+  int get _selectedSegment => _ui.selectedSegment.value;
+  String get _filterValue => _ui.filterValue.value;
+  bool get _isOut => _ui.isOut.value;
+  String get _amount => _ui.amount.value;
+  String? get _selectedPelangganId => _ui.selectedPelangganId.value;
+  DateTime? get _selectedTanggal => _ui.selectedTanggal.value;
 
   @override
   void initState() {
     super.initState();
+    _ui = Get.put(GalonUiController(), tag: _uiTag);
     _scrollController.addListener(_onScroll);
-    final galon = Get.find<GalonController>();
-    galon.loadGalon();
-    galon.loadSummary();
-    // Muat daftar pelanggan untuk dropdown peminjam
-    Get.find<PelangganController>().loadPelanggan();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final galon = Get.find<GalonController>();
+      galon.loadGalon();
+      galon.loadSummary();
+      Get.find<PelangganController>().loadPelanggan();
+    });
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
+    if (Get.isRegistered<GalonUiController>(tag: _uiTag)) {
+      Get.delete<GalonUiController>(tag: _uiTag);
+    }
     super.dispose();
   }
 
@@ -54,35 +61,11 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
     }
   }
 
-  void _onKeypadTap(String value) {
-    setState(() {
-      if (_amount == "0") {
-        if (value != "0") {
-          _amount = value;
-        }
-      } else {
-        if (_amount.length < 5) {
-          _amount += value;
-        }
-      }
-    });
-  }
+  void _onKeypadTap(String value) => _ui.addDigit(value);
 
-  void _onBackspace() {
-    setState(() {
-      if (_amount.length > 1) {
-        _amount = _amount.substring(0, _amount.length - 1);
-      } else {
-        _amount = "0";
-      }
-    });
-  }
+  void _onBackspace() => _ui.backspace();
 
-  void _onClear() {
-    setState(() {
-      _amount = "0";
-    });
-  }
+  void _onClear() => _ui.clearAmount();
 
   Future<void> _pilihTanggal() async {
     final picked = await showDatePicker(
@@ -105,7 +88,7 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
       },
     );
     if (picked != null) {
-      setState(() => _selectedTanggal = picked);
+      _ui.setSelectedTanggal(picked);
     }
   }
 
@@ -133,14 +116,12 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
     }
 
     final ok = _isOut
-        ? await galon.pinjamGalon(val, pelangganId: _selectedPelangganId, tanggal: _selectedTanggal)
-        : await galon.kembalikanGalon(val, pelangganId: _selectedPelangganId, tanggal: _selectedTanggal);
+        ? await galon.pinjamGalon(val,
+            pelangganId: _selectedPelangganId, tanggal: _selectedTanggal)
+        : await galon.kembalikanGalon(val,
+            pelangganId: _selectedPelangganId, tanggal: _selectedTanggal);
     if (ok && mounted) {
-      setState(() {
-        _amount = '0';
-        _selectedPelangganId = null;
-        _selectedTanggal = null;
-      });
+      _ui.resetBulkForm();
     }
   }
 
@@ -151,245 +132,207 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
 
     return Scaffold(
       backgroundColor: _bgLight,
-      body: Column(
-        children: [
-          // ── HEADER ─────────────────────────────────────────────────────
-          _buildHeader(mainController),
+      body: Obx(() => Column(
+            children: [
+              // ── HEADER ─────────────────────────────────────────────────────
+              _buildHeader(mainController),
 
-          // ── MIDDLE METRICS CARD ────────────────────────────────────────
-          Transform.translate(
-            offset: const Offset(0, -32),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.04),
-                      blurRadius: 20,
-                      offset: const Offset(0, 4),
+              // ── MIDDLE METRICS CARD ────────────────────────────────────────
+              Transform.translate(
+                offset: const Offset(0, -32),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.04),
+                          blurRadius: 20,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                      border: Border.all(color: const Color(0xFFEEF2F6)),
                     ),
-                  ],
-                  border: Border.all(color: const Color(0xFFEEF2F6)),
-                ),
-                child: Obx(() {
-                  final summaryVal = galon.summary.value;
-                  return Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          decoration: const BoxDecoration(
-                            border: Border(
-                              right: BorderSide(color: Color(0xFFF1F5F9)),
-                            ),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'GALON TERSEDIA',
-                                style: TextStyle(
-                                  fontSize: 9,
-                                  fontWeight: FontWeight.w800,
-                                  color: Color(0xFF94A3B8),
-                                  letterSpacing: 1.2,
+                    child: Obx(() {
+                      final summaryVal = galon.summary.value;
+                      return Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                border: Border(
+                                  right: BorderSide(color: Color(0xFFF1F5F9)),
                                 ),
                               ),
-                              const SizedBox(height: 4),
-                              Row(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Icon(Icons.warehouse_rounded,
-                                      color: Color(0xFF10B981), size: 16),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    '${summaryVal?.tersedia ?? 0}',
-                                    style: const TextStyle(
-                                      fontSize: 20,
+                                  const Text(
+                                    'GALON TERSEDIA',
+                                    style: TextStyle(
+                                      fontSize: 9,
                                       fontWeight: FontWeight.w800,
-                                      color: Color(0xFF1E293B),
+                                      color: Color(0xFF94A3B8),
+                                      letterSpacing: 1.2,
                                     ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.warehouse_rounded,
+                                          color: Color(0xFF10B981), size: 16),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        '${summaryVal?.tersedia ?? 0}',
+                                        style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w800,
+                                          color: Color(0xFF1E293B),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Container(
-                          decoration: const BoxDecoration(
-                            border: Border(
-                              right: BorderSide(color: Color(0xFFF1F5F9)),
                             ),
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'GALON DIPINJAM',
-                                style: TextStyle(
-                                  fontSize: 9,
-                                  fontWeight: FontWeight.w800,
-                                  color: Color(0xFF94A3B8),
-                                  letterSpacing: 1.2,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Row(
-                                children: [
-                                  const Icon(Icons.group,
-                                      color: _primary, size: 16),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    '${summaryVal?.dipinjam ?? 0}',
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w800,
-                                      color: Color(0xFF1E293B),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'GALON RUSAK',
-                              style: TextStyle(
-                                fontSize: 9,
-                                fontWeight: FontWeight.w800,
-                                color: Color(0xFF94A3B8),
-                                letterSpacing: 1.2,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Row(
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Icon(Icons.broken_image_rounded,
-                                    color: Color(0xFFEF4444), size: 16),
-                                const SizedBox(width: 8),
-                                Text(
-                                  '${summaryVal?.rusak ?? 0}',
-                                  style: const TextStyle(
-                                    fontSize: 20,
+                                const Text(
+                                  'GALON DIPINJAM',
+                                  style: TextStyle(
+                                    fontSize: 9,
                                     fontWeight: FontWeight.w800,
-                                    color: Color(0xFF1E293B),
+                                    color: Color(0xFF94A3B8),
+                                    letterSpacing: 1.2,
                                   ),
+                                ),
+                                const SizedBox(height: 4),
+                                Row(
+                                  children: [
+                                    const Icon(Icons.group,
+                                        color: _primary, size: 16),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      '${summaryVal?.dipinjam ?? 0}',
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w800,
+                                        color: Color(0xFF1E293B),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  );
-                }),
+                          ),
+                        ],
+                      );
+                    }),
+                  ),
+                ),
               ),
-            ),
-          ),
 
-          // Custom Segment Toggles
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 24),
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              color: const Color(0xFFEEF2F6),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () => setState(() => _selectedSegment = 0),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      decoration: BoxDecoration(
-                        color: _selectedSegment == 0
-                            ? Colors.white
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(8),
-                        boxShadow: _selectedSegment == 0
-                            ? [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.05),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 2),
-                                )
-                              ]
-                            : null,
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        'Daftar Galon',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 13,
-                          color: _selectedSegment == 0
-                              ? const Color(0xFF1E293B)
-                              : const Color(0xFF64748B),
+              // Custom Segment Toggles
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEEF2F6),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => _ui.setSegment(0),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          decoration: BoxDecoration(
+                            color: _selectedSegment == 0
+                                ? Colors.white
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: _selectedSegment == 0
+                                ? [
+                                    BoxShadow(
+                                      color:
+                                          Colors.black.withValues(alpha: 0.05),
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 2),
+                                    )
+                                  ]
+                                : null,
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            'Daftar Galon',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 13,
+                              color: _selectedSegment == 0
+                                  ? const Color(0xFF1E293B)
+                                  : const Color(0xFF64748B),
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ),
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () => setState(() => _selectedSegment = 1),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      decoration: BoxDecoration(
-                        color: _selectedSegment == 1
-                            ? Colors.white
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(8),
-                        boxShadow: _selectedSegment == 1
-                            ? [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.05),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 2),
-                                )
-                              ]
-                            : null,
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        'Log Cepat',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 13,
-                          color: _selectedSegment == 1
-                              ? const Color(0xFF1E293B)
-                              : const Color(0xFF64748B),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => _ui.setSegment(1),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          decoration: BoxDecoration(
+                            color: _selectedSegment == 1
+                                ? Colors.white
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: _selectedSegment == 1
+                                ? [
+                                    BoxShadow(
+                                      color:
+                                          Colors.black.withValues(alpha: 0.05),
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 2),
+                                    )
+                                  ]
+                                : null,
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            'Log Cepat',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 13,
+                              color: _selectedSegment == 1
+                                  ? const Color(0xFF1E293B)
+                                  : const Color(0xFF64748B),
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
-          ),
+              ),
 
-          const SizedBox(height: 16),
+              const SizedBox(height: 16),
 
-          // ── DYNAMIC CONTENT CONTAINER ──────────────────────────────────
-          Expanded(
-            child: _selectedSegment == 0
-                ? _buildDaftarGalonTab(galon)
-                : _buildLogCepatTab(galon),
-          ),
-        ],
-      ),
+              // ── DYNAMIC CONTENT CONTAINER ──────────────────────────────────
+              Expanded(
+                child: _selectedSegment == 0
+                    ? _buildDaftarGalonTab(galon)
+                    : _buildLogCepatTab(galon),
+              ),
+            ],
+          )),
     );
   }
 
@@ -439,8 +382,8 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
                     Expanded(
                       child: ListView.builder(
                         controller: _scrollController,
-                        padding:
-                            const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 12),
                         itemCount: list.length,
                         itemBuilder: (_, i) {
                           final g = list[i];
@@ -483,9 +426,7 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
     final bool isSelected = _filterValue == value;
     return GestureDetector(
       onTap: () {
-        setState(() {
-          _filterValue = value;
-        });
+        _ui.setFilter(value);
         galon.loadGalon(status: value == 'semua' ? null : value);
       },
       child: Container(
@@ -667,7 +608,7 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
                   icon: Icons.logout_rounded,
                   activeColor: _primary,
                   bgColor: const Color(0xFFF0F9FF),
-                  onTap: () => setState(() => _isOut = true),
+                  onTap: () => _ui.setLogType(true),
                 ),
               ),
               const SizedBox(width: 16),
@@ -678,7 +619,7 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
                   icon: Icons.login_rounded,
                   activeColor: const Color(0xFF10B981),
                   bgColor: const Color(0xFFECFDF5),
-                  onTap: () => setState(() => _isOut = false),
+                  onTap: () => _ui.setLogType(false),
                 ),
               ),
             ],
@@ -998,10 +939,13 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
       Obx(() {
         final list =
             pelangganCtrl.pelangganList.where((p) => p.isAktif).toList();
-        // Ensure selected ID exists in list, otherwise reset
-        if (_selectedPelangganId != null &&
-            !list.any((p) => p.id == _selectedPelangganId)) {
-          _selectedPelangganId = null;
+        final selectedId = list.any((p) => p.id == _selectedPelangganId)
+            ? _selectedPelangganId
+            : null;
+        if (selectedId != _selectedPelangganId) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _ui.setSelectedPelanggan(null);
+          });
         }
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -1009,10 +953,8 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
             color: Colors.white,
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
-              color: _selectedPelangganId != null
-                  ? _primary
-                  : const Color(0xFFE2E8F0),
-              width: _selectedPelangganId != null ? 2 : 1,
+              color: selectedId != null ? _primary : const Color(0xFFE2E8F0),
+              width: selectedId != null ? 2 : 1,
             ),
             boxShadow: [
               BoxShadow(
@@ -1025,7 +967,7 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
           child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
               isExpanded: true,
-              value: _selectedPelangganId,
+              value: selectedId,
               hint: const Text(
                 'Pilih pelanggan...',
                 style: TextStyle(fontSize: 14, color: Color(0xFF94A3B8)),
@@ -1047,7 +989,7 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
                   ),
                 );
               }).toList(),
-              onChanged: (v) => setState(() => _selectedPelangganId = v),
+              onChanged: _ui.setSelectedPelanggan,
             ),
           ),
         );
@@ -1063,92 +1005,229 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
     final jenis = 'isi'.obs;
     final pelangganCtrl = Get.find<PelangganController>();
     final selectedPelanggan = Rxn<Pelanggan>();
+    final selectedTanggal = Rxn<DateTime>(DateTime.now());
+
+    Widget modernDropdown<T>({
+      required T value,
+      required List<DropdownMenuItem<T>> items,
+      required ValueChanged<T?> onChanged,
+      required String label,
+    }) {
+      return Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFFF8FAFC),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFFE2E8F0)),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        child: DropdownButtonHideUnderline(
+          child: DropdownButton<T>(
+            isExpanded: true,
+            value: value,
+            items: items,
+            onChanged: onChanged,
+            icon: const Icon(Icons.keyboard_arrow_down_rounded,
+                color: Color(0xFF94A3B8)),
+            hint: Text(label),
+          ),
+        ),
+      );
+    }
 
     Get.defaultDialog(
       title: 'Catat Galon Baru',
-      titleStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      titleStyle: const TextStyle(
+          fontWeight: FontWeight.w800, fontSize: 18, color: Color(0xFF1E293B)),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      radius: 20,
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: const Color(0xFFE0F2FE),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: const Row(
                 children: [
-                  Icon(Icons.info_outline, size: 18, color: Color(0xFF0284C7)),
-                  SizedBox(width: 8),
+                  Icon(Icons.info_outline, size: 20, color: Color(0xFF0284C7)),
+                  SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      'Kode galon akan di-generate otomatis oleh sistem',
-                      style: TextStyle(fontSize: 12, color: Color(0xFF0284C7)),
+                      'Kode galon dibuat otomatis oleh sistem',
+                      style: TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF0284C7),
+                          fontWeight: FontWeight.w500),
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
+            const Text('Jumlah Galon',
+                style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF64748B))),
+            const SizedBox(height: 6),
             TextField(
               controller: jumlahCtrl,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Jumlah Galon',
-                hintText: 'Masukkan jumlah galon yang ditambahkan',
+              decoration: InputDecoration(
+                hintText: '1',
                 suffixText: 'galon',
+                filled: true,
+                fillColor: const Color(0xFFF8FAFC),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
+                enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               ),
             ),
             const SizedBox(height: 16),
-            Obx(() => DropdownButtonFormField<String>(
-                  initialValue: status.value,
-                  items: [
-                    DropdownMenuItem(
-                        value: AppConstants.galonTersedia,
-                        child: const Text('Tersedia')),
-                    DropdownMenuItem(
-                        value: AppConstants.galonDipinjam,
-                        child: const Text('Dipinjam')),
-                    DropdownMenuItem(
-                        value: AppConstants.galonRusak,
-                        child: const Text('Rusak')),
-                  ],
-                  onChanged: (v) => status.value = v!,
-                  decoration: const InputDecoration(labelText: 'Status'),
+            const Text('Tanggal',
+                style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF64748B))),
+            const SizedBox(height: 6),
+            Obx(() => GestureDetector(
+                  onTap: () async {
+                    final picked = await showDatePicker(
+                      context: Get.context!,
+                      initialDate: selectedTanggal.value ?? DateTime.now(),
+                      firstDate: DateTime(2020),
+                      lastDate: DateTime.now(),
+                      builder: (context, child) => Theme(
+                        data: Theme.of(context).copyWith(
+                          colorScheme: const ColorScheme.light(
+                              primary: _primary, onPrimary: Colors.white),
+                        ),
+                        child: child!,
+                      ),
+                    );
+                    if (picked != null) selectedTanggal.value = picked;
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 14),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF8FAFC),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: const Color(0xFFE2E8F0)),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.calendar_today_rounded,
+                            size: 18, color: _primary),
+                        const SizedBox(width: 12),
+                        Text(
+                          _formatTanggal(
+                              selectedTanggal.value ?? DateTime.now()),
+                          style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF1E293B)),
+                        ),
+                      ],
+                    ),
+                  ),
                 )),
             const SizedBox(height: 16),
-            Obx(() => DropdownButtonFormField<String>(
-                  initialValue: jenis.value,
-                  items: const [
-                    DropdownMenuItem(value: 'isi', child: Text('Isi')),
-                    DropdownMenuItem(value: 'kosong', child: Text('Kosong')),
-                  ],
-                  onChanged: (v) => jenis.value = v!,
-                  decoration: const InputDecoration(labelText: 'Jenis'),
-                )),
-            // Tampilkan dropdown pelanggan jika status Dipinjam
-            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Status',
+                          style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF64748B))),
+                      const SizedBox(height: 6),
+                      Obx(() => modernDropdown<String>(
+                            value: status.value,
+                            label: 'Status',
+                            items: const [
+                              DropdownMenuItem(
+                                  value: AppConstants.galonTersedia,
+                                  child: Text('Tersedia')),
+                              DropdownMenuItem(
+                                  value: AppConstants.galonDipinjam,
+                                  child: Text('Dipinjam')),
+                              DropdownMenuItem(
+                                  value: AppConstants.galonRusak,
+                                  child: Text('Rusak')),
+                            ],
+                            onChanged: (v) => status.value = v!,
+                          )),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Jenis',
+                          style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF64748B))),
+                      const SizedBox(height: 6),
+                      Obx(() => modernDropdown<String>(
+                            value: jenis.value,
+                            label: 'Jenis',
+                            items: const [
+                              DropdownMenuItem(
+                                  value: 'isi', child: Text('Isi')),
+                              DropdownMenuItem(
+                                  value: 'kosong', child: Text('Kosong')),
+                            ],
+                            onChanged: (v) => jenis.value = v!,
+                          )),
+                    ],
+                  ),
+                ),
+              ],
+            ),
             Obx(() {
               if (status.value != AppConstants.galonDipinjam) {
                 return const SizedBox.shrink();
               }
               final list =
                   pelangganCtrl.pelangganList.where((p) => p.isAktif).toList();
-              return DropdownButtonFormField<Pelanggan>(
-                initialValue: selectedPelanggan.value,
-                isExpanded: true,
-                hint: const Text('Pilih pelanggan...'),
-                items: list.map((p) {
-                  return DropdownMenuItem<Pelanggan>(
-                    value: p,
-                    child: Text(p.nama, overflow: TextOverflow.ellipsis),
-                  );
-                }).toList(),
-                onChanged: (v) => selectedPelanggan.value = v,
-                decoration:
-                    const InputDecoration(labelText: 'Pelanggan Peminjam'),
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 16),
+                  const Text('Pelanggan Peminjam',
+                      style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF64748B))),
+                  const SizedBox(height: 6),
+                  modernDropdown<Pelanggan?>(
+                    value: selectedPelanggan.value,
+                    label: 'Pilih pelanggan...',
+                    items: list
+                        .map((p) => DropdownMenuItem<Pelanggan>(
+                            value: p,
+                            child:
+                                Text(p.nama, overflow: TextOverflow.ellipsis)))
+                        .toList(),
+                    onChanged: (v) => selectedPelanggan.value = v,
+                  ),
+                ],
               );
             }),
           ],
@@ -1156,22 +1235,29 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
       ),
       cancel: TextButton(
         onPressed: () => Get.back(),
-        child: const Text('Batal', style: TextStyle(color: Color(0xFF64748B))),
+        child: const Text('Batal',
+            style: TextStyle(
+                color: Color(0xFF64748B), fontWeight: FontWeight.w600)),
       ),
       confirm: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: _primary,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          elevation: 0,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
         onPressed: () async {
           final jumlah = int.tryParse(jumlahCtrl.text) ?? 0;
           if (jumlah <= 0) {
-            Get.snackbar('Error', 'Jumlah galon harus lebih dari 0');
+            Get.snackbar('Peringatan', 'Jumlah galon harus lebih dari 0',
+                backgroundColor: Colors.orange, colorText: Colors.white);
             return;
           }
           if (status.value == AppConstants.galonDipinjam &&
               selectedPelanggan.value == null) {
-            Get.snackbar('Error', 'Pilih pelanggan yang meminjam');
+            Get.snackbar('Peringatan', 'Pilih pelanggan yang meminjam',
+                backgroundColor: Colors.orange, colorText: Colors.white);
             return;
           }
           Get.back();
@@ -1179,6 +1265,8 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
             'jenis': jenis.value,
             'status': status.value,
             'jumlah': jumlah,
+            'tanggal': selectedTanggal.value
+                ?.toIso8601String(), // Optional: kirim tanggal ke API
             if (selectedPelanggan.value != null)
               'pelangganId': selectedPelanggan.value!.id,
           });

@@ -32,7 +32,7 @@ class PengaturanScreen extends StatelessWidget {
                     offset: const Offset(0, -32),
                     child: Obx(() {
                       final nama = auth.userData['nama'] ?? 'Crew';
-                      final username = auth.userData['username'] ?? 'crew';
+                      final noHp = auth.userData['noHp'] ?? '-';
 
                       return Column(
                         children: [
@@ -92,7 +92,7 @@ class PengaturanScreen extends StatelessWidget {
                                       ),
                                       const SizedBox(height: 2),
                                       Text(
-                                        '@$username',
+                                        noHp,
                                         style: const TextStyle(
                                           fontSize: 13,
                                           fontWeight: FontWeight.w600,
@@ -361,7 +361,7 @@ class PengaturanScreen extends StatelessWidget {
             obscureText: true,
             keyboardType: TextInputType.number,
             maxLength: 6,
-            decoration: const InputDecoration(labelText: 'PIN Baru (min 4 digit)'),
+            decoration: const InputDecoration(labelText: 'PIN Baru (6 digit)'),
           ),
         ],
       ),
@@ -383,8 +383,8 @@ class PengaturanScreen extends StatelessWidget {
               Get.snackbar('Error', 'PIN tidak boleh kosong', backgroundColor: Colors.red, colorText: Colors.white);
               return;
             }
-            if (newPin.length < 4) {
-              Get.snackbar('Error', 'PIN minimal 4 digit', backgroundColor: Colors.red, colorText: Colors.white);
+            if (newPin.length != 6) {
+              Get.snackbar('Error', 'PIN harus 6 digit', backgroundColor: Colors.red, colorText: Colors.white);
               return;
             }
             final success = await Get.find<AuthController>().changePin(oldPin, newPin);

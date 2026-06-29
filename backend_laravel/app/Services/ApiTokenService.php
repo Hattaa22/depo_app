@@ -11,7 +11,7 @@ class ApiTokenService
         return $this->sign([
             's' => $user['id'],
             'r' => $user['role'],
-            'u' => $user['username'],
+            'n' => $user['nama'],
             't' => 'access',
             'e' => now()->addHours(8)->timestamp,
         ]);
@@ -49,7 +49,7 @@ class ApiTokenService
         $normalized = [
             'sub' => $data['sub'] ?? $data['s'] ?? null,
             'role' => $data['role'] ?? $data['r'] ?? null,
-            'username' => $data['username'] ?? $data['u'] ?? null,
+            'nama' => $data['nama'] ?? $data['n'] ?? null,
             'type' => $data['type'] ?? $data['t'] ?? null,
             'exp' => $data['exp'] ?? $data['e'] ?? 0,
         ];

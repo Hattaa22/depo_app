@@ -49,12 +49,12 @@ class AuthController extends GetxController {
     return ok;
   }
 
-  Future<void> loginCrew(String username, String password) async {
+  Future<void> loginCrew(String noHp, String password) async {
     isLoading.value = true;
     errorMessage.value = '';
     try {
       if (!await _pastikanServerOnline()) return;
-      final response = await _authService.loginCrew(username, password);
+      final response = await _authService.loginCrew(noHp, password);
       token.value = response.accessToken;
       role.value = response.role;
       userData.value = response.userData;

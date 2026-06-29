@@ -67,6 +67,6 @@ class AppConstants {
   // Test Credentials (untuk development & testing)
   static const String testManagerEmail = 'manager@depoair.com';
   static const String testManagerPassword = 'Password123';
-  static const String testCrewUsername = 'crew001';
-  static const String testCrewPassword = 'Password123';
+  static const String testCrewUsername = '081234567890';
+  static const String testCrewPassword = '123456';
 }

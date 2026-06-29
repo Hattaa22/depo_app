@@ -14,7 +14,12 @@ class ApiErrorHelper {
           final code = error.response?.statusCode;
           final data = error.response?.data;
           if (data is Map && data['message'] != null) {
-            return data['message'].toString();
+            final message = data['message'].toString();
+            final detail = data['error']?.toString();
+            if (detail != null && detail.isNotEmpty && detail != message) {
+              return '$message\n$detail';
+            }
+            return message;
           }
           if (code == 502 || code == 503 || code == 504) {
             return 'Server API aktif, tetapi gagal menghubungi layanan eksternal. Coba lagi atau cek konfigurasi server.';

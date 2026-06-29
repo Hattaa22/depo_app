@@ -11,11 +11,11 @@ class AuthService {
 
   AuthService(this._apiService, this._localStorage);
 
-  Future<AuthResponse> loginCrew(String username, String password) async {
+  Future<AuthResponse> loginCrew(String noHp, String password) async {
     // Mock authentication untuk development
     if (AppConstants.useMockAuth) {
       final finalUsername =
-          username.trim().isEmpty ? 'crew001' : username.trim();
+          noHp.trim().isEmpty ? 'crew001' : noHp.trim();
       final mockResponse = AuthResponse(
         accessToken:
             'mock_access_token_crew_${DateTime.now().millisecondsSinceEpoch}',
@@ -33,17 +33,17 @@ class AuthService {
     }
 
     final response = await _apiService.loginCrew(
-      LoginRequest(username: username, password: password),
+      LoginRequest(identifier: noHp, password: password, noHp: noHp),
     );
     await _saveSession(response);
     return response;
   }
 
-  Future<AuthResponse> loginManager(String username, String password) async {
+  Future<AuthResponse> loginManager(String email, String password) async {
     // Mock authentication untuk development
     if (AppConstants.useMockAuth) {
       final finalEmail =
-          username.trim().isEmpty ? 'manager@depoair.com' : username.trim();
+          email.trim().isEmpty ? 'manager@depoair.com' : email.trim();
       final displayName =
           finalEmail.contains('@') ? finalEmail.split('@')[0] : finalEmail;
       final mockResponse = AuthResponse(
@@ -65,7 +65,7 @@ class AuthService {
     }
 
     final response = await _apiService.loginManager(
-      LoginRequest(username: username, password: password),
+      LoginRequest(identifier: email, password: password),
     );
     await _saveSession(response);
     return response;

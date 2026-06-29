@@ -116,9 +116,7 @@ class CrewNavigationDrawer extends StatelessWidget {
         if (isAtMainShell) {
           mainController.changeTab(targetTab);
         } else {
-          // If we are on another screen, navigate back to CrewMainScreen and set the tab
-          mainController.changeTab(targetTab);
-          Get.offAllNamed(AppRoutes.crewDashboard);
+          Get.offAllNamed(targetRoute);
         }
       },
     );

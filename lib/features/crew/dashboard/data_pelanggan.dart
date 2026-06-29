@@ -4,20 +4,39 @@ import '../../../controllers/pelanggan_controller.dart';
 import '../../../config/routes.dart';
 import '../../../models/pelanggan.dart';
 
-class CrewDataPelangganScreen extends StatelessWidget {
+class CrewDataPelangganScreen extends StatefulWidget {
   const CrewDataPelangganScreen({super.key});
 
+  @override
+  State<CrewDataPelangganScreen> createState() =>
+      _CrewDataPelangganScreenState();
+}
+
+class _CrewDataPelangganScreenState extends State<CrewDataPelangganScreen> {
   static const Color _primary = Color(0xFF1392EC);
   static const Color _bgLight = Color(0xFFF2F2F7);
+
+  final TextEditingController searchCtrl = TextEditingController();
+  final searchQuery = ''.obs;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      Get.find<PelangganController>().loadPelanggan();
+    });
+  }
+
+  @override
+  void dispose() {
+    searchCtrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final pelanggan = Get.find<PelangganController>();
-    final searchCtrl = TextEditingController();
-    final searchQuery = ''.obs;
-
-    // Pastikan memuat pelanggan terbaru saat masuk halaman
-    pelanggan.loadPelanggan();
 
     return Scaffold(
       backgroundColor: _bgLight,
