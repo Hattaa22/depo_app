@@ -71,156 +71,189 @@ class _AnalisisKeuanganScreenState extends State<AnalisisKeuanganScreen> {
                 );
               }
 
+              // Helper function to safely parse num
+              num safeParseNum(dynamic value) {
+                if (value == null) return 0;
+                if (value is num) return value;
+                if (value is String) {
+                  final parsed = num.tryParse(value);
+                  return parsed ?? 0;
+                }
+                return 0;
+              }
+
               final activePeriod = periode.value;
-              final periodData = data[activePeriod] ?? {
-                'totalPendapatan': 0,
-                'totalTransaksi': 0,
-                'totalPengeluaran': 0,
-                'pendapatanBersih': 0,
-              };
+              final periodData = data[activePeriod] ??
+                  {
+                    'totalPendapatan': 0,
+                    'totalTransaksi': 0,
+                    'totalPengeluaran': 0,
+                    'pendapatanBersih': 0,
+                  };
 
               final totalPendapatan =
-                  (periodData['totalPendapatan'] as num? ?? 0).toDouble();
+                  safeParseNum(periodData['totalPendapatan']).toDouble();
               final totalPengeluaran =
-                  (periodData['totalPengeluaran'] as num? ?? 0).toDouble();
+                  safeParseNum(periodData['totalPengeluaran']).toDouble();
               final pendapatanBersih =
-                  (periodData['pendapatanBersih'] as num? ?? 0).toDouble();
+                  safeParseNum(periodData['pendapatanBersih']).toDouble();
               final totalTransaksi =
-                  (periodData['totalTransaksi'] as num? ?? 0);
+                  safeParseNum(periodData['totalTransaksi']).toInt();
+              final totalPengiriman =
+                  safeParseNum(periodData['totalPengiriman']).toInt();
               final galonBersih =
-                  (data['galonBersih'] ?? data['tersedia'] ?? 0) as num;
-              final totalPelanggan = (data['totalPelanggan'] ?? 0) as num;
-              final breakdownList = data['breakdown']?[activePeriod] as List<dynamic>?;
+                  safeParseNum(data['galonBersih'] ?? data['tersedia'] ?? 0);
+              final totalPelanggan = safeParseNum(data['totalPelanggan'] ?? 0);
+              final breakdownList =
+                  data['breakdown']?[activePeriod] as List<dynamic>?;
 
-              final expenseRatio = totalPendapatan > 0 ? (totalPengeluaran / totalPendapatan).clamp(0.0, 1.0) : 0.0;
-              final netRatio = totalPendapatan > 0 ? (pendapatanBersih / totalPendapatan).clamp(0.0, 1.0) : 0.0;
+              final expenseRatio = totalPendapatan > 0
+                  ? (totalPengeluaran / totalPendapatan).clamp(0.0, 1.0)
+                  : 0.0;
+              final netRatio = totalPendapatan > 0
+                  ? (pendapatanBersih / totalPendapatan).clamp(0.0, 1.0)
+                  : 0.0;
 
-              return SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // ── Donut-style Metric Cards ─────────────────────────────
-                    const Text(
-                      'Ringkasan Keuangan',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF1E293B),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Donut Row
-                    Row(
+              return RefreshIndicator(
+                  onRefresh: analisis.loadDashboard,
+                  color: _primary,
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: _buildDonutCard(
-                            label: 'Pendapatan',
-                            value: Formatters.currency(totalPendapatan),
-                            percent: 1.0,
+                        // ── Donut-style Metric Cards ─────────────────────────────
+                        const Text(
+                          'Ringkasan Keuangan',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF1E293B),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Donut Row
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildDonutCard(
+                                label: 'Pendapatan',
+                                value: Formatters.currency(totalPendapatan),
+                                percent: 1.0,
+                                color: _primary,
+                                icon: Icons.payments_rounded,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _buildDonutCard(
+                                label: 'Pengeluaran',
+                                value: Formatters.currency(totalPengeluaran),
+                                percent: expenseRatio,
+                                color: const Color(0xFFEF4444),
+                                icon: Icons.outbox_rounded,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildDonutCard(
+                                label: 'Pendapatan Bersih',
+                                value: Formatters.currency(pendapatanBersih),
+                                percent: netRatio,
+                                color: const Color(0xFF10B981),
+                                icon: Icons.account_balance_wallet_rounded,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _buildDonutCard(
+                                label: 'Transaksi',
+                                value: '$totalTransaksi',
+                                percent: 0.58,
+                                color: const Color(0xFF8B5CF6),
+                                icon: Icons.receipt_long_rounded,
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 28),
+
+                        // ── Detail List ───────────────────────────────────────────
+                        const Text(
+                          'Detail Operasional',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF1E293B),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+
+                        _buildDetailCard([
+                          _DetailItem(
+                            icon: Icons.inventory_2_rounded,
+                            label: 'Galon Bersih Tersedia',
+                            value: '$galonBersih pcs',
                             color: _primary,
-                            icon: Icons.payments_rounded,
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _buildDonutCard(
-                            label: 'Pengeluaran',
-                            value: Formatters.currency(totalPengeluaran),
-                            percent: expenseRatio,
-                            color: const Color(0xFFEF4444),
-                            icon: Icons.outbox_rounded,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildDonutCard(
-                            label: 'Pendapatan Bersih',
-                            value: Formatters.currency(pendapatanBersih),
-                            percent: netRatio,
-                            color: const Color(0xFF10B981),
-                            icon: Icons.account_balance_wallet_rounded,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _buildDonutCard(
-                            label: 'Transaksi',
-                            value: '$totalTransaksi',
-                            percent: 0.58,
-                            color: const Color(0xFF8B5CF6),
+                          _DetailItem(
                             icon: Icons.receipt_long_rounded,
+                            label: activePeriod == 'harian'
+                                ? 'Total Transaksi Hari Ini'
+                                : activePeriod == 'bulanan'
+                                    ? 'Total Transaksi Bulan Ini'
+                                    : 'Total Transaksi Keseluruhan',
+                            value: '$totalTransaksi',
+                            color: const Color(0xFF8B5CF6),
+                          ),
+                          _DetailItem(
+                            icon: Icons.attach_money_rounded,
+                            label: activePeriod == 'harian'
+                                ? 'Pendapatan Bersih Hari Ini'
+                                : activePeriod == 'bulanan'
+                                    ? 'Pendapatan Bersih Bulan Ini'
+                                    : 'Pendapatan Bersih Keseluruhan',
+                            value: Formatters.currency(pendapatanBersih),
+                            color: const Color(0xFF10B981),
+                          ),
+                          _DetailItem(
+                            icon: Icons.people_rounded,
+                            label: 'Total Pelanggan Terdaftar',
+                            value: '$totalPelanggan orang',
+                            color: const Color(0xFFF59E0B),
+                          ),
+                          _DetailItem(
+                            icon: Icons.local_shipping_rounded,
+                            label: activePeriod == 'harian'
+                                ? 'Total Pengiriman Hari Ini'
+                                : activePeriod == 'bulanan'
+                                    ? 'Total Pengiriman Bulan Ini'
+                                    : 'Total Pengiriman Keseluruhan',
+                            value: '$totalPengiriman pesanan',
+                            color: const Color(0xFF3B82F6),
+                          ),
+                        ]),
+                        const SizedBox(height: 28),
+                        const Text(
+                          'Analisis Per Kategori',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF1E293B),
                           ),
                         ),
+                        const SizedBox(height: 12),
+                        _buildCategoryBreakdown(breakdownList),
                       ],
                     ),
-
-                    const SizedBox(height: 28),
-
-                    // ── Detail List ───────────────────────────────────────────
-                    const Text(
-                      'Detail Operasional',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF1E293B),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-
-                    _buildDetailCard([
-                      _DetailItem(
-                        icon: Icons.inventory_2_rounded,
-                        label: 'Galon Bersih Tersedia',
-                        value: '$galonBersih pcs',
-                        color: _primary,
-                      ),
-                      _DetailItem(
-                        icon: Icons.receipt_long_rounded,
-                        label: activePeriod == 'harian'
-                            ? 'Total Transaksi Hari Ini'
-                            : activePeriod == 'bulanan'
-                                ? 'Total Transaksi Bulan Ini'
-                                : 'Total Transaksi Keseluruhan',
-                        value: '$totalTransaksi',
-                        color: const Color(0xFF8B5CF6),
-                      ),
-                      _DetailItem(
-                        icon: Icons.attach_money_rounded,
-                        label: activePeriod == 'harian'
-                            ? 'Pendapatan Bersih Hari Ini'
-                            : activePeriod == 'bulanan'
-                                ? 'Pendapatan Bersih Bulan Ini'
-                                : 'Pendapatan Bersih Keseluruhan',
-                        value: Formatters.currency(pendapatanBersih),
-                        color: const Color(0xFF10B981),
-                      ),
-                      _DetailItem(
-                        icon: Icons.people_rounded,
-                        label: 'Total Pelanggan Terdaftar',
-                        value: '$totalPelanggan orang',
-                        color: const Color(0xFFF59E0B),
-                      ),
-                    ]),
-                    const SizedBox(height: 28),
-                    const Text(
-                      'Analisis Per Kategori',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF1E293B),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildCategoryBreakdown(breakdownList),
-                  ],
-                ),
-              );
+                  ));
             }),
           ),
         ],
@@ -282,8 +315,7 @@ class _AnalisisKeuanganScreenState extends State<AnalisisKeuanganScreen> {
                     ),
                     Text(
                       'Ringkasan performa finansial',
-                      style: TextStyle(
-                          color: Color(0xFFBFDBFE), fontSize: 12),
+                      style: TextStyle(color: Color(0xFFBFDBFE), fontSize: 12),
                     ),
                   ],
                 ),
@@ -293,7 +325,7 @@ class _AnalisisKeuanganScreenState extends State<AnalisisKeuanganScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.1),
+                    color: Colors.white.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(Icons.refresh_rounded,
@@ -308,7 +340,7 @@ class _AnalisisKeuanganScreenState extends State<AnalisisKeuanganScreen> {
           Obx(() => Container(
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.15),
+                  color: Colors.white.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Row(
@@ -326,12 +358,9 @@ class _AnalisisKeuanganScreenState extends State<AnalisisKeuanganScreen> {
                         },
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
-                          padding:
-                              const EdgeInsets.symmetric(vertical: 10),
+                          padding: const EdgeInsets.symmetric(vertical: 10),
                           decoration: BoxDecoration(
-                            color: isActive
-                                ? Colors.white
-                                : Colors.transparent,
+                            color: isActive ? Colors.white : Colors.transparent,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           alignment: Alignment.center,
@@ -342,7 +371,7 @@ class _AnalisisKeuanganScreenState extends State<AnalisisKeuanganScreen> {
                               fontWeight: FontWeight.w700,
                               color: isActive
                                   ? _primary
-                                  : Colors.white.withOpacity(0.8),
+                                  : Colors.white.withValues(alpha: 0.8),
                             ),
                           ),
                         ),
@@ -372,7 +401,7 @@ class _AnalisisKeuanganScreenState extends State<AnalisisKeuanganScreen> {
         border: Border.all(color: const Color(0xFFF1F5F9)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -387,7 +416,7 @@ class _AnalisisKeuanganScreenState extends State<AnalisisKeuanganScreen> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(icon, color: color, size: 18),
@@ -444,7 +473,7 @@ class _AnalisisKeuanganScreenState extends State<AnalisisKeuanganScreen> {
         border: Border.all(color: const Color(0xFFF1F5F9)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -465,11 +494,10 @@ class _AnalisisKeuanganScreenState extends State<AnalisisKeuanganScreen> {
                       width: 38,
                       height: 38,
                       decoration: BoxDecoration(
-                        color: item.color.withOpacity(0.1),
+                        color: item.color.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child:
-                          Icon(item.icon, color: item.color, size: 20),
+                      child: Icon(item.icon, color: item.color, size: 20),
                     ),
                     const SizedBox(width: 14),
                     Expanded(
@@ -520,6 +548,17 @@ class _AnalisisKeuanganScreenState extends State<AnalisisKeuanganScreen> {
       );
     }
 
+    // Helper function to safely parse num for category items
+    num safeParseNumCategory(dynamic value) {
+      if (value == null) return 0;
+      if (value is num) return value;
+      if (value is String) {
+        final parsed = num.tryParse(value);
+        return parsed ?? 0;
+      }
+      return 0;
+    }
+
     final Map<String, IconData> iconMap = {
       'water_drop': Icons.water_drop_rounded,
       'inventory_2': Icons.inventory_2_rounded,
@@ -544,7 +583,7 @@ class _AnalisisKeuanganScreenState extends State<AnalisisKeuanganScreen> {
         border: Border.all(color: const Color(0xFFF1F5F9)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -557,23 +596,25 @@ class _AnalisisKeuanganScreenState extends State<AnalisisKeuanganScreen> {
           final String nama = item['nama'] ?? '';
           final String tipe = item['tipe'] ?? 'pemasukan';
           final String? ikon = item['ikon'];
-          final double total = (item['total'] ?? 0).toDouble();
+          final double total = safeParseNumCategory(item['total']).toDouble();
 
           final isPemasukan = tipe == 'pemasukan';
-          final color = isPemasukan ? const Color(0xFF10B981) : const Color(0xFFEF4444);
+          final color =
+              isPemasukan ? const Color(0xFF10B981) : const Color(0xFFEF4444);
           final iconData = iconMap[ikon] ?? Icons.label_rounded;
 
           return Column(
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 child: Row(
                   children: [
                     Container(
                       width: 38,
                       height: 38,
                       decoration: BoxDecoration(
-                        color: color.withOpacity(0.1),
+                        color: color.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Icon(iconData, color: color, size: 20),
@@ -597,7 +638,9 @@ class _AnalisisKeuanganScreenState extends State<AnalisisKeuanganScreen> {
                             style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w700,
-                              color: isPemasukan ? const Color(0xFF059669) : const Color(0xFFDC2626),
+                              color: isPemasukan
+                                  ? const Color(0xFF059669)
+                                  : const Color(0xFFDC2626),
                             ),
                           ),
                         ],
@@ -608,9 +651,11 @@ class _AnalisisKeuanganScreenState extends State<AnalisisKeuanganScreen> {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
-                        color: total == 0 
+                        color: total == 0
                             ? const Color(0xFF94A3B8)
-                            : (isPemasukan ? const Color(0xFF10B981) : const Color(0xFFEF4444)),
+                            : (isPemasukan
+                                ? const Color(0xFF10B981)
+                                : const Color(0xFFEF4444)),
                       ),
                     ),
                   ],
@@ -645,7 +690,7 @@ class _DonutPainter extends CustomPainter {
       2 * math.pi,
       false,
       Paint()
-        ..color = color.withOpacity(0.1)
+        ..color = color.withValues(alpha: 0.1)
         ..strokeWidth = strokeWidth
         ..style = PaintingStyle.stroke
         ..strokeCap = StrokeCap.round,

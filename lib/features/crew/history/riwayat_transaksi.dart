@@ -6,6 +6,7 @@ import '../../../controllers/crew_main_controller.dart';
 import '../../../models/transaksi.dart';
 import '../../../utils/formatters.dart';
 import '../../../widgets/modern_date_range_sheet.dart';
+import '../../../widgets/qr_code_widget.dart';
 
 class RiwayatTransaksiScreen extends StatefulWidget {
   const RiwayatTransaksiScreen({super.key});
@@ -20,7 +21,12 @@ class _RiwayatTransaksiScreenState extends State<RiwayatTransaksiScreen> {
 
   final TextEditingController _searchController = TextEditingController();
   int _selectedFilterIndex = 0;
-  final List<String> _filters = ['Hari Ini', 'Kemarin', '7 Hari Terakhir', 'Semua'];
+  final List<String> _filters = [
+    'Hari Ini',
+    'Kemarin',
+    '7 Hari Terakhir',
+    'Semua'
+  ];
   DateTimeRange? _rentangKustom;
 
   @override
@@ -88,7 +94,8 @@ class _RiwayatTransaksiScreenState extends State<RiwayatTransaksiScreen> {
           RefreshIndicator(
             color: _primary,
             onRefresh: () {
-              final crewId = Get.find<AuthController>().userData['id']?.toString();
+              final crewId =
+                  Get.find<AuthController>().userData['id']?.toString();
               return transaksi.loadTransaksi(crewId: crewId);
             },
             child: CustomScrollView(
@@ -115,24 +122,28 @@ class _RiwayatTransaksiScreenState extends State<RiwayatTransaksiScreen> {
                             onTap: () => _onFilterChipTap(index),
                             child: Container(
                               alignment: Alignment.center,
-                              padding: const EdgeInsets.symmetric(horizontal: 24),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 24),
                               decoration: BoxDecoration(
                                 color: isSelected ? _primary : Colors.white,
                                 borderRadius: BorderRadius.circular(999),
                                 border: isSelected
                                     ? null
-                                    : Border.all(color: const Color(0xFFE2E8F0)),
+                                    : Border.all(
+                                        color: const Color(0xFFE2E8F0)),
                                 boxShadow: isSelected
                                     ? [
                                         BoxShadow(
-                                          color: _primary.withValues(alpha: 0.3),
+                                          color:
+                                              _primary.withValues(alpha: 0.3),
                                           blurRadius: 8,
                                           offset: const Offset(0, 4),
                                         )
                                       ]
                                     : [
                                         BoxShadow(
-                                          color: Colors.black.withValues(alpha: 0.02),
+                                          color: Colors.black
+                                              .withValues(alpha: 0.02),
                                           blurRadius: 4,
                                         )
                                       ],
@@ -142,7 +153,9 @@ class _RiwayatTransaksiScreenState extends State<RiwayatTransaksiScreen> {
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
-                                  color: isSelected ? Colors.white : const Color(0xFF475569),
+                                  color: isSelected
+                                      ? Colors.white
+                                      : const Color(0xFF475569),
                                 ),
                               ),
                             ),
@@ -207,15 +220,19 @@ class _RiwayatTransaksiScreenState extends State<RiwayatTransaksiScreen> {
                       final name = (tx.pelanggan?.nama ?? '').toLowerCase();
                       final code = (tx.nomorTransaksi).toLowerCase();
                       final id = tx.id.toLowerCase();
-                      return name.contains(query) || code.contains(query) || id.contains(query);
+                      return name.contains(query) ||
+                          code.contains(query) ||
+                          id.contains(query);
                     }).toList();
                   }
 
                   // Filter by Date Range Chip
                   final now = DateTime.now();
                   final todayStart = DateTime(now.year, now.month, now.day);
-                  final yesterdayStart = todayStart.subtract(const Duration(days: 1));
-                  final sevenDaysAgoStart = todayStart.subtract(const Duration(days: 7));
+                  final yesterdayStart =
+                      todayStart.subtract(const Duration(days: 1));
+                  final sevenDaysAgoStart =
+                      todayStart.subtract(const Duration(days: 7));
 
                   if (_rentangKustom != null) {
                     final start = DateTime(
@@ -237,12 +254,19 @@ class _RiwayatTransaksiScreenState extends State<RiwayatTransaksiScreen> {
                             !tx.createdAt.isAfter(end))
                         .toList();
                   } else if (_selectedFilterIndex == 0) {
-                    list = list.where((tx) => tx.createdAt.isAfter(todayStart)).toList();
+                    list = list
+                        .where((tx) => tx.createdAt.isAfter(todayStart))
+                        .toList();
                   } else if (_selectedFilterIndex == 1) {
-                    list = list.where((tx) =>
-                        tx.createdAt.isAfter(yesterdayStart) && tx.createdAt.isBefore(todayStart)).toList();
+                    list = list
+                        .where((tx) =>
+                            tx.createdAt.isAfter(yesterdayStart) &&
+                            tx.createdAt.isBefore(todayStart))
+                        .toList();
                   } else if (_selectedFilterIndex == 2) {
-                    list = list.where((tx) => tx.createdAt.isAfter(sevenDaysAgoStart)).toList();
+                    list = list
+                        .where((tx) => tx.createdAt.isAfter(sevenDaysAgoStart))
+                        .toList();
                   }
 
                   if (list.isEmpty) {
@@ -253,7 +277,8 @@ class _RiwayatTransaksiScreenState extends State<RiwayatTransaksiScreen> {
                   }
 
                   return SliverPadding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 12),
                     sliver: SliverList(
                       delegate: SliverChildBuilderDelegate(
                         (context, index) => _buildTransactionCard(list[index]),
@@ -405,140 +430,142 @@ class _RiwayatTransaksiScreenState extends State<RiwayatTransaksiScreen> {
     final statusBg = _statusBgColor(tx.status);
     final pelangganNama = tx.pelanggan?.nama ?? 'Pelanggan';
 
-
     return GestureDetector(
       onTap: () => _showDetailBottomSheet(context, tx),
       child: Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFF1F5F9)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Top section
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Avatar
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: _primary.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: Text(
-                    pelangganNama.isNotEmpty ? pelangganNama[0].toUpperCase() : 'P',
-                    style: const TextStyle(
-                      color: _primary,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 16,
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: const Color(0xFFF1F5F9)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.02),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Top section
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Avatar
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: _primary.withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Text(
+                      pelangganNama.isNotEmpty
+                          ? pelangganNama[0].toUpperCase()
+                          : 'P',
+                      style: const TextStyle(
+                        color: _primary,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 12),
+                const SizedBox(width: 12),
 
-              // Name and Time
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                // Name and Time
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        pelangganNama,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF0F172A),
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '${Formatters.time(tx.createdAt)} • #${tx.nomorTransaksi.isNotEmpty ? tx.nomorTransaksi : tx.id.substring(tx.id.length.clamp(0, 4))}',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: Color(0xFF94A3B8),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Payment and Status badges
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text(
-                      pelangganNama,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF0F172A),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: statusBg,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        statusLabel.toUpperCase(),
+                        style: TextStyle(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w800,
+                          color: statusColor,
+                          letterSpacing: 0.5,
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 4),
                     Text(
-                      '${Formatters.time(tx.createdAt)} • #${tx.nomorTransaksi.isNotEmpty ? tx.nomorTransaksi : tx.id.substring(tx.id.length.clamp(0, 4))}',
+                      tx.metodePembayaran.name.toUpperCase(),
                       style: const TextStyle(
-                        fontSize: 11,
-                        color: Color(0xFF94A3B8),
+                        fontSize: 10,
+                        fontWeight: FontWeight.w900,
+                        color: Color(0xFF64748B),
                       ),
                     ),
                   ],
                 ),
-              ),
+              ],
+            ),
 
-              // Payment and Status badges
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: statusBg,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      statusLabel.toUpperCase(),
-                      style: TextStyle(
-                        fontSize: 9,
-                        fontWeight: FontWeight.w800,
-                        color: statusColor,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
+            const SizedBox(height: 12),
+            const Divider(height: 1, color: Color(0xFFF1F5F9)),
+            const SizedBox(height: 12),
+
+            // Bottom section
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  'Petugas: ${tx.crew?.nama ?? 'Crew'}',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF94A3B8),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    tx.metodePembayaran.name.toUpperCase(),
-                    style: const TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w900,
-                      color: Color(0xFF64748B),
-                    ),
+                ),
+                Text(
+                  Formatters.currency(tx.totalHarga),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFF0F172A),
                   ),
-                ],
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 12),
-          const Divider(height: 1, color: Color(0xFFF1F5F9)),
-          const SizedBox(height: 12),
-
-          // Bottom section
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                'Petugas: ${tx.crew?.nama ?? 'Crew'}',
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Color(0xFF94A3B8),
                 ),
-              ),
-              Text(
-                Formatters.currency(tx.totalHarga),
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xFF0F172A),
-                ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
-    ),
     );
   }
 
@@ -550,7 +577,8 @@ class _RiwayatTransaksiScreenState extends State<RiwayatTransaksiScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: const [
-            Icon(Icons.history_toggle_off_rounded, size: 64, color: Color(0xFF94A3B8)),
+            Icon(Icons.history_toggle_off_rounded,
+                size: 64, color: Color(0xFF94A3B8)),
             SizedBox(height: 16),
             Text(
               'Tidak ada transaksi',
@@ -660,7 +688,8 @@ class _RiwayatTransaksiScreenState extends State<RiwayatTransaksiScreen> {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
                       color: _statusBgColor(tx.status),
                       borderRadius: BorderRadius.circular(8),
@@ -694,10 +723,37 @@ class _RiwayatTransaksiScreenState extends State<RiwayatTransaksiScreen> {
               _buildInfoRow('Waktu', Formatters.dateTime(tx.createdAt)),
               _buildInfoRow('Pelanggan', tx.pelanggan?.nama ?? '-'),
               _buildInfoRow('No HP Pelanggan', tx.pelanggan?.noHp ?? '-'),
-              _buildInfoRow('Metode Bayar', tx.metodePembayaran.name.toUpperCase()),
+              _buildInfoRow(
+                  'Metode Bayar', tx.metodePembayaran.name.toUpperCase()),
               _buildInfoRow('Petugas', tx.crew?.nama ?? '-'),
+              if (tx.isDikirim)
+                _buildInfoRow('Pengirim', tx.pengirimCrew?.nama ?? '-'),
               if (tx.catatan != null && tx.catatan!.isNotEmpty)
                 _buildInfoRow('Catatan', tx.catatan!),
+
+              // Show QR code if payment is QRIS and qrPaymentId exists
+              if (tx.metodePembayaran == MetodePembayaran.qris &&
+                  tx.qrPaymentId != null) ...[
+                const SizedBox(height: 16),
+                const Divider(color: Color(0xFFF1F5F9)),
+                const SizedBox(height: 16),
+                const Text(
+                  'Kode QR Pembayaran',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF0F172A),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Center(
+                  child: QrCodeWidget(
+                    data: tx.qrPaymentId!,
+                    size: 180,
+                    showBorder: true,
+                  ),
+                ),
+              ],
 
               const SizedBox(height: 16),
               const Divider(color: Color(0xFFF1F5F9)),
@@ -713,38 +769,41 @@ class _RiwayatTransaksiScreenState extends State<RiwayatTransaksiScreen> {
                 ),
               ),
               const SizedBox(height: 10),
-              ...tx.items.where((item) => item.subtotal > 0).map((item) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            '${item.produk?.nama ?? "Produk"} x${item.jumlah}',
-                            style: const TextStyle(
-                              fontSize: 13,
-                              color: Color(0xFF334155),
+              ...tx.items
+                  .where((item) => item.subtotal > 0)
+                  .map((item) => Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                '${item.produk?.nama ?? "Produk"} x${item.jumlah}',
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  color: Color(0xFF334155),
+                                ),
+                              ),
                             ),
-                          ),
+                            Text(
+                              Formatters.currency(item.subtotal),
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF0F172A),
+                              ),
+                            ),
+                          ],
                         ),
-                        Text(
-                          Formatters.currency(item.subtotal),
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF0F172A),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )),
+                      )),
 
               const SizedBox(height: 16),
               const Divider(color: Color(0xFFF1F5F9)),
               const SizedBox(height: 16),
 
               // Galon Returns / Loans details if any
-              if (tx.items.any((i) => i.galonPinjam > 0 || i.galonKembali > 0)) ...[
+              if (tx.items
+                  .any((i) => i.galonPinjam > 0 || i.galonKembali > 0)) ...[
                 const Text(
                   'Status Galon',
                   style: TextStyle(
@@ -754,31 +813,33 @@ class _RiwayatTransaksiScreenState extends State<RiwayatTransaksiScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                ...tx.items.where((i) => i.galonPinjam > 0 || i.galonKembali > 0).map((item) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              item.produk?.nama ?? "Produk",
-                              style: const TextStyle(
-                                fontSize: 13,
-                                color: Color(0xFF334155),
+                ...tx.items
+                    .where((i) => i.galonPinjam > 0 || i.galonKembali > 0)
+                    .map((item) => Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  item.produk?.nama ?? "Produk",
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    color: Color(0xFF334155),
+                                  ),
+                                ),
                               ),
-                            ),
+                              Text(
+                                'Pinjam: ${item.galonPinjam} • Kembali: ${item.galonKembali}',
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF0F172A),
+                                ),
+                              ),
+                            ],
                           ),
-                          Text(
-                            'Pinjam: ${item.galonPinjam} • Kembali: ${item.galonKembali}',
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF0F172A),
-                            ),
-                          ),
-                        ],
-                      ),
-                    )),
+                        )),
                 const SizedBox(height: 16),
                 const Divider(color: Color(0xFFF1F5F9)),
                 const SizedBox(height: 16),
@@ -818,7 +879,10 @@ class _RiwayatTransaksiScreenState extends State<RiwayatTransaksiScreen> {
                     ),
                     Text(
                       Formatters.currency(tx.bayar!),
-                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155)),
+                      style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF334155)),
                     ),
                   ],
                 ),
@@ -829,11 +893,15 @@ class _RiwayatTransaksiScreenState extends State<RiwayatTransaksiScreen> {
                     children: [
                       const Text(
                         'Kembalian',
-                        style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
+                        style:
+                            TextStyle(fontSize: 13, color: Color(0xFF64748B)),
                       ),
                       Text(
                         Formatters.currency(tx.kembalian!),
-                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155)),
+                        style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF334155)),
                       ),
                     ],
                   ),
@@ -853,7 +921,8 @@ class _RiwayatTransaksiScreenState extends State<RiwayatTransaksiScreen> {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.verified_user_rounded, color: Color(0xFF065F46), size: 18),
+                      const Icon(Icons.verified_user_rounded,
+                          color: Color(0xFF065F46), size: 18),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(

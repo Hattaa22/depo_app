@@ -49,8 +49,7 @@ class ProdukController extends GetxController {
     } catch (e) {
       errorMessage.value = ApiErrorHelper.message(e);
       Get.snackbar('Error', errorMessage.value,
-          backgroundColor: Color(0xFFE63946),
-          colorText: Color(0xFFFFFFFF));
+          backgroundColor: Color(0xFFE63946), colorText: Color(0xFFFFFFFF));
     } finally {
       isLoading.value = false;
     }
@@ -65,8 +64,7 @@ class ProdukController extends GetxController {
     } catch (e) {
       errorMessage.value = e.toString();
       Get.snackbar('Error', errorMessage.value,
-          backgroundColor: Color(0xFFE63946),
-          colorText: Color(0xFFFFFFFF));
+          backgroundColor: Color(0xFFE63946), colorText: Color(0xFFFFFFFF));
     } finally {
       isLoading.value = false;
     }
@@ -81,8 +79,7 @@ class ProdukController extends GetxController {
     } catch (e) {
       errorMessage.value = e.toString();
       Get.snackbar('Error', errorMessage.value,
-          backgroundColor: Color(0xFFE63946),
-          colorText: Color(0xFFFFFFFF));
+          backgroundColor: Color(0xFFE63946), colorText: Color(0xFFFFFFFF));
     } finally {
       isLoading.value = false;
     }
@@ -97,8 +94,7 @@ class ProdukController extends GetxController {
     } catch (e) {
       errorMessage.value = e.toString();
       Get.snackbar('Error', errorMessage.value,
-          backgroundColor: Color(0xFFE63946),
-          colorText: Color(0xFFFFFFFF));
+          backgroundColor: Color(0xFFE63946), colorText: Color(0xFFFFFFFF));
     } finally {
       isLoading.value = false;
     }
@@ -113,8 +109,7 @@ class ProdukController extends GetxController {
     } catch (e) {
       errorMessage.value = e.toString();
       Get.snackbar('Error', errorMessage.value,
-          backgroundColor: Color(0xFFE63946),
-          colorText: Color(0xFFFFFFFF));
+          backgroundColor: Color(0xFFE63946), colorText: Color(0xFFFFFFFF));
     } finally {
       isLoading.value = false;
     }
@@ -129,8 +124,7 @@ class ProdukController extends GetxController {
     } catch (e) {
       errorMessage.value = e.toString();
       Get.snackbar('Error', errorMessage.value,
-          backgroundColor: Color(0xFFE63946),
-          colorText: Color(0xFFFFFFFF));
+          backgroundColor: Color(0xFFE63946), colorText: Color(0xFFFFFFFF));
     } finally {
       isLoading.value = false;
     }

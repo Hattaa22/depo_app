@@ -10,7 +10,8 @@ class ValidasiTransaksiScreen extends StatefulWidget {
   const ValidasiTransaksiScreen({super.key});
 
   @override
-  State<ValidasiTransaksiScreen> createState() => _ValidasiTransaksiScreenState();
+  State<ValidasiTransaksiScreen> createState() =>
+      _ValidasiTransaksiScreenState();
 }
 
 class _ValidasiTransaksiScreenState extends State<ValidasiTransaksiScreen> {
@@ -97,7 +98,8 @@ class _ValidasiTransaksiScreenState extends State<ValidasiTransaksiScreen> {
                       SizedBox(height: 6),
                       Text(
                         'Tidak ada transaksi tertunda yang perlu divalidasi.',
-                        style: TextStyle(fontSize: 13, color: Color(0xFF94A3B8)),
+                        style:
+                            TextStyle(fontSize: 13, color: Color(0xFF94A3B8)),
                       ),
                     ],
                   ),
@@ -174,7 +176,7 @@ class _ValidasiTransaksiScreenState extends State<ValidasiTransaksiScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.15),
+                    color: Colors.white.withValues(alpha: 0.15),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -192,10 +194,10 @@ class _ValidasiTransaksiScreenState extends State<ValidasiTransaksiScreen> {
           Obx(() => Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.15),
+                  color: Colors.white.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.2),
                   ),
                 ),
                 child: Row(
@@ -209,7 +211,7 @@ class _ValidasiTransaksiScreenState extends State<ValidasiTransaksiScreen> {
                             style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w800,
-                              color: Colors.white.withOpacity(0.7),
+                              color: Colors.white.withValues(alpha: 0.7),
                               letterSpacing: 1.5,
                             ),
                           ),
@@ -228,7 +230,7 @@ class _ValidasiTransaksiScreenState extends State<ValidasiTransaksiScreen> {
                     Container(
                       width: 1,
                       height: 40,
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withValues(alpha: 0.2),
                     ),
                     Expanded(
                       child: Padding(
@@ -241,7 +243,7 @@ class _ValidasiTransaksiScreenState extends State<ValidasiTransaksiScreen> {
                               style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w800,
-                                color: Colors.white.withOpacity(0.7),
+                                color: Colors.white.withValues(alpha: 0.7),
                                 letterSpacing: 1.5,
                               ),
                             ),
@@ -266,10 +268,16 @@ class _ValidasiTransaksiScreenState extends State<ValidasiTransaksiScreen> {
   }
 
   // ── PENDING CARD ────────────────────────────────────────────────────────────
-  Widget _buildPendingCard(BuildContext context, TransaksiController controller, dynamic t) {
+  Widget _buildPendingCard(
+      BuildContext context, TransaksiController controller, dynamic t) {
     final namaPelanggan = t.pelanggan?.nama ?? 'Umum';
     final initials = namaPelanggan.isNotEmpty
-        ? namaPelanggan.trim().split(' ').take(2).map((w) => w[0].toUpperCase()).join()
+        ? namaPelanggan
+            .trim()
+            .split(' ')
+            .take(2)
+            .map((w) => w[0].toUpperCase())
+            .join()
         : '?';
 
     return Container(
@@ -281,7 +289,7 @@ class _ValidasiTransaksiScreenState extends State<ValidasiTransaksiScreen> {
         border: Border.all(color: const Color(0xFFF1F5F9)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -297,7 +305,7 @@ class _ValidasiTransaksiScreenState extends State<ValidasiTransaksiScreen> {
                 width: 46,
                 height: 46,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF59E0B).withOpacity(0.12),
+                  color: const Color(0xFFF59E0B).withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(14),
                 ),
                 alignment: Alignment.center,
@@ -367,8 +375,10 @@ class _ValidasiTransaksiScreenState extends State<ValidasiTransaksiScreen> {
               // Decline Button
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: () => _confirmAction(context, controller, t.id, 'gagal', 'Tolak'),
-                  icon: const Icon(Icons.cancel_outlined, size: 18, color: Color(0xFFEF4444)),
+                  onPressed: () => _confirmAction(
+                      context, controller, t.id, 'gagal', 'Tolak'),
+                  icon: const Icon(Icons.cancel_outlined,
+                      size: 18, color: Color(0xFFEF4444)),
                   label: const Text(
                     'Tolak',
                     style: TextStyle(
@@ -381,7 +391,8 @@ class _ValidasiTransaksiScreenState extends State<ValidasiTransaksiScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     side: const BorderSide(color: Color(0xFFFEE2E2)),
                     backgroundColor: const Color(0xFFFEF2F2),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14)),
                   ),
                 ),
               ),
@@ -390,8 +401,10 @@ class _ValidasiTransaksiScreenState extends State<ValidasiTransaksiScreen> {
               // Approve Button
               Expanded(
                 child: ElevatedButton.icon(
-                  onPressed: () => _confirmAction(context, controller, t.id, 'sukses', 'Setujui'),
-                  icon: const Icon(Icons.check_circle_outline_rounded, size: 18, color: Colors.white),
+                  onPressed: () => _confirmAction(
+                      context, controller, t.id, 'sukses', 'Setujui'),
+                  icon: const Icon(Icons.check_circle_outline_rounded,
+                      size: 18, color: Colors.white),
                   label: const Text(
                     'Setujui',
                     style: TextStyle(
@@ -404,7 +417,8 @@ class _ValidasiTransaksiScreenState extends State<ValidasiTransaksiScreen> {
                     backgroundColor: const Color(0xFF10B981),
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14)),
                   ),
                 ),
               ),
@@ -416,9 +430,11 @@ class _ValidasiTransaksiScreenState extends State<ValidasiTransaksiScreen> {
   }
 
   // ── CONFIRM ACTION ──────────────────────────────────────────────────────────
-  void _confirmAction(BuildContext context, TransaksiController controller, String id, String status, String actionName) {
+  void _confirmAction(BuildContext context, TransaksiController controller,
+      String id, String status, String actionName) {
     final isSuccess = status == 'sukses';
-    final actionColor = isSuccess ? const Color(0xFF10B981) : const Color(0xFFEF4444);
+    final actionColor =
+        isSuccess ? const Color(0xFF10B981) : const Color(0xFFEF4444);
 
     Get.dialog(
       Dialog(
@@ -432,11 +448,13 @@ class _ValidasiTransaksiScreenState extends State<ValidasiTransaksiScreen> {
                 width: 64,
                 height: 64,
                 decoration: BoxDecoration(
-                  color: actionColor.withOpacity(0.12),
+                  color: actionColor.withValues(alpha: 0.12),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  isSuccess ? Icons.check_circle_outline_rounded : Icons.cancel_outlined,
+                  isSuccess
+                      ? Icons.check_circle_outline_rounded
+                      : Icons.cancel_outlined,
                   color: actionColor,
                   size: 32,
                 ),
@@ -470,10 +488,12 @@ class _ValidasiTransaksiScreenState extends State<ValidasiTransaksiScreen> {
                       onPressed: () => Get.back(),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14)),
                         side: const BorderSide(color: Color(0xFFE2E8F0)),
                       ),
-                      child: const Text('Batal', style: TextStyle(color: Color(0xFF64748B))),
+                      child: const Text('Batal',
+                          style: TextStyle(color: Color(0xFF64748B))),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -482,13 +502,15 @@ class _ValidasiTransaksiScreenState extends State<ValidasiTransaksiScreen> {
                       onPressed: () {
                         Get.back();
                         controller.validasiTransaksi(id, status,
-                          reloadStatus: '${AppConstants.statusMenungguValidasi},${AppConstants.statusPending}');
+                            reloadStatus:
+                                '${AppConstants.statusMenungguValidasi},${AppConstants.statusPending}');
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: actionColor,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14)),
                         elevation: 0,
                       ),
                       child: Text(actionName),

@@ -97,7 +97,8 @@ class _CabangDepoScreenState extends State<CabangDepoScreen> {
                             child: Align(
                               alignment: Alignment.topCenter,
                               child: ConstrainedBox(
-                                constraints: BoxConstraints(maxWidth: m.maxContentWidth),
+                                constraints:
+                                    BoxConstraints(maxWidth: m.maxContentWidth),
                                 child: Padding(
                                   padding: EdgeInsets.fromLTRB(
                                     m.horizontalPad,
@@ -106,7 +107,8 @@ class _CabangDepoScreenState extends State<CabangDepoScreen> {
                                     0,
                                   ),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       SizedBox(height: m.isCompact ? 12 : 16),
                                       _buildManagerCard(cabang, m),
@@ -128,9 +130,11 @@ class _CabangDepoScreenState extends State<CabangDepoScreen> {
                               child: Align(
                                 alignment: Alignment.topCenter,
                                 child: ConstrainedBox(
-                                  constraints: BoxConstraints(maxWidth: m.maxContentWidth),
+                                  constraints: BoxConstraints(
+                                      maxWidth: m.maxContentWidth),
                                   child: Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: m.horizontalPad),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: m.horizontalPad),
                                     child: _buildEmptyState(m),
                                   ),
                                 ),
@@ -141,7 +145,8 @@ class _CabangDepoScreenState extends State<CabangDepoScreen> {
                               child: Align(
                                 alignment: Alignment.topCenter,
                                 child: ConstrainedBox(
-                                  constraints: BoxConstraints(maxWidth: m.maxContentWidth),
+                                  constraints: BoxConstraints(
+                                      maxWidth: m.maxContentWidth),
                                   child: Padding(
                                     padding: EdgeInsets.fromLTRB(
                                       m.horizontalPad,
@@ -152,7 +157,8 @@ class _CabangDepoScreenState extends State<CabangDepoScreen> {
                                     child: m.gridColumns > 1
                                         ? GridView.builder(
                                             shrinkWrap: true,
-                                            physics: const NeverScrollableScrollPhysics(),
+                                            physics:
+                                                const NeverScrollableScrollPhysics(),
                                             itemCount: cabang.cabangList.length,
                                             gridDelegate:
                                                 SliverGridDelegateWithFixedCrossAxisCount(
@@ -208,7 +214,7 @@ class _CabangDepoScreenState extends State<CabangDepoScreen> {
       );
     }
     return FloatingActionButton.extended(
-                      onPressed: () => _showFormDialog(),
+      onPressed: () => _showFormDialog(),
       backgroundColor: _primary,
       icon: const Icon(Icons.add_business_rounded, color: Colors.white),
       label: const Text(
@@ -218,7 +224,8 @@ class _CabangDepoScreenState extends State<CabangDepoScreen> {
     );
   }
 
-  Widget _buildHeader(BuildContext context, _ScreenMetrics m, AuthController auth) {
+  Widget _buildHeader(
+      BuildContext context, _ScreenMetrics m, AuthController auth) {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.only(
@@ -247,7 +254,8 @@ class _CabangDepoScreenState extends State<CabangDepoScreen> {
             children: [
               Row(
                 children: [
-                  const HeaderBackButton(fallbackRoute: AppRoutes.managerSettings),
+                  const HeaderBackButton(
+                      fallbackRoute: AppRoutes.managerSettings),
                   Expanded(
                     child: Text(
                       'Cabang Depo',
@@ -264,7 +272,8 @@ class _CabangDepoScreenState extends State<CabangDepoScreen> {
                     shape: const CircleBorder(),
                     child: IconButton(
                       visualDensity: VisualDensity.compact,
-                      onPressed: () => Get.find<CabangController>().loadCabang(),
+                      onPressed: () =>
+                          Get.find<CabangController>().loadCabang(),
                       icon: Icon(
                         Icons.refresh_rounded,
                         color: Colors.white,
@@ -315,10 +324,12 @@ class _CabangDepoScreenState extends State<CabangDepoScreen> {
                       style: TextButton.styleFrom(
                         foregroundColor: Colors.white,
                         backgroundColor: Colors.white.withValues(alpha: 0.15),
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 8),
                       ),
                       icon: const Icon(Icons.add, size: 18),
-                      label: const Text('Tambah Cabang', style: TextStyle(fontWeight: FontWeight.w700)),
+                      label: const Text('Tambah Cabang',
+                          style: TextStyle(fontWeight: FontWeight.w700)),
                     ),
                 ],
               ),
@@ -338,7 +349,6 @@ class _CabangDepoScreenState extends State<CabangDepoScreen> {
     );
   }
 
-  
   Widget _buildManagerCard(CabangController cabang, _ScreenMetrics m) {
     final stats = [
       _StatData(
@@ -407,7 +417,8 @@ class _CabangDepoScreenState extends State<CabangDepoScreen> {
     return kota.isEmpty ? list.length : kota.length;
   }
 
-  Widget _buildStatTile(_StatData stat, _ScreenMetrics m, {bool compact = false}) {
+  Widget _buildStatTile(_StatData stat, _ScreenMetrics m,
+      {bool compact = false}) {
     return SizedBox(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -474,7 +485,8 @@ class _CabangDepoScreenState extends State<CabangDepoScreen> {
 
   Widget _buildCabangCard(CabangDepo cabang, int index, _ScreenMetrics m) {
     final color = _accentColors[index % _accentColors.length];
-    final shortName = cabang.nama.replaceFirst(RegExp(r'^Depo\s*', caseSensitive: false), '');
+    final shortName =
+        cabang.nama.replaceFirst(RegExp(r'^Depo\s*', caseSensitive: false), '');
     final iconSize = m.isCompact ? 44.0 : 52.0;
 
     return Container(
@@ -483,7 +495,9 @@ class _CabangDepoScreenState extends State<CabangDepoScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: cabang.isPusat ? color.withValues(alpha: 0.4) : const Color(0xFFE2E8F0),
+          color: cabang.isPusat
+              ? color.withValues(alpha: 0.4)
+              : const Color(0xFFE2E8F0),
           width: cabang.isPusat ? 1.5 : 1,
         ),
         boxShadow: [
@@ -502,8 +516,10 @@ class _CabangDepoScreenState extends State<CabangDepoScreen> {
           child: Padding(
             padding: EdgeInsets.all(m.isCompact ? 12 : 16),
             child: m.gridColumns > 1
-                ? _buildCardContentVertical(cabang, shortName, color, iconSize, m)
-                : _buildCardContentHorizontal(cabang, shortName, color, iconSize, m),
+                ? _buildCardContentVertical(
+                    cabang, shortName, color, iconSize, m)
+                : _buildCardContentHorizontal(
+                    cabang, shortName, color, iconSize, m),
           ),
         ),
       ),
@@ -543,7 +559,9 @@ class _CabangDepoScreenState extends State<CabangDepoScreen> {
           children: [
             _buildCardIcon(color, iconSize),
             const SizedBox(width: 12),
-            Expanded(child: _buildCardDetails(cabang, shortName, color, m, dense: true)),
+            Expanded(
+                child: _buildCardDetails(cabang, shortName, color, m,
+                    dense: true)),
             _buildCardMenu(cabang),
           ],
         ),
@@ -563,7 +581,8 @@ class _CabangDepoScreenState extends State<CabangDepoScreen> {
         ),
         borderRadius: BorderRadius.circular(14),
       ),
-      child: Icon(Icons.water_drop_rounded, color: Colors.white, size: size * 0.5),
+      child:
+          Icon(Icons.water_drop_rounded, color: Colors.white, size: size * 0.5),
     );
   }
 
@@ -633,14 +652,16 @@ class _CabangDepoScreenState extends State<CabangDepoScreen> {
           const SizedBox(height: 6),
           Row(
             children: [
-              const Icon(Icons.phone_outlined, size: 13, color: Color(0xFF94A3B8)),
+              const Icon(Icons.phone_outlined,
+                  size: 13, color: Color(0xFF94A3B8)),
               const SizedBox(width: 4),
               Flexible(
                 child: Text(
                   cabang.noHp!,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 11, color: Color(0xFF94A3B8)),
+                  style:
+                      const TextStyle(fontSize: 11, color: Color(0xFF94A3B8)),
                 ),
               ),
             ],
@@ -664,7 +685,8 @@ class _CabangDepoScreenState extends State<CabangDepoScreen> {
         const PopupMenuItem(value: 'edit', child: Text('Edit Cabang')),
         const PopupMenuItem(
           value: 'hapus',
-          child: Text('Nonaktifkan', style: TextStyle(color: Color(0xFFEF4444))),
+          child:
+              Text('Nonaktifkan', style: TextStyle(color: Color(0xFFEF4444))),
         ),
       ],
     );
@@ -679,7 +701,8 @@ class _CabangDepoScreenState extends State<CabangDepoScreen> {
       ),
       child: Text(
         text,
-        style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: color),
+        style:
+            TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: color),
       ),
     );
   }
@@ -695,7 +718,8 @@ class _CabangDepoScreenState extends State<CabangDepoScreen> {
       ),
       child: Column(
         children: [
-          Icon(Icons.store_outlined, size: m.isCompact ? 40 : 48, color: const Color(0xFFCBD5E1)),
+          Icon(Icons.store_outlined,
+              size: m.isCompact ? 40 : 48, color: const Color(0xFFCBD5E1)),
           const SizedBox(height: 12),
           Text(
             'Belum ada cabang terdaftar',
@@ -724,14 +748,16 @@ class _CabangDepoScreenState extends State<CabangDepoScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.cloud_off_rounded, size: 48, color: Color(0xFF94A3B8)),
+            const Icon(Icons.cloud_off_rounded,
+                size: 48, color: Color(0xFF94A3B8)),
             const SizedBox(height: 12),
             Text(cabang.errorMessage.value, textAlign: TextAlign.center),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: cabang.loadCabang,
               style: ElevatedButton.styleFrom(backgroundColor: _primary),
-              child: const Text('Coba Lagi', style: TextStyle(color: Colors.white)),
+              child: const Text('Coba Lagi',
+                  style: TextStyle(color: Colors.white)),
             ),
           ],
         ),
@@ -743,7 +769,8 @@ class _CabangDepoScreenState extends State<CabangDepoScreen> {
     Get.dialog(
       AlertDialog(
         title: const Text('Nonaktifkan Cabang?'),
-        content: Text('Cabang "${cabang.nama}" akan dinonaktifkan dari daftar.'),
+        content:
+            Text('Cabang "${cabang.nama}" akan dinonaktifkan dari daftar.'),
         actions: [
           TextButton(onPressed: () => Get.back(), child: const Text('Batal')),
           TextButton(
@@ -751,7 +778,8 @@ class _CabangDepoScreenState extends State<CabangDepoScreen> {
               Get.back();
               Get.find<CabangController>().hapusCabang(cabang.id);
             },
-            child: const Text('Nonaktifkan', style: TextStyle(color: Color(0xFFEF4444))),
+            child: const Text('Nonaktifkan',
+                style: TextStyle(color: Color(0xFFEF4444))),
           ),
         ],
       ),
@@ -802,131 +830,142 @@ class _CabangDepoScreenState extends State<CabangDepoScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: _primary.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
+                    Row(
+                      children: [
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: _primary.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(
+                            isEdit
+                                ? Icons.edit_location_alt_rounded
+                                : Icons.add_business_rounded,
+                            color: _primary,
+                            size: 22,
+                          ),
                         ),
-                        child: Icon(
-                          isEdit ? Icons.edit_location_alt_rounded : Icons.add_business_rounded,
-                          color: _primary,
-                          size: 22,
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                isEdit ? 'Edit Cabang' : 'Tambah Cabang',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w800,
+                                  color: Color(0xFF0F172A),
+                                ),
+                              ),
+                              Text(
+                                isEdit
+                                    ? 'Perbarui data cabang'
+                                    : 'Cabang baru di jaringan depo',
+                                style: const TextStyle(
+                                    fontSize: 11, color: Color(0xFF94A3B8)),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              isEdit ? 'Edit Cabang' : 'Tambah Cabang',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w800,
-                                color: Color(0xFF0F172A),
+                        IconButton(
+                          visualDensity: VisualDensity.compact,
+                          padding: EdgeInsets.zero,
+                          constraints:
+                              const BoxConstraints(minWidth: 32, minHeight: 32),
+                          onPressed: () => Get.back(),
+                          icon: const Icon(Icons.close_rounded,
+                              color: Color(0xFF94A3B8), size: 20),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    _dialogField(namaCtrl, 'Nama Cabang', Icons.store_outlined),
+                    const SizedBox(height: 10),
+                    _dialogField(kotaCtrl, 'Kota / Kecamatan',
+                        Icons.location_city_outlined),
+                    const SizedBox(height: 10),
+                    _dialogField(hpCtrl, 'No. Telepon', Icons.phone_outlined,
+                        keyboardType: TextInputType.phone),
+                    const SizedBox(height: 10),
+                    _dialogField(
+                        alamatCtrl, 'Alamat', Icons.location_on_outlined,
+                        maxLines: 2),
+                    const SizedBox(height: 18),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () => Get.back(),
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              side: const BorderSide(color: Color(0xFFE2E8F0)),
+                            ),
+                            child: const Text(
+                              'Batal',
+                              style: TextStyle(
+                                color: Color(0xFF64748B),
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
                               ),
                             ),
-                            Text(
-                              isEdit ? 'Perbarui data cabang' : 'Cabang baru di jaringan depo',
-                              style: const TextStyle(fontSize: 11, color: Color(0xFF94A3B8)),
-                            ),
-                          ],
-                        ),
-                      ),
-                      IconButton(
-                        visualDensity: VisualDensity.compact,
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                        onPressed: () => Get.back(),
-                        icon: const Icon(Icons.close_rounded, color: Color(0xFF94A3B8), size: 20),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  _dialogField(namaCtrl, 'Nama Cabang', Icons.store_outlined),
-                  const SizedBox(height: 10),
-                  _dialogField(kotaCtrl, 'Kota / Kecamatan', Icons.location_city_outlined),
-                  const SizedBox(height: 10),
-                  _dialogField(hpCtrl, 'No. Telepon', Icons.phone_outlined,
-                      keyboardType: TextInputType.phone),
-                  const SizedBox(height: 10),
-                  _dialogField(alamatCtrl, 'Alamat', Icons.location_on_outlined, maxLines: 2),
-                  const SizedBox(height: 18),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: () => Get.back(),
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            side: const BorderSide(color: Color(0xFFE2E8F0)),
-                          ),
-                          child: const Text(
-                            'Batal',
-                            style: TextStyle(
-                              color: Color(0xFF64748B),
-                              fontWeight: FontWeight.w600,
-                              fontSize: 13,
-                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            if (namaCtrl.text.trim().isEmpty) {
-                              Get.snackbar('Perhatian', 'Nama cabang wajib diisi');
-                              return;
-                            }
-                            final data = {
-                              'nama': namaCtrl.text.trim(),
-                              'kota': kotaCtrl.text.trim().isEmpty
-                                  ? null
-                                  : kotaCtrl.text.trim(),
-                              'alamat': alamatCtrl.text.trim().isEmpty
-                                  ? null
-                                  : alamatCtrl.text.trim(),
-                              'noHp': hpCtrl.text.trim().isEmpty
-                                  ? null
-                                  : hpCtrl.text.trim(),
-                            };
-                            final ctrl = Get.find<CabangController>();
-                            // Close dialog FIRST to avoid snackbar/dialog navigation conflict
-                            Get.back();
-                            if (isEdit) {
-                              ctrl.editCabang(existing.id, data);
-                            } else {
-                              ctrl.tambahCabang(data);
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: _primary,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              if (namaCtrl.text.trim().isEmpty) {
+                                Get.snackbar(
+                                    'Perhatian', 'Nama cabang wajib diisi');
+                                return;
+                              }
+                              final data = {
+                                'nama': namaCtrl.text.trim(),
+                                'kota': kotaCtrl.text.trim().isEmpty
+                                    ? null
+                                    : kotaCtrl.text.trim(),
+                                'alamat': alamatCtrl.text.trim().isEmpty
+                                    ? null
+                                    : alamatCtrl.text.trim(),
+                                'noHp': hpCtrl.text.trim().isEmpty
+                                    ? null
+                                    : hpCtrl.text.trim(),
+                              };
+                              final ctrl = Get.find<CabangController>();
+                              // Close dialog FIRST to avoid snackbar/dialog navigation conflict
+                              Get.back();
+                              if (isEdit) {
+                                ctrl.editCabang(existing.id, data);
+                              } else {
+                                ctrl.tambahCabang(data);
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: _primary,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 0,
                             ),
-                            elevation: 0,
-                          ),
-                          child: Text(
-                            isEdit ? 'Simpan' : 'Tambah',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 13,
+                            child: Text(
+                              isEdit ? 'Simpan' : 'Tambah',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -946,19 +985,22 @@ class _CabangDepoScreenState extends State<CabangDepoScreen> {
     TextInputType keyboardType = TextInputType.text,
     int maxLines = 1,
   }) {
-    final effectiveKeyboardType = maxLines > 1 ? TextInputType.multiline : keyboardType;
+    final effectiveKeyboardType =
+        maxLines > 1 ? TextInputType.multiline : keyboardType;
     return TextField(
       controller: ctrl,
       keyboardType: effectiveKeyboardType,
       maxLines: maxLines,
       style: const TextStyle(fontSize: 13),
-      textInputAction: maxLines > 1 ? TextInputAction.newline : TextInputAction.next,
+      textInputAction:
+          maxLines > 1 ? TextInputAction.newline : TextInputAction.next,
       decoration: InputDecoration(
         labelText: label,
         labelStyle: const TextStyle(color: Color(0xFF64748B), fontSize: 12),
         prefixIcon: Icon(icon, color: const Color(0xFF94A3B8), size: 18),
         isDense: true,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),

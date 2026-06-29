@@ -23,7 +23,8 @@ class PilihPeranScreen extends StatelessWidget {
                   color: AppTheme.primaryColor,
                   borderRadius: BorderRadius.circular(24),
                 ),
-                child: const Icon(Icons.water_drop, size: 56, color: Colors.white),
+                child:
+                    const Icon(Icons.water_drop, size: 56, color: Colors.white),
               ),
               const SizedBox(height: 24),
               const Text(

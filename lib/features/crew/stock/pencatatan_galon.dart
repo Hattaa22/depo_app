@@ -25,7 +25,8 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
   // Keypad variables
   bool _isOut = true; // true = Pinjam (Out), false = Kembali (In)
   String _amount = "0";
-  String? _selectedPelangganId; // ID Pelanggan yang meminjam/mengembalikan galon
+  String?
+      _selectedPelangganId; // ID Pelanggan yang meminjam/mengembalikan galon
 
   @override
   void initState() {
@@ -125,7 +126,7 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
+                      color: Colors.black.withValues(alpha: 0.04),
                       blurRadius: 20,
                       offset: const Offset(0, 4),
                     ),
@@ -160,7 +161,8 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
                               const SizedBox(height: 4),
                               Row(
                                 children: [
-                                  const Icon(Icons.group, color: _primary, size: 16),
+                                  const Icon(Icons.group,
+                                      color: _primary, size: 16),
                                   const SizedBox(width: 8),
                                   Text(
                                     '$dipinjam',
@@ -192,7 +194,8 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
                             const SizedBox(height: 4),
                             Row(
                               children: [
-                                const Icon(Icons.warehouse_rounded, color: Color(0xFF10B981), size: 16),
+                                const Icon(Icons.warehouse_rounded,
+                                    color: Color(0xFF10B981), size: 16),
                                 const SizedBox(width: 8),
                                 Text(
                                   '$tersedia',
@@ -230,12 +233,14 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       decoration: BoxDecoration(
-                        color: _selectedSegment == 0 ? Colors.white : Colors.transparent,
+                        color: _selectedSegment == 0
+                            ? Colors.white
+                            : Colors.transparent,
                         borderRadius: BorderRadius.circular(8),
                         boxShadow: _selectedSegment == 0
                             ? [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.05),
+                                  color: Colors.black.withValues(alpha: 0.05),
                                   blurRadius: 4,
                                   offset: const Offset(0, 2),
                                 )
@@ -248,7 +253,9 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
                         style: TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 13,
-                          color: _selectedSegment == 0 ? const Color(0xFF1E293B) : const Color(0xFF64748B),
+                          color: _selectedSegment == 0
+                              ? const Color(0xFF1E293B)
+                              : const Color(0xFF64748B),
                         ),
                       ),
                     ),
@@ -260,12 +267,14 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       decoration: BoxDecoration(
-                        color: _selectedSegment == 1 ? Colors.white : Colors.transparent,
+                        color: _selectedSegment == 1
+                            ? Colors.white
+                            : Colors.transparent,
                         borderRadius: BorderRadius.circular(8),
                         boxShadow: _selectedSegment == 1
                             ? [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.05),
+                                  color: Colors.black.withValues(alpha: 0.05),
                                   blurRadius: 4,
                                   offset: const Offset(0, 2),
                                 )
@@ -278,7 +287,9 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
                         style: TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 13,
-                          color: _selectedSegment == 1 ? const Color(0xFF1E293B) : const Color(0xFF64748B),
+                          color: _selectedSegment == 1
+                              ? const Color(0xFF1E293B)
+                              : const Color(0xFF64748B),
                         ),
                       ),
                     ),
@@ -328,7 +339,8 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
         Expanded(
           child: Obx(() {
             if (galon.isLoading.value) {
-              return const Center(child: CircularProgressIndicator(color: _primary));
+              return const Center(
+                  child: CircularProgressIndicator(color: _primary));
             }
             if (galon.errorMessage.value.isNotEmpty) {
               return Center(child: Text(galon.errorMessage.value));
@@ -342,7 +354,8 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
             return Stack(
               children: [
                 ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                   itemCount: list.length,
                   itemBuilder: (_, i) {
                     final g = list[i];
@@ -360,7 +373,8 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
                     icon: const Icon(Icons.add, color: Colors.white),
                     label: const Text(
                       'Catat Galon',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
                     ),
                   ),
                 )
@@ -386,7 +400,8 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
         decoration: BoxDecoration(
           color: isSelected ? _primary : Colors.white,
           borderRadius: BorderRadius.circular(999),
-          border: isSelected ? null : Border.all(color: const Color(0xFFE2E8F0)),
+          border:
+              isSelected ? null : Border.all(color: const Color(0xFFE2E8F0)),
         ),
         child: Text(
           label,
@@ -413,7 +428,7 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
         border: Border.all(color: const Color(0xFFF1F5F9)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.01),
+            color: Colors.black.withValues(alpha: 0.01),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -425,7 +440,7 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(Icons.water_drop, color: color, size: 22),
@@ -451,7 +466,8 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
                     color: Color(0xFF94A3B8),
                   ),
                 ),
-                if (g.status == StatusGalon.dipinjam && g.pelangganNama != null) ...[
+                if (g.status == StatusGalon.dipinjam &&
+                    g.pelangganNama != null) ...[
                   Padding(
                     padding: const EdgeInsets.only(top: 4),
                     child: GestureDetector(
@@ -461,7 +477,8 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
                         children: [
                           Row(
                             children: [
-                              const Icon(Icons.person_outline, size: 12, color: _primary),
+                              const Icon(Icons.person_outline,
+                                  size: 12, color: _primary),
                               const SizedBox(width: 4),
                               Expanded(
                                 child: Text(
@@ -480,7 +497,8 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
                             const SizedBox(height: 2),
                             Row(
                               children: [
-                                const Icon(Icons.calendar_today, size: 10, color: Color(0xFF64748B)),
+                                const Icon(Icons.calendar_today,
+                                    size: 10, color: Color(0xFF64748B)),
                                 const SizedBox(width: 4),
                                 Expanded(
                                   child: Text(
@@ -506,7 +524,7 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
@@ -526,10 +544,13 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
               galon.loadSummary();
             },
             itemBuilder: (_) => [
-              const PopupMenuItem(value: 'tersedia', child: Text('Tandai Tersedia')),
-              const PopupMenuItem(value: 'dipinjam', child: Text('Tandai Dipinjam')),
+              const PopupMenuItem(
+                  value: 'tersedia', child: Text('Tandai Tersedia')),
+              const PopupMenuItem(
+                  value: 'dipinjam', child: Text('Tandai Dipinjam')),
               const PopupMenuItem(value: 'rusak', child: Text('Tandai Rusak')),
-              const PopupMenuItem(value: 'hilang', child: Text('Tandai Hilang')),
+              const PopupMenuItem(
+                  value: 'hilang', child: Text('Tandai Hilang')),
             ],
           ),
         ],
@@ -592,7 +613,7 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
                       style: TextStyle(
                         fontSize: 60,
                         fontWeight: FontWeight.w900,
-                        color: const Color(0xFFE2E8F0).withOpacity(0.5),
+                        color: const Color(0xFFE2E8F0).withValues(alpha: 0.5),
                       ),
                     ),
                   ),
@@ -665,7 +686,8 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
                 borderRadius: BorderRadius.circular(30),
                 boxShadow: [
                   BoxShadow(
-                    color: (_isOut ? _primary : const Color(0xFF10B981)).withOpacity(0.3),
+                    color: (_isOut ? _primary : const Color(0xFF10B981))
+                        .withValues(alpha: 0.3),
                     blurRadius: 16,
                     offset: const Offset(0, 8),
                   )
@@ -721,7 +743,7 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
           boxShadow: [
             if (isActive)
               BoxShadow(
-                color: activeColor.withOpacity(0.1),
+                color: activeColor.withValues(alpha: 0.1),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               )
@@ -754,7 +776,9 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w800,
-                color: isActive ? const Color(0xFF1E293B) : const Color(0xFF64748B),
+                color: isActive
+                    ? const Color(0xFF1E293B)
+                    : const Color(0xFF64748B),
               ),
             ),
           ],
@@ -835,9 +859,8 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
       ),
       const SizedBox(height: 8),
       Obx(() {
-        final list = pelangganCtrl.pelangganList
-            .where((p) => p.isAktif)
-            .toList();
+        final list =
+            pelangganCtrl.pelangganList.where((p) => p.isAktif).toList();
         // Ensure selected ID exists in list, otherwise reset
         if (_selectedPelangganId != null &&
             !list.any((p) => p.id == _selectedPelangganId)) {
@@ -849,12 +872,14 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: _selectedPelangganId != null ? _primary : const Color(0xFFE2E8F0),
+              color: _selectedPelangganId != null
+                  ? _primary
+                  : const Color(0xFFE2E8F0),
               width: _selectedPelangganId != null ? 2 : 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.03),
+                color: Colors.black.withValues(alpha: 0.03),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -868,7 +893,8 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
                 'Pilih pelanggan...',
                 style: TextStyle(fontSize: 14, color: Color(0xFF94A3B8)),
               ),
-              icon: const Icon(Icons.keyboard_arrow_down_rounded, color: _primary),
+              icon: const Icon(Icons.keyboard_arrow_down_rounded,
+                  color: _primary),
               items: list.map((p) {
                 return DropdownMenuItem<String>(
                   value: p.id,
@@ -941,9 +967,15 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
             Obx(() => DropdownButtonFormField<String>(
                   initialValue: status.value,
                   items: [
-                    DropdownMenuItem(value: AppConstants.galonTersedia, child: const Text('Tersedia')),
-                    DropdownMenuItem(value: AppConstants.galonDipinjam, child: const Text('Dipinjam')),
-                    DropdownMenuItem(value: AppConstants.galonRusak, child: const Text('Rusak')),
+                    DropdownMenuItem(
+                        value: AppConstants.galonTersedia,
+                        child: const Text('Tersedia')),
+                    DropdownMenuItem(
+                        value: AppConstants.galonDipinjam,
+                        child: const Text('Dipinjam')),
+                    DropdownMenuItem(
+                        value: AppConstants.galonRusak,
+                        child: const Text('Rusak')),
                   ],
                   onChanged: (v) => status.value = v!,
                   decoration: const InputDecoration(labelText: 'Status'),
@@ -964,9 +996,8 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
               if (status.value != AppConstants.galonDipinjam) {
                 return const SizedBox.shrink();
               }
-              final list = pelangganCtrl.pelangganList
-                  .where((p) => p.isAktif)
-                  .toList();
+              final list =
+                  pelangganCtrl.pelangganList.where((p) => p.isAktif).toList();
               return DropdownButtonFormField<Pelanggan>(
                 initialValue: selectedPelanggan.value,
                 isExpanded: true,
@@ -978,7 +1009,8 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
                   );
                 }).toList(),
                 onChanged: (v) => selectedPelanggan.value = v,
-                decoration: const InputDecoration(labelText: 'Pelanggan Peminjam'),
+                decoration:
+                    const InputDecoration(labelText: 'Pelanggan Peminjam'),
               );
             }),
           ],
@@ -999,7 +1031,8 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
             Get.snackbar('Error', 'Jumlah galon harus lebih dari 0');
             return;
           }
-          if (status.value == AppConstants.galonDipinjam && selectedPelanggan.value == null) {
+          if (status.value == AppConstants.galonDipinjam &&
+              selectedPelanggan.value == null) {
             Get.snackbar('Error', 'Pilih pelanggan yang meminjam');
             return;
           }
@@ -1012,7 +1045,8 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
               'pelangganId': selectedPelanggan.value!.id,
           });
         },
-        child: const Text('Simpan', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        child: const Text('Simpan',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
       ),
     );
   }
@@ -1052,7 +1086,7 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
             child: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.15),
+                color: Colors.white.withValues(alpha: 0.15),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -1077,7 +1111,7 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
               Text(
                 'ASSET MANAGEMENT',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.7),
+                  color: Colors.white.withValues(alpha: 0.7),
                   fontSize: 9,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 2,
@@ -1090,7 +1124,7 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
             child: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.15),
+                color: Colors.white.withValues(alpha: 0.15),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -1182,15 +1216,19 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
                   ),
                 ),
                 const SizedBox(height: 6),
-                Text('Kode: ${g.kodeGalon}', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                Text('Kode: ${g.kodeGalon}',
+                    style: const TextStyle(
+                        fontSize: 12, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 2),
-                Text('Merek: ${g.merek.isNotEmpty ? g.merek : 'Depo'} • ${g.jenis.name.toUpperCase()}', 
-                    style: const TextStyle(fontSize: 11, color: Color(0xFF64748B))),
+                Text(
+                    'Merek: ${g.merek.isNotEmpty ? g.merek : 'Depo'} • ${g.jenis.name.toUpperCase()}',
+                    style: const TextStyle(
+                        fontSize: 11, color: Color(0xFF64748B))),
               ],
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // Info Pelanggan
           _detailRow('Pelanggan', g.pelangganNama ?? '-'),
           const SizedBox(height: 12),
@@ -1198,7 +1236,7 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
           const SizedBox(height: 12),
           _detailRow('Alamat', g.pelangganAlamat ?? '-'),
           const SizedBox(height: 16),
-          
+
           // Info Tanggal
           Container(
             padding: const EdgeInsets.all(12),
@@ -1219,7 +1257,7 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  g.tanggalPinjam != null 
+                  g.tanggalPinjam != null
                       ? '${_formatTanggal(g.tanggalPinjam!)} (${_hitungDurasi(g.tanggalPinjam!)})'
                       : '-',
                   style: const TextStyle(
@@ -1232,7 +1270,7 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
             ),
           ),
           const SizedBox(height: 8),
-          
+
           if (g.catatan != null && g.catatan!.isNotEmpty) ...[
             const SizedBox(height: 8),
             _detailRow('Catatan', g.catatan!),
@@ -1277,8 +1315,18 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
 
   String _formatTanggal(DateTime date) {
     final months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-      'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'Mei',
+      'Jun',
+      'Jul',
+      'Agu',
+      'Sep',
+      'Okt',
+      'Nov',
+      'Des'
     ];
     return '${date.day} ${months[date.month - 1]} ${date.year}';
   }
@@ -1287,7 +1335,7 @@ class _PencatatanGalonScreenState extends State<PencatatanGalonScreen> {
     final now = DateTime.now();
     final difference = now.difference(tanggalPinjam);
     final days = difference.inDays;
-    
+
     if (days == 0) {
       return 'Hari ini';
     } else if (days == 1) {

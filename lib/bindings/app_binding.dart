@@ -30,8 +30,10 @@ class AppBinding extends Bindings {
     Get.lazyPut<Dio>(() {
       final dio = Dio(BaseOptions(
         baseUrl: AppConstants.baseUrl,
-        connectTimeout: const Duration(milliseconds: AppConstants.connectTimeout),
-        receiveTimeout: const Duration(milliseconds: AppConstants.receiveTimeout),
+        connectTimeout:
+            const Duration(milliseconds: AppConstants.connectTimeout),
+        receiveTimeout:
+            const Duration(milliseconds: AppConstants.receiveTimeout),
       ));
       return dio;
     }, fenix: true);

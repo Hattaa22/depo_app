@@ -71,6 +71,7 @@ class Transaksi {
   final Pelanggan? pelanggan;
   final String crewId;
   final Crew? crew;
+  final Crew? pengirimCrew;
   final List<ItemTransaksi> items;
   final double totalHarga;
   final MetodePembayaran metodePembayaran;
@@ -95,6 +96,7 @@ class Transaksi {
     this.pelanggan,
     required this.crewId,
     this.crew,
+    this.pengirimCrew,
     required this.items,
     required this.totalHarga,
     this.metodePembayaran = MetodePembayaran.tunai,
@@ -123,6 +125,9 @@ class Transaksi {
         crewId: json['crewId'] as String? ?? '',
         crew: json['crew'] != null
             ? Crew.fromJson(json['crew'] as Map<String, dynamic>)
+            : null,
+        pengirimCrew: json['pengirimCrew'] != null
+            ? Crew.fromJson(json['pengirimCrew'] as Map<String, dynamic>)
             : null,
         items: (json['items'] as List<dynamic>?)
                 ?.map((e) => ItemTransaksi.fromJson(e as Map<String, dynamic>))

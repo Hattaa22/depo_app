@@ -26,7 +26,8 @@ class PengaturanScreen extends StatelessWidget {
               // ── MAIN CONTENT (-mt-8 equivalent) ─────────────────────────
               Expanded(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.only(left: 24, right: 24, bottom: 120),
+                  padding:
+                      const EdgeInsets.only(left: 24, right: 24, bottom: 120),
                   child: Transform.translate(
                     offset: const Offset(0, -32),
                     child: Obx(() {
@@ -43,12 +44,13 @@ class PengaturanScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(20),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.04),
+                                  color: Colors.black.withValues(alpha: 0.04),
                                   blurRadius: 16,
                                   offset: const Offset(0, 4),
                                 ),
                               ],
-                              border: Border.all(color: const Color(0xFFEEF2F6)),
+                              border:
+                                  Border.all(color: const Color(0xFFEEF2F6)),
                             ),
                             child: Row(
                               children: [
@@ -62,7 +64,9 @@ class PengaturanScreen extends StatelessWidget {
                                   ),
                                   child: Center(
                                     child: Text(
-                                      nama.isNotEmpty ? nama[0].toUpperCase() : 'C',
+                                      nama.isNotEmpty
+                                          ? nama[0].toUpperCase()
+                                          : 'C',
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 24,
@@ -74,7 +78,8 @@ class PengaturanScreen extends StatelessWidget {
                                 const SizedBox(width: 16),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         nama,
@@ -117,7 +122,8 @@ class PengaturanScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 0),
                                 child: Text(
                                   'AKUN & KEAMANAN',
                                   style: TextStyle(
@@ -135,12 +141,14 @@ class PengaturanScreen extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(20),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(0.02),
+                                      color:
+                                          Colors.black.withValues(alpha: 0.02),
                                       blurRadius: 10,
                                       offset: const Offset(0, 4),
                                     ),
                                   ],
-                                  border: Border.all(color: const Color(0xFFEEF2F6)),
+                                  border: Border.all(
+                                      color: const Color(0xFFEEF2F6)),
                                 ),
                                 child: Column(
                                   children: [
@@ -150,7 +158,8 @@ class PengaturanScreen extends StatelessWidget {
                                       title: 'Ubah Password',
                                       onTap: () => _showGantiPasswordDialog(),
                                     ),
-                                    const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                                    const Divider(
+                                        height: 1, color: Color(0xFFF1F5F9)),
                                     // About App
                                     _buildSettingItem(
                                       icon: Icons.info_outline_rounded,
@@ -174,7 +183,8 @@ class PengaturanScreen extends StatelessWidget {
                               decoration: BoxDecoration(
                                 color: const Color(0xFFFEF2F2),
                                 borderRadius: BorderRadius.circular(16),
-                                border: Border.all(color: const Color(0xFFFEE2E2)),
+                                border:
+                                    Border.all(color: const Color(0xFFFEE2E2)),
                               ),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -246,7 +256,7 @@ class PengaturanScreen extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.15),
+                color: Colors.white.withValues(alpha: 0.15),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -288,7 +298,7 @@ class PengaturanScreen extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: _primary.withOpacity(0.1),
+                color: _primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(
@@ -357,7 +367,8 @@ class PengaturanScreen extends StatelessWidget {
           Get.back();
           Get.snackbar('Berhasil', 'Password Anda berhasil diperbarui.');
         },
-        child: const Text('Simpan', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        child: const Text('Simpan',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
       ),
     );
   }
@@ -374,13 +385,17 @@ class PengaturanScreen extends StatelessWidget {
           SizedBox(height: 12),
           Text(
             'Depo Air App v1.0.0',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF0F172A)),
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: Color(0xFF0F172A)),
           ),
           SizedBox(height: 8),
           Text(
             'Aplikasi manajemen operasional depo air isi ulang terintegrasi. Mempermudah pencatatan stok galon, kasir transaksi POS, dan riwayat pesanan secara real-time.',
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 13, color: Color(0xFF64748B), height: 1.4),
+            style:
+                TextStyle(fontSize: 13, color: Color(0xFF64748B), height: 1.4),
           ),
         ],
       ),
@@ -390,7 +405,8 @@ class PengaturanScreen extends StatelessWidget {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
         onPressed: () => Get.back(),
-        child: const Text('Tutup', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        child: const Text('Tutup',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
       ),
     );
   }

@@ -26,7 +26,6 @@ class AppHelpers {
     );
   }
 
-
   static void showSnackbar(
     BuildContext context,
     String message, {

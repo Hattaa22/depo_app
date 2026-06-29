@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
@@ -28,7 +29,9 @@ import 'utils/formatters.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Formatters.init();
-  debugPrint('Depo API baseUrl: ${ApiConfig.baseUrl}');
+  if (kDebugMode) {
+    debugPrint('Depo API baseUrl: ${ApiConfig.baseUrl}');
+  }
 
   // Inisialisasi async dependencies sebelum runApp
   final prefs = await SharedPreferences.getInstance();
@@ -115,6 +118,13 @@ class DepoAirApp extends StatelessWidget {
       // Tidak perlu initialBinding lagi karena sudah di-register di main()
       initialRoute: AppRoutes.pilihPeran,
       getPages: AppRoutes.pages,
+      unknownRoute: GetPage(
+        name: '/not-found',
+        page: () {
+          final currentRoute = Get.currentRoute;
+          return RouteNotFoundScreen(routeName: currentRoute);
+        },
+      ),
     );
   }
 }

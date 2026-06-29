@@ -48,9 +48,8 @@ class Galon {
             : null,
         catatan: json['catatan'] as String?,
         createdAt: _parseDate(json['createdAt']),
-        updatedAt: json['updatedAt'] != null
-            ? _parseDate(json['updatedAt'])
-            : null,
+        updatedAt:
+            json['updatedAt'] != null ? _parseDate(json['updatedAt']) : null,
       );
 
   static DateTime _parseDate(dynamic value) {
@@ -64,10 +63,14 @@ class Galon {
 
   static StatusGalon _statusFromString(String s) {
     switch (s) {
-      case 'dipinjam': return StatusGalon.dipinjam;
-      case 'rusak': return StatusGalon.rusak;
-      case 'hilang': return StatusGalon.hilang;
-      default: return StatusGalon.tersedia;
+      case 'dipinjam':
+        return StatusGalon.dipinjam;
+      case 'rusak':
+        return StatusGalon.rusak;
+      case 'hilang':
+        return StatusGalon.hilang;
+      default:
+        return StatusGalon.tersedia;
     }
   }
 

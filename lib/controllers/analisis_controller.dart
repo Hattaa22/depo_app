@@ -56,7 +56,8 @@ class AnalisisController extends GetxController {
   Future<void> loadRingkasan(String tanggalMulai, String tanggalAkhir) async {
     isLoading.value = true;
     try {
-      ringkasanData.value = await _apiService.getLaporanKeuangan(tanggalMulai, tanggalAkhir);
+      ringkasanData.value =
+          await _apiService.getLaporanKeuangan(tanggalMulai, tanggalAkhir);
     } catch (e) {
       errorMessage.value = e.toString();
     } finally {

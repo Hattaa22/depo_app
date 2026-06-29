@@ -18,13 +18,13 @@ class BottomBar extends StatefulWidget {
 }
 
 class _BottomBarState extends State<BottomBar> {
-  static const Color _primary  = Color(0xFF1392EC);
+  static const Color _primary = Color(0xFF1392EC);
   static const Color _inactive = Color(0xFFADB5C7);
 
   // Ukuran FAB
-  static const double _fabSize        = 72;
-  static const double _barTopPadding  = 10;
-  static const double _barHeight      = 68; // tinggi bar (tanpa safe-area)
+  static const double _fabSize = 72;
+  static const double _barTopPadding = 10;
+  static const double _barHeight = 68; // tinggi bar (tanpa safe-area)
 
   late int _selectedIndex;
 
@@ -58,7 +58,7 @@ class _BottomBarState extends State<BottomBar> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 24,
             spreadRadius: 0,
             offset: const Offset(0, -6),
@@ -138,7 +138,7 @@ class _BottomBarState extends State<BottomBar> {
           border: Border.all(color: Colors.white, width: 4),
           boxShadow: [
             BoxShadow(
-              color: _primary.withOpacity(isActive ? 0.45 : 0.30),
+              color: _primary.withValues(alpha: isActive ? 0.45 : 0.30),
               blurRadius: 24,
               spreadRadius: 0,
               offset: const Offset(0, 8),

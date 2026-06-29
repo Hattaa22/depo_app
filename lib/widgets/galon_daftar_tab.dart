@@ -115,7 +115,8 @@ class _GalonDaftarTabState extends State<GalonDaftarTab> {
         decoration: BoxDecoration(
           color: isSelected ? _primary : Colors.white,
           borderRadius: BorderRadius.circular(999),
-          border: isSelected ? null : Border.all(color: const Color(0xFFE2E8F0)),
+          border:
+              isSelected ? null : Border.all(color: const Color(0xFFE2E8F0)),
         ),
         child: Text(
           label,
@@ -134,147 +135,154 @@ class _GalonDaftarTabState extends State<GalonDaftarTab> {
     final statusLabel = Formatters.statusGalon(g.status.name);
 
     return GestureDetector(
-      onTap: g.status == StatusGalon.dipinjam ? () => _showBorrowingDetails(g) : null,
+      onTap: g.status == StatusGalon.dipinjam
+          ? () => _showBorrowingDetails(g)
+          : null,
       child: Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFF1F5F9)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.01),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: const Color(0xFFF1F5F9)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.01),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
             ),
-            child: Icon(Icons.water_drop, color: color, size: 22),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Galon #${g.kodeGalon}',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFF1E293B),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.water_drop, color: color, size: 22),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Galon #${g.kodeGalon}',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF1E293B),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  'Merek: ${g.merek.isNotEmpty ? g.merek : 'Depo'} • ${g.jenis.name.toUpperCase()}',
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: Color(0xFF94A3B8),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Merek: ${g.merek.isNotEmpty ? g.merek : 'Depo'} • ${g.jenis.name.toUpperCase()}',
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: Color(0xFF94A3B8),
+                    ),
                   ),
-                ),
-                if (g.status == StatusGalon.dipinjam) ...[
-                  const SizedBox(height: 6),
-                  GestureDetector(
-                    onTap: () => _showBorrowingDetails(g),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE0F2FE),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.person_outline, size: 12, color: _primary),
-                              const SizedBox(width: 4),
-                              Flexible(
-                                child: Text(
-                                  g.pelangganNama != null 
-                                      ? 'Dipinjam: ${g.pelangganNama}'
-                                      : 'Status: Dipinjam',
-                                  style: const TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w600,
-                                    color: _primary,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                          if (g.tanggalPinjam != null) ...[
-                            const SizedBox(height: 4),
+                  if (g.status == StatusGalon.dipinjam) ...[
+                    const SizedBox(height: 6),
+                    GestureDetector(
+                      onTap: () => _showBorrowingDetails(g),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE0F2FE),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
                             Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Icon(Icons.calendar_today, size: 10, color: Color(0xFF64748B)),
+                                const Icon(Icons.person_outline,
+                                    size: 12, color: _primary),
                                 const SizedBox(width: 4),
                                 Flexible(
                                   child: Text(
-                                    '${_formatTanggal(g.tanggalPinjam!)} • ${_hitungDurasi(g.tanggalPinjam!)}',
+                                    g.pelangganNama != null
+                                        ? 'Dipinjam: ${g.pelangganNama}'
+                                        : 'Status: Dipinjam',
                                     style: const TextStyle(
-                                      fontSize: 9,
-                                      color: Color(0xFF64748B),
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w600,
+                                      color: _primary,
                                     ),
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                               ],
                             ),
+                            if (g.tanggalPinjam != null) ...[
+                              const SizedBox(height: 4),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.calendar_today,
+                                      size: 10, color: Color(0xFF64748B)),
+                                  const SizedBox(width: 4),
+                                  Flexible(
+                                    child: Text(
+                                      '${_formatTanggal(g.tanggalPinjam!)} • ${_hitungDurasi(g.tanggalPinjam!)}',
+                                      style: const TextStyle(
+                                        fontSize: 9,
+                                        color: Color(0xFF64748B),
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ],
-                        ],
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ],
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              statusLabel,
-              style: TextStyle(
-                fontSize: 9,
-                fontWeight: FontWeight.w800,
-                color: color,
               ),
             ),
-          ),
-          const SizedBox(width: 8),
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert, color: Color(0xFF94A3B8)),
-            onSelected: (status) async {
-              await galon.updateStatusGalon(g.id, status);
-              galon.loadSummary();
-            },
-            itemBuilder: (_) => const [
-              PopupMenuItem(value: 'tersedia', child: Text('Tandai Tersedia')),
-              PopupMenuItem(value: 'dipinjam', child: Text('Tandai Dipinjam')),
-              PopupMenuItem(value: 'rusak', child: Text('Tandai Rusak')),
-              PopupMenuItem(value: 'hilang', child: Text('Tandai Hilang')),
-            ],
-          ),
-        ],
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                statusLabel,
+                style: TextStyle(
+                  fontSize: 9,
+                  fontWeight: FontWeight.w800,
+                  color: color,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            PopupMenuButton<String>(
+              icon: const Icon(Icons.more_vert, color: Color(0xFF94A3B8)),
+              onSelected: (status) async {
+                await galon.updateStatusGalon(g.id, status);
+                galon.loadSummary();
+              },
+              itemBuilder: (_) => const [
+                PopupMenuItem(
+                    value: 'tersedia', child: Text('Tandai Tersedia')),
+                PopupMenuItem(
+                    value: 'dipinjam', child: Text('Tandai Dipinjam')),
+                PopupMenuItem(value: 'rusak', child: Text('Tandai Rusak')),
+                PopupMenuItem(value: 'hilang', child: Text('Tandai Hilang')),
+              ],
+            ),
+          ],
+        ),
       ),
-    ),
     );
   }
 
@@ -327,7 +335,7 @@ class _GalonDaftarTabState extends State<GalonDaftarTab> {
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // Info Pelanggan
           const Text(
             'Data Pelanggan',
@@ -344,7 +352,7 @@ class _GalonDaftarTabState extends State<GalonDaftarTab> {
           const SizedBox(height: 10),
           _detailRow('Alamat', g.pelangganAlamat ?? '-'),
           const SizedBox(height: 16),
-          
+
           // Info Tanggal
           Container(
             padding: const EdgeInsets.all(12),
@@ -365,7 +373,7 @@ class _GalonDaftarTabState extends State<GalonDaftarTab> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  g.tanggalPinjam != null 
+                  g.tanggalPinjam != null
                       ? '${_formatTanggal(g.tanggalPinjam!)} (${_hitungDurasi(g.tanggalPinjam!)})'
                       : '-',
                   style: const TextStyle(
@@ -377,7 +385,7 @@ class _GalonDaftarTabState extends State<GalonDaftarTab> {
               ],
             ),
           ),
-          
+
           if (g.catatan != null && g.catatan!.isNotEmpty) ...[
             const SizedBox(height: 12),
             _detailRow('Catatan', g.catatan!),
@@ -411,7 +419,8 @@ class _GalonDaftarTabState extends State<GalonDaftarTab> {
             ),
           ),
         ),
-        const Text(':', style: TextStyle(fontSize: 11, color: Color(0xFF64748B))),
+        const Text(':',
+            style: TextStyle(fontSize: 11, color: Color(0xFF64748B))),
         const SizedBox(width: 8),
         Expanded(
           child: Text(
@@ -429,8 +438,18 @@ class _GalonDaftarTabState extends State<GalonDaftarTab> {
 
   String _formatTanggal(DateTime date) {
     final months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-      'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'Mei',
+      'Jun',
+      'Jul',
+      'Agu',
+      'Sep',
+      'Okt',
+      'Nov',
+      'Des'
     ];
     return '${date.day} ${months[date.month - 1]} ${date.year}';
   }
@@ -439,7 +458,7 @@ class _GalonDaftarTabState extends State<GalonDaftarTab> {
     final now = DateTime.now();
     final difference = now.difference(tanggalPinjam);
     final days = difference.inDays;
-    
+
     if (days == 0) {
       return 'Hari ini';
     } else if (days == 1) {
@@ -689,9 +708,8 @@ class GalonSegmentBar extends StatelessWidget {
             style: TextStyle(
               fontWeight: FontWeight.w700,
               fontSize: 13,
-              color: selected
-                  ? const Color(0xFF1E293B)
-                  : const Color(0xFF64748B),
+              color:
+                  selected ? const Color(0xFF1E293B) : const Color(0xFF64748B),
             ),
           ),
         ),

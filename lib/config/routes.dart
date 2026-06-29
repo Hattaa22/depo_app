@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../features/auth/login_peran_screen.dart';
 import '../features/auth/login_crew_screen.dart';
@@ -23,6 +24,60 @@ import '../features/manager/setting/data_pengeluaran.dart';
 import '../features/manager/setting/data_crew.dart' as setting;
 import '../features/manager/setting/manager_settings_screen.dart';
 import '../features/manager/setting/cabang_depo_screen.dart';
+
+// Route error handler widget
+class RouteNotFoundScreen extends StatelessWidget {
+  final String routeName;
+  const RouteNotFoundScreen({super.key, required this.routeName});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Route Error'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Get.back(),
+        ),
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline,
+                  size: 64, color: Color(0xFFEF4444)),
+              const SizedBox(height: 16),
+              const Text(
+                'Route Tidak Ditemukan',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Route: $routeName',
+                style: const TextStyle(fontSize: 14, color: Color(0xFF64748B)),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton.icon(
+                onPressed: () => Get.back(),
+                icon: const Icon(Icons.arrow_back),
+                label: const Text('Kembali'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF1392EC),
+                  foregroundColor: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 class AppRoutes {
   static const String pilihPeran = '/';
@@ -63,7 +118,8 @@ class AppRoutes {
         // Crew Routes
         GetPage(name: crewDashboard, page: () => const CrewMainScreen()),
         GetPage(name: crewKasir, page: () => const KasirScreen()),
-        GetPage(name: crewTransaksi, page: () => const RiwayatTransaksiScreen()),
+        GetPage(
+            name: crewTransaksi, page: () => const RiwayatTransaksiScreen()),
         GetPage(
           name: crewPembayaranQr,
           page: () {
@@ -74,28 +130,44 @@ class AppRoutes {
             );
           },
         ),
-        GetPage(name: crewDataPelanggan, page: () => const CrewDataPelangganScreen()),
+        GetPage(
+            name: crewDataPelanggan,
+            page: () => const CrewDataPelangganScreen()),
         GetPage(name: crewRiwayat, page: () => const RiwayatTransaksiScreen()),
         GetPage(name: crewGalon, page: () => const PencatatanGalonScreen()),
         GetPage(name: crewPengaturan, page: () => const PengaturanScreen()),
 
         // Manager Routes
-        GetPage(name: managerDashboard, page: () => const ManagerDashboardScreen()),
-        GetPage(name: managerDataPelanggan, page: () => const ManagerDataPelangganScreen()),
-        GetPage(name: managerLaporan, page: () => const LaporanTransaksiScreen()),
-        GetPage(name: managerAnalisis, page: () => const AnalisisKeuanganScreen()),
+        GetPage(
+            name: managerDashboard, page: () => const ManagerDashboardScreen()),
+        GetPage(
+            name: managerDataPelanggan,
+            page: () => const ManagerDataPelangganScreen()),
+        GetPage(
+            name: managerLaporan, page: () => const LaporanTransaksiScreen()),
+        GetPage(
+            name: managerAnalisis, page: () => const AnalisisKeuanganScreen()),
         GetPage(name: managerDataCrew, page: () => const DataCrewScreen()),
-        GetPage(name: managerAnalisisReport, page: () => const report.AnalisisKeuanganReportScreen()),
+        GetPage(
+            name: managerAnalisisReport,
+            page: () => const report.AnalisisKeuanganReportScreen()),
         GetPage(name: managerAssetGalon, page: () => const AssetGalonScreen()),
         GetPage(
           name: managerSettings,
           page: () => const ManagerSettingsScreen(),
         ),
         GetPage(name: managerDataProduk, page: () => const DataProdukScreen()),
-        GetPage(name: managerValidasiTransaksi, page: () => const ValidasiTransaksiScreen()),
-        GetPage(name: managerDataKategori, page: () => const DataKategoriScreen()),
-        GetPage(name: managerSettingCrew, page: () => const setting.SettingDataCrewScreen()),
-        GetPage(name: managerDataPengeluaran, page: () => const DataPengeluaranScreen()),
+        GetPage(
+            name: managerValidasiTransaksi,
+            page: () => const ValidasiTransaksiScreen()),
+        GetPage(
+            name: managerDataKategori, page: () => const DataKategoriScreen()),
+        GetPage(
+            name: managerSettingCrew,
+            page: () => const setting.SettingDataCrewScreen()),
+        GetPage(
+            name: managerDataPengeluaran,
+            page: () => const DataPengeluaranScreen()),
         GetPage(name: managerCabangDepo, page: () => const CabangDepoScreen()),
       ];
 }

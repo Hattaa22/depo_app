@@ -37,14 +37,20 @@ class LaporanController extends GetxController {
     errorMessage.value = '';
     try {
       final result = await _apiService.getSemuaTransaksi(
-        page, 20, null, null, tanggalMulai, tanggalAkhir,
+        page,
+        20,
+        null,
+        null,
+        tanggalMulai,
+        tanggalAkhir,
       );
       transaksiList.value = result.data;
       totalTransaksi.value = result.total;
       currentPage.value = result.page;
       totalPage.value = result.totalPages;
 
-      final laporan = await _apiService.getLaporanKeuangan(tanggalMulai, tanggalAkhir);
+      final laporan =
+          await _apiService.getLaporanKeuangan(tanggalMulai, tanggalAkhir);
       totalPendapatan.value = laporan.totalPendapatan.toDouble();
     } catch (e) {
       errorMessage.value = ApiErrorHelper.message(e);
@@ -57,17 +63,19 @@ class LaporanController extends GetxController {
     await loadLaporan(tanggalMulai: tanggalMulai, tanggalAkhir: tanggalAkhir);
   }
 
-  Future<void> exportLaporan(String tanggalMulai, String tanggalAkhir, String format) async {
+  Future<void> exportLaporan(
+      String tanggalMulai, String tanggalAkhir, String format) async {
     isLoading.value = true;
     try {
       // Implementasi export sesuai API
-      exportFilePath.value = '/storage/laporan_$tanggalMulai-$tanggalAkhir.$format';
-      Get.snackbar('Berhasil', 'Laporan berhasil diekspor ke ${exportFilePath.value}');
+      exportFilePath.value =
+          '/storage/laporan_$tanggalMulai-$tanggalAkhir.$format';
+      Get.snackbar(
+          'Berhasil', 'Laporan berhasil diekspor ke ${exportFilePath.value}');
     } catch (e) {
       errorMessage.value = ApiErrorHelper.message(e);
       Get.snackbar('Error', errorMessage.value,
-          backgroundColor: Color(0xFFE63946),
-          colorText: Color(0xFFFFFFFF));
+          backgroundColor: Color(0xFFE63946), colorText: Color(0xFFFFFFFF));
     } finally {
       isLoading.value = false;
     }

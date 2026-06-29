@@ -31,7 +31,7 @@ class ManagerBottomNav extends StatelessWidget {
         border: Border(top: BorderSide(color: Colors.grey.shade100, width: 1)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha: 0.06),
             blurRadius: 20,
             offset: const Offset(0, -4),
           ),
@@ -58,7 +58,7 @@ class ManagerBottomNav extends StatelessWidget {
                         item.icon,
                         color: isActive
                             ? _primary
-                            : _primary.withOpacity(0.45),
+                            : _primary.withValues(alpha: 0.45),
                         size: 26,
                       ),
                       const SizedBox(height: 2),

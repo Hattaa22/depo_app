@@ -52,7 +52,8 @@ class ModernDateRangeSheet {
         data: _pickerTheme(ctx),
         child: Dialog(
           clipBehavior: Clip.antiAlias,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           child: DateRangePickerDialog(
             firstDate: DateTime(2020),
             lastDate: now,
@@ -151,22 +152,30 @@ class _SheetBodyState extends State<_SheetBody> {
               spacing: 8,
               runSpacing: 8,
               children: [
-                _chip('Hari ini', DateTimeRange(
-                  start: DateTime(now.year, now.month, now.day),
-                  end: DateTime(now.year, now.month, now.day),
-                )),
-                _chip('7 hari', DateTimeRange(
-                  start: now.subtract(const Duration(days: 6)),
-                  end: now,
-                )),
-                _chip('Bulan ini', DateTimeRange(
-                  start: DateTime(now.year, now.month, 1),
-                  end: now,
-                )),
-                _chip('Bulan lalu', DateTimeRange(
-                  start: DateTime(now.year, now.month - 1, 1),
-                  end: DateTime(now.year, now.month, 0),
-                )),
+                _chip(
+                    'Hari ini',
+                    DateTimeRange(
+                      start: DateTime(now.year, now.month, now.day),
+                      end: DateTime(now.year, now.month, now.day),
+                    )),
+                _chip(
+                    '7 hari',
+                    DateTimeRange(
+                      start: now.subtract(const Duration(days: 6)),
+                      end: now,
+                    )),
+                _chip(
+                    'Bulan ini',
+                    DateTimeRange(
+                      start: DateTime(now.year, now.month, 1),
+                      end: now,
+                    )),
+                _chip(
+                    'Bulan lalu',
+                    DateTimeRange(
+                      start: DateTime(now.year, now.month - 1, 1),
+                      end: DateTime(now.year, now.month, 0),
+                    )),
               ],
             ),
             const SizedBox(height: 12),
@@ -177,7 +186,8 @@ class _SheetBodyState extends State<_SheetBody> {
                 onTap: _bukaKalender,
                 borderRadius: BorderRadius.circular(12),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                   child: Row(
                     children: [
                       const Icon(Icons.calendar_today_rounded,
@@ -245,7 +255,8 @@ class _SheetBodyState extends State<_SheetBody> {
   }
 
   Widget _chip(String label, DateTimeRange range) {
-    final selected = _isSameDay(_start, range.start) && _isSameDay(_end, range.end);
+    final selected =
+        _isSameDay(_start, range.start) && _isSameDay(_end, range.end);
     return FilterChip(
       label: Text(label),
       selected: selected,

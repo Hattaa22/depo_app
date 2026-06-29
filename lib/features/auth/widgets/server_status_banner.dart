@@ -66,7 +66,7 @@ class _ServerStatusBannerState extends State<ServerStatusBanner> {
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: fg.withOpacity(0.3)),
+        border: Border.all(color: fg.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -94,7 +94,7 @@ class _ServerStatusBannerState extends State<ServerStatusBanner> {
           const SizedBox(height: 6),
           Text(
             ApiConfig.baseUrl,
-            style: TextStyle(fontSize: 11, color: fg.withOpacity(0.9)),
+            style: TextStyle(fontSize: 11, color: fg.withValues(alpha: 0.9)),
           ),
           if (_ok == false) ...[
             const SizedBox(height: 8),

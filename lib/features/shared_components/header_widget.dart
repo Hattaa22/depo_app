@@ -43,7 +43,7 @@ class HeaderWidget extends StatelessWidget {
                       subtitle!,
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.white.withOpacity(0.8),
+                        color: Colors.white.withValues(alpha: 0.8),
                       ),
                     ),
                   ],
@@ -83,7 +83,9 @@ class StatCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(title, style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary)),
+                Text(title,
+                    style: const TextStyle(
+                        fontSize: 12, color: AppTheme.textSecondary)),
                 Icon(icon, color: color ?? AppTheme.primaryColor, size: 20),
               ],
             ),

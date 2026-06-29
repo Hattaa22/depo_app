@@ -36,7 +36,8 @@ class PengeluaranController extends GetxController {
   Future<void> loadKategoriPengeluaran() async {
     try {
       final allKategori = await _apiService.getSemuaKategori();
-      kategoriList.value = allKategori.where((k) => k.tipe == 'pengeluaran').toList();
+      kategoriList.value =
+          allKategori.where((k) => k.tipe == 'pengeluaran').toList();
     } catch (e) {
       debugPrint('Gagal memuat kategori pengeluaran: $e');
     }

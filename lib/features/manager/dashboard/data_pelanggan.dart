@@ -35,7 +35,7 @@ class ManagerDataPelangganScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.04),
+                        color: Colors.black.withValues(alpha: 0.04),
                         blurRadius: 12,
                         offset: const Offset(0, 4),
                       ),
@@ -45,12 +45,15 @@ class ManagerDataPelangganScreen extends StatelessWidget {
                     controller: searchCtrl,
                     decoration: InputDecoration(
                       hintText: 'Cari pelanggan...',
-                      hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 14),
-                      prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF94A3B8)),
+                      hintStyle: const TextStyle(
+                          color: Color(0xFF94A3B8), fontSize: 14),
+                      prefixIcon: const Icon(Icons.search_rounded,
+                          color: Color(0xFF94A3B8)),
                       suffixIcon: Obx(() {
                         return searchQuery.isNotEmpty
                             ? IconButton(
-                                icon: const Icon(Icons.clear_rounded, color: Color(0xFF64748B)),
+                                icon: const Icon(Icons.clear_rounded,
+                                    color: Color(0xFF64748B)),
                                 onPressed: () {
                                   searchCtrl.clear();
                                   searchQuery.value = '';
@@ -60,7 +63,8 @@ class ManagerDataPelangganScreen extends StatelessWidget {
                             : const SizedBox.shrink();
                       }),
                       border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 16),
                     ),
                     onChanged: (v) {
                       searchQuery.value = v;
@@ -122,7 +126,8 @@ class ManagerDataPelangganScreen extends StatelessWidget {
                           SizedBox(height: 12),
                           Text(
                             'Belum ada data pelanggan.',
-                            style: TextStyle(fontSize: 14, color: Color(0xFF94A3B8)),
+                            style: TextStyle(
+                                fontSize: 14, color: Color(0xFF94A3B8)),
                           ),
                         ],
                       ),
@@ -210,7 +215,7 @@ class ManagerDataPelangganScreen extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.15),
+                    color: Colors.white.withValues(alpha: 0.15),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -228,10 +233,10 @@ class ManagerDataPelangganScreen extends StatelessWidget {
           Obx(() => Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.15),
+                  color: Colors.white.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.2),
                   ),
                 ),
                 child: Row(
@@ -245,7 +250,7 @@ class ManagerDataPelangganScreen extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w800,
-                              color: Colors.white.withOpacity(0.7),
+                              color: Colors.white.withValues(alpha: 0.7),
                               letterSpacing: 1.5,
                             ),
                           ),
@@ -264,7 +269,7 @@ class ManagerDataPelangganScreen extends StatelessWidget {
                     Container(
                       width: 1,
                       height: 40,
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withValues(alpha: 0.2),
                     ),
                     Expanded(
                       child: Padding(
@@ -277,7 +282,7 @@ class ManagerDataPelangganScreen extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w800,
-                                color: Colors.white.withOpacity(0.7),
+                                color: Colors.white.withValues(alpha: 0.7),
                                 letterSpacing: 1.5,
                               ),
                             ),
@@ -324,7 +329,7 @@ class ManagerDataPelangganScreen extends StatelessWidget {
         border: Border.all(color: const Color(0xFFF1F5F9)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -337,7 +342,7 @@ class ManagerDataPelangganScreen extends StatelessWidget {
             width: 52,
             height: 52,
             decoration: BoxDecoration(
-              color: avatarColor.withOpacity(0.12),
+              color: avatarColor.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(16),
             ),
             alignment: Alignment.center,
@@ -368,7 +373,8 @@ class ManagerDataPelangganScreen extends StatelessWidget {
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    const Icon(Icons.phone_rounded, size: 12, color: Color(0xFF94A3B8)),
+                    const Icon(Icons.phone_rounded,
+                        size: 12, color: Color(0xFF94A3B8)),
                     const SizedBox(width: 6),
                     Text(
                       p.noHp.isEmpty ? '-' : p.noHp,
@@ -384,7 +390,8 @@ class ManagerDataPelangganScreen extends StatelessWidget {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(Icons.location_on_rounded, size: 12, color: Color(0xFF94A3B8)),
+                      const Icon(Icons.location_on_rounded,
+                          size: 12, color: Color(0xFF94A3B8)),
                       const SizedBox(width: 6),
                       Expanded(
                         child: Text(
@@ -437,7 +444,8 @@ class ManagerDataPelangganScreen extends StatelessWidget {
                 value: 'hapus',
                 child: Row(
                   children: [
-                    Icon(Icons.delete_outline, size: 18, color: Color(0xFFEF4444)),
+                    Icon(Icons.delete_outline,
+                        size: 18, color: Color(0xFFEF4444)),
                     SizedBox(width: 8),
                     Text('Hapus', style: TextStyle(color: Color(0xFFEF4444))),
                   ],
@@ -461,7 +469,7 @@ class ManagerDataPelangganScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: _primary.withOpacity(0.4),
+              color: _primary.withValues(alpha: 0.4),
               blurRadius: 20,
               offset: const Offset(0, 8),
             ),
@@ -514,7 +522,8 @@ class ManagerDataPelangganScreen extends StatelessWidget {
                 const SizedBox(height: 20),
                 _dialogField(namaCtrl, 'Nama Lengkap', Icons.person_outline),
                 const SizedBox(height: 12),
-                _dialogField(noHpCtrl, 'No. HP', Icons.phone_android_rounded, keyboardType: TextInputType.phone),
+                _dialogField(noHpCtrl, 'No. HP', Icons.phone_android_rounded,
+                    keyboardType: TextInputType.phone),
                 const SizedBox(height: 12),
                 _dialogField(alamatCtrl, 'Alamat', Icons.location_on_outlined),
                 const SizedBox(height: 24),
@@ -525,10 +534,12 @@ class ManagerDataPelangganScreen extends StatelessWidget {
                         onPressed: () => Get.back(),
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14)),
                           side: const BorderSide(color: Color(0xFFE2E8F0)),
                         ),
-                        child: const Text('Batal', style: TextStyle(color: Color(0xFF64748B))),
+                        child: const Text('Batal',
+                            style: TextStyle(color: Color(0xFF64748B))),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -536,7 +547,8 @@ class ManagerDataPelangganScreen extends StatelessWidget {
                       child: ElevatedButton(
                         onPressed: () {
                           if (namaCtrl.text.trim().isEmpty) {
-                            Get.snackbar('Input Invalid', 'Nama lengkap wajib diisi');
+                            Get.snackbar(
+                                'Input Invalid', 'Nama lengkap wajib diisi');
                             return;
                           }
                           Get.back();
@@ -550,7 +562,8 @@ class ManagerDataPelangganScreen extends StatelessWidget {
                           backgroundColor: _primary,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14)),
                           elevation: 0,
                         ),
                         child: const Text('Simpan'),
@@ -592,7 +605,8 @@ class ManagerDataPelangganScreen extends StatelessWidget {
                 const SizedBox(height: 20),
                 _dialogField(namaCtrl, 'Nama Lengkap', Icons.person_outline),
                 const SizedBox(height: 12),
-                _dialogField(noHpCtrl, 'No. HP', Icons.phone_android_rounded, keyboardType: TextInputType.phone),
+                _dialogField(noHpCtrl, 'No. HP', Icons.phone_android_rounded,
+                    keyboardType: TextInputType.phone),
                 const SizedBox(height: 12),
                 _dialogField(alamatCtrl, 'Alamat', Icons.location_on_outlined),
                 const SizedBox(height: 24),
@@ -603,10 +617,12 @@ class ManagerDataPelangganScreen extends StatelessWidget {
                         onPressed: () => Get.back(),
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14)),
                           side: const BorderSide(color: Color(0xFFE2E8F0)),
                         ),
-                        child: const Text('Batal', style: TextStyle(color: Color(0xFF64748B))),
+                        child: const Text('Batal',
+                            style: TextStyle(color: Color(0xFF64748B))),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -614,7 +630,8 @@ class ManagerDataPelangganScreen extends StatelessWidget {
                       child: ElevatedButton(
                         onPressed: () {
                           if (namaCtrl.text.trim().isEmpty) {
-                            Get.snackbar('Input Invalid', 'Nama lengkap wajib diisi');
+                            Get.snackbar(
+                                'Input Invalid', 'Nama lengkap wajib diisi');
                             return;
                           }
                           Get.back();
@@ -628,7 +645,8 @@ class ManagerDataPelangganScreen extends StatelessWidget {
                           backgroundColor: _primary,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14)),
                           elevation: 0,
                         ),
                         child: const Text('Simpan'),
@@ -690,10 +708,12 @@ class ManagerDataPelangganScreen extends StatelessWidget {
                       onPressed: () => Get.back(),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14)),
                         side: const BorderSide(color: Color(0xFFE2E8F0)),
                       ),
-                      child: const Text('Batal', style: TextStyle(color: Color(0xFF64748B))),
+                      child: const Text('Batal',
+                          style: TextStyle(color: Color(0xFF64748B))),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -707,7 +727,8 @@ class ManagerDataPelangganScreen extends StatelessWidget {
                         backgroundColor: const Color(0xFFEF4444),
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14)),
                         elevation: 0,
                       ),
                       child: const Text('Hapus'),

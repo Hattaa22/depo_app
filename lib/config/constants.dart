@@ -45,6 +45,7 @@ class AppConstants {
   static const String statusMenungguValidasi = 'menungguValidasi';
   static const String statusSelesai = 'selesai';
   static const String statusDibatalkan = 'dibatalkan';
+
   /// Body validasi API
   static const String validasiSukses = 'sukses';
   static const String validasiGagal = 'gagal';

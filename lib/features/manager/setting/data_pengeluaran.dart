@@ -56,7 +56,8 @@ class _DataPengeluaranScreenState extends State<DataPengeluaranScreen> {
           _buildHeader(context),
           Expanded(
             child: Obx(() {
-              if (controller.isLoading.value && controller.pengeluaranList.isEmpty) {
+              if (controller.isLoading.value &&
+                  controller.pengeluaranList.isEmpty) {
                 return const Center(
                   child: CircularProgressIndicator(color: _primary),
                 );
@@ -74,11 +75,15 @@ class _DataPengeluaranScreenState extends State<DataPengeluaranScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.payments_outlined, size: 64, color: Color(0xFFCBD5E1)),
+                      Icon(Icons.payments_outlined,
+                          size: 64, color: Color(0xFFCBD5E1)),
                       SizedBox(height: 16),
                       Text(
                         'Belum ada catatan pengeluaran',
-                        style: TextStyle(fontSize: 14, color: Color(0xFF94A3B8), fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                            fontSize: 14,
+                            color: Color(0xFF94A3B8),
+                            fontWeight: FontWeight.w600),
                       ),
                     ],
                   ),
@@ -102,33 +107,35 @@ class _DataPengeluaranScreenState extends State<DataPengeluaranScreen> {
         ],
       ),
       bottomNavigationBar: Container(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              border: Border(top: BorderSide(color: Color(0xFFE2E8F0))),
-            ),
-            child: SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: ElevatedButton.icon(
-                onPressed: () => _showTambahDialog(context, controller),
-                icon: const Icon(Icons.add_circle_rounded, color: Colors.white, size: 20),
-                label: const Text(
-                  'Catat Pengeluaran Baru',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _primary,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  elevation: 0,
-                ),
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          border: Border(top: BorderSide(color: Color(0xFFE2E8F0))),
+        ),
+        child: SizedBox(
+          width: double.infinity,
+          height: 52,
+          child: ElevatedButton.icon(
+            onPressed: () => _showTambahDialog(context, controller),
+            icon: const Icon(Icons.add_circle_rounded,
+                color: Colors.white, size: 20),
+            label: const Text(
+              'Catat Pengeluaran Baru',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
               ),
             ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: _primary,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
+              elevation: 0,
+            ),
           ),
+        ),
+      ),
     );
   }
 
@@ -181,9 +188,11 @@ class _DataPengeluaranScreenState extends State<DataPengeluaranScreen> {
           Obx(() {
             final controller = Get.find<PengeluaranController>();
             if (controller.pengeluaranList.isNotEmpty) {
-              final total = controller.pengeluaranList.fold<double>(0, (sum, item) => sum + item.nominal);
+              final total = controller.pengeluaranList
+                  .fold<double>(0, (sum, item) => sum + item.nominal);
               return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(20),
@@ -208,7 +217,8 @@ class _DataPengeluaranScreenState extends State<DataPengeluaranScreen> {
   Widget _buildExpenseItem(Pengeluaran item, PengeluaranController controller) {
     // Cari ikon kategori (dummy default jika tidak ketemu)
     // Di backend, kategori dicari berdasarkan kategoriId
-    final kat = controller.kategoriList.firstWhereOrNull((k) => k.id == item.kategoriId);
+    final kat = controller.kategoriList
+        .firstWhereOrNull((k) => k.id == item.kategoriId);
     final iconName = kat?.ikon ?? 'payments';
     final iconData = _iconMap[iconName] ?? Icons.payments_rounded;
 
@@ -244,7 +254,9 @@ class _DataPengeluaranScreenState extends State<DataPengeluaranScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  item.keterangan.isNotEmpty ? item.keterangan : 'Pengeluaran tanpa catatan',
+                  item.keterangan.isNotEmpty
+                      ? item.keterangan
+                      : 'Pengeluaran tanpa catatan',
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
@@ -265,7 +277,9 @@ class _DataPengeluaranScreenState extends State<DataPengeluaranScreen> {
                       ),
                     ),
                     const SizedBox(width: 6),
-                    const Text('•', style: TextStyle(color: Color(0xFF94A3B8), fontSize: 11)),
+                    const Text('•',
+                        style:
+                            TextStyle(color: Color(0xFF94A3B8), fontSize: 11)),
                     const SizedBox(width: 6),
                     Text(
                       Formatters.date(item.tanggal),
@@ -314,7 +328,8 @@ class _DataPengeluaranScreenState extends State<DataPengeluaranScreen> {
     );
   }
 
-  void _showTambahDialog(BuildContext context, PengeluaranController controller) {
+  void _showTambahDialog(
+      BuildContext context, PengeluaranController controller) {
     if (controller.kategoriList.isEmpty) {
       Get.snackbar(
         'Kategori Kosong',
@@ -352,14 +367,16 @@ class _DataPengeluaranScreenState extends State<DataPengeluaranScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                
+
                 // Dropdown Kategori
                 Obx(() => DropdownButtonFormField<String>(
-                      value: kategoriId.value,
+                      initialValue: kategoriId.value,
                       decoration: InputDecoration(
                         labelText: 'Kategori Pengeluaran',
-                        prefixIcon: const Icon(Icons.pie_chart_outline_rounded, color: Color(0xFF94A3B8), size: 20),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        prefixIcon: const Icon(Icons.pie_chart_outline_rounded,
+                            color: Color(0xFF94A3B8), size: 20),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12)),
                         filled: true,
                         fillColor: const Color(0xFFF8FAFC),
                       ),
@@ -374,15 +391,17 @@ class _DataPengeluaranScreenState extends State<DataPengeluaranScreen> {
                       },
                     )),
                 const SizedBox(height: 12),
-                
+
                 // Input Nominal
                 TextField(
                   controller: nominalCtrl,
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     labelText: 'Nominal (Rp)',
-                    prefixIcon: const Icon(Icons.payments_outlined, color: Color(0xFF94A3B8), size: 20),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    prefixIcon: const Icon(Icons.payments_outlined,
+                        color: Color(0xFF94A3B8), size: 20),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
                     filled: true,
                     fillColor: const Color(0xFFF8FAFC),
                   ),
@@ -402,13 +421,16 @@ class _DataPengeluaranScreenState extends State<DataPengeluaranScreen> {
                     );
                     if (picked != null) {
                       tanggalTerpilih = picked;
-                      tanggalCtrl.text = picked.toIso8601String().substring(0, 10);
+                      tanggalCtrl.text =
+                          picked.toIso8601String().substring(0, 10);
                     }
                   },
                   decoration: InputDecoration(
                     labelText: 'Tanggal',
-                    prefixIcon: const Icon(Icons.calendar_today_rounded, color: Color(0xFF94A3B8), size: 20),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    prefixIcon: const Icon(Icons.calendar_today_rounded,
+                        color: Color(0xFF94A3B8), size: 20),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
                     filled: true,
                     fillColor: const Color(0xFFF8FAFC),
                   ),
@@ -420,14 +442,16 @@ class _DataPengeluaranScreenState extends State<DataPengeluaranScreen> {
                   controller: keteranganCtrl,
                   decoration: InputDecoration(
                     labelText: 'Keterangan/Catatan',
-                    prefixIcon: const Icon(Icons.notes_rounded, color: Color(0xFF94A3B8), size: 20),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    prefixIcon: const Icon(Icons.notes_rounded,
+                        color: Color(0xFF94A3B8), size: 20),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
                     filled: true,
                     fillColor: const Color(0xFFF8FAFC),
                   ),
                 ),
                 const SizedBox(height: 24),
-                
+
                 // Tombol Dialog
                 Row(
                   children: [
@@ -436,12 +460,15 @@ class _DataPengeluaranScreenState extends State<DataPengeluaranScreen> {
                         onPressed: () => Get.back(),
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14)),
                           side: const BorderSide(color: Color(0xFFE2E8F0)),
                         ),
                         child: const Text(
                           'Batal',
-                          style: TextStyle(color: Color(0xFF64748B), fontWeight: FontWeight.w700),
+                          style: TextStyle(
+                              color: Color(0xFF64748B),
+                              fontWeight: FontWeight.w700),
                         ),
                       ),
                     ),
@@ -452,7 +479,7 @@ class _DataPengeluaranScreenState extends State<DataPengeluaranScreen> {
                           final nominalStr = nominalCtrl.text.trim();
                           final nominal = double.tryParse(nominalStr) ?? 0;
                           final keterangan = keteranganCtrl.text.trim();
-                          
+
                           if (nominal <= 0) {
                             Get.snackbar(
                               'Error',
@@ -462,7 +489,7 @@ class _DataPengeluaranScreenState extends State<DataPengeluaranScreen> {
                             );
                             return;
                           }
-                          
+
                           if (keterangan.isEmpty) {
                             Get.snackbar(
                               'Error',
@@ -485,7 +512,8 @@ class _DataPengeluaranScreenState extends State<DataPengeluaranScreen> {
                           backgroundColor: _primary,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14)),
                           elevation: 0,
                         ),
                         child: const Text(
@@ -508,12 +536,16 @@ class _DataPengeluaranScreenState extends State<DataPengeluaranScreen> {
     Get.dialog(
       AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Hapus Catatan', style: TextStyle(fontWeight: FontWeight.w800)),
-        content: const Text('Apakah Anda yakin ingin menghapus catatan pengeluaran ini?'),
+        title: const Text('Hapus Catatan',
+            style: TextStyle(fontWeight: FontWeight.w800)),
+        content: const Text(
+            'Apakah Anda yakin ingin menghapus catatan pengeluaran ini?'),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const Text('Batal', style: TextStyle(color: Color(0xFF64748B), fontWeight: FontWeight.w700)),
+            child: const Text('Batal',
+                style: TextStyle(
+                    color: Color(0xFF64748B), fontWeight: FontWeight.w700)),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -523,10 +555,12 @@ class _DataPengeluaranScreenState extends State<DataPengeluaranScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: _danger,
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
               elevation: 0,
             ),
-            child: const Text('Hapus', style: TextStyle(fontWeight: FontWeight.w700)),
+            child: const Text('Hapus',
+                style: TextStyle(fontWeight: FontWeight.w700)),
           ),
         ],
       ),

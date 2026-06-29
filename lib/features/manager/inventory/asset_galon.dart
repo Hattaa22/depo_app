@@ -52,15 +52,15 @@ class _AssetGalonScreenState extends State<AssetGalonScreen> {
           backgroundColor: Colors.orange, colorText: Colors.white);
       return;
     }
-    
+
     final ok = _isOut
         ? await galon.pinjamGalon(
-            amount, 
+            amount,
             pelangganId: _selectedPelangganId,
             tanggal: _selectedTanggal,
           )
         : await galon.kembalikanGalon(
-            amount, 
+            amount,
             pelangganId: _selectedPelangganId,
             tanggal: _selectedTanggal,
           );
@@ -122,8 +122,18 @@ class _AssetGalonScreenState extends State<AssetGalonScreen> {
 
   String _formatTanggal(DateTime date) {
     final months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-      'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'Mei',
+      'Jun',
+      'Jul',
+      'Agu',
+      'Sep',
+      'Okt',
+      'Nov',
+      'Des'
     ];
     return '${date.day} ${months[date.month - 1]} ${date.year}';
   }
@@ -326,7 +336,7 @@ class _AssetGalonScreenState extends State<AssetGalonScreen> {
           const SizedBox(height: 32),
           ..._buildPelangganSelector(),
           const SizedBox(height: 16),
-          
+
           // Tanggal Picker
           GestureDetector(
             onTap: _pilihTanggal,
@@ -342,7 +352,9 @@ class _AssetGalonScreenState extends State<AssetGalonScreen> {
                   Icon(
                     Icons.calendar_today_rounded,
                     size: 20,
-                    color: _selectedTanggal != null ? _primary : const Color(0xFF94A3B8),
+                    color: _selectedTanggal != null
+                        ? _primary
+                        : const Color(0xFF94A3B8),
                   ),
                   const SizedBox(width: 12),
                   Text(
@@ -367,7 +379,7 @@ class _AssetGalonScreenState extends State<AssetGalonScreen> {
               ),
             ),
           ),
-          
+
           const SizedBox(height: 24),
           Column(
             children: [
@@ -436,7 +448,8 @@ class _AssetGalonScreenState extends State<AssetGalonScreen> {
           ),
           const SizedBox(height: 24),
           Obx(() => GestureDetector(
-                onTap: galon.isLoading.value ? null : () => _onKonfirmasi(galon),
+                onTap:
+                    galon.isLoading.value ? null : () => _onKonfirmasi(galon),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 150),
                   padding: const EdgeInsets.symmetric(vertical: 20),
@@ -531,7 +544,7 @@ class _AssetGalonScreenState extends State<AssetGalonScreen> {
               Text(
                 'MANAJEMEN GALON',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.7),
+                  color: Colors.white.withValues(alpha: 0.7),
                   fontSize: 9,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 2,
@@ -574,9 +587,8 @@ class _AssetGalonScreenState extends State<AssetGalonScreen> {
       ),
       const SizedBox(height: 8),
       Obx(() {
-        final list = pelangganCtrl.pelangganList
-            .where((p) => p.isAktif)
-            .toList();
+        final list =
+            pelangganCtrl.pelangganList.where((p) => p.isAktif).toList();
         // Ensure selected ID exists in list, otherwise reset
         if (_selectedPelangganId != null &&
             !list.any((p) => p.id == _selectedPelangganId)) {
@@ -588,12 +600,14 @@ class _AssetGalonScreenState extends State<AssetGalonScreen> {
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: _selectedPelangganId != null ? _primary : const Color(0xFFE2E8F0),
+              color: _selectedPelangganId != null
+                  ? _primary
+                  : const Color(0xFFE2E8F0),
               width: _selectedPelangganId != null ? 2 : 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.03),
+                color: Colors.black.withValues(alpha: 0.03),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -607,7 +621,8 @@ class _AssetGalonScreenState extends State<AssetGalonScreen> {
                 'Pilih pelanggan...',
                 style: TextStyle(fontSize: 14, color: Color(0xFF94A3B8)),
               ),
-              icon: const Icon(Icons.keyboard_arrow_down_rounded, color: _primary),
+              icon: const Icon(Icons.keyboard_arrow_down_rounded,
+                  color: _primary),
               items: list.map((p) {
                 return DropdownMenuItem<String>(
                   value: p.id,
@@ -654,7 +669,7 @@ class _AssetGalonScreenState extends State<AssetGalonScreen> {
           boxShadow: [
             if (isActive)
               BoxShadow(
-                color: activeColor.withOpacity(0.1),
+                color: activeColor.withValues(alpha: 0.1),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               )

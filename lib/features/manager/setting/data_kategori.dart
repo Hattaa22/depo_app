@@ -103,35 +103,34 @@ class _DataKategoriScreenState extends State<DataKategoriScreen> {
         ],
       ),
       bottomNavigationBar: Container(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              border: Border(top: BorderSide(color: Color(0xFFE2E8F0))),
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          border: Border(top: BorderSide(color: Color(0xFFE2E8F0))),
+        ),
+        child: SizedBox(
+          width: double.infinity,
+          height: 52,
+          child: ElevatedButton.icon(
+            onPressed: () => _showTambahDialog(Get.find<ProdukController>()),
+            icon: const Icon(Icons.add_circle_rounded,
+                color: Colors.white, size: 20),
+            label: const Text(
+              'Tambah Kategori Baru',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700),
             ),
-            child: SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: ElevatedButton.icon(
-                onPressed: () =>
-                    _showTambahDialog(Get.find<ProdukController>()),
-                icon: const Icon(Icons.add_circle_rounded,
-                    color: Colors.white, size: 20),
-                label: const Text(
-                  'Tambah Kategori Baru',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _primary,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16)),
-                  elevation: 0,
-                ),
-              ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: _primary,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
+              elevation: 0,
             ),
           ),
+        ),
+      ),
     );
   }
 
@@ -218,7 +217,7 @@ class _DataKategoriScreenState extends State<DataKategoriScreen> {
             boxShadow: isSelected
                 ? [
                     BoxShadow(
-                      color: _primary.withOpacity(0.3),
+                      color: _primary.withValues(alpha: 0.3),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     )
@@ -230,8 +229,7 @@ class _DataKategoriScreenState extends State<DataKategoriScreen> {
             label,
             style: TextStyle(
               color: isSelected ? Colors.white : const Color(0xFF64748B),
-              fontWeight:
-                  isSelected ? FontWeight.w700 : FontWeight.w500,
+              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
               fontSize: 14,
             ),
           ),
@@ -255,10 +253,9 @@ class _DataKategoriScreenState extends State<DataKategoriScreen> {
         ),
         const Spacer(),
         Container(
-          padding:
-              const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
-            color: accentColor.withOpacity(0.1),
+            color: accentColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
@@ -277,8 +274,8 @@ class _DataKategoriScreenState extends State<DataKategoriScreen> {
 
   // ── List Item ────────────────────────────────────────────────────────────────
 
-  Widget _buildItem(KategoriProduk k, bool isPemasukan, int index,
-      ProdukController produk) {
+  Widget _buildItem(
+      KategoriProduk k, bool isPemasukan, int index, ProdukController produk) {
     const pColors = [
       Color(0xFF1392EC),
       Color(0xFF0B5FA0),
@@ -306,15 +303,14 @@ class _DataKategoriScreenState extends State<DataKategoriScreen> {
         border: Border.all(color: const Color(0xFFF1F5F9)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
         ],
       ),
       child: Padding(
-        padding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
           children: [
             // Icon
@@ -322,9 +318,7 @@ class _DataKategoriScreenState extends State<DataKategoriScreen> {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: isLocked
-                    ? color.withOpacity(0.12)
-                    : color,
+                color: isLocked ? color.withValues(alpha: 0.12) : color,
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Icon(iconData,
@@ -391,8 +385,8 @@ class _DataKategoriScreenState extends State<DataKategoriScreen> {
                     icon: Icons.delete_outline_rounded,
                     bg: const Color(0xFFFEF2F2),
                     fg: const Color(0xFFEF4444),
-                    onTap: () => _confirmHapus(
-                        k.nama, () => produk.hapusKategori(k.id)),
+                    onTap: () =>
+                        _confirmHapus(k.nama, () => produk.hapusKategori(k.id)),
                   ),
                 ],
               ),
@@ -427,14 +421,13 @@ class _DataKategoriScreenState extends State<DataKategoriScreen> {
   void _showTambahDialog(ProdukController produk) {
     final namaCtrl = TextEditingController();
     final deskripsiCtrl = TextEditingController();
-    String selectedTipe =
-        _selectedTab == 0 ? 'pemasukan' : 'pengeluaran';
+    String selectedTipe = _selectedTab == 0 ? 'pemasukan' : 'pengeluaran';
 
     Get.dialog(
       StatefulBuilder(
         builder: (ctx, setS) => Dialog(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(24)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Column(
@@ -449,8 +442,7 @@ class _DataKategoriScreenState extends State<DataKategoriScreen> {
                       color: Color(0xFF1E293B)),
                 ),
                 const SizedBox(height: 20),
-                _inputField(namaCtrl, 'Nama Kategori',
-                    Icons.label_rounded),
+                _inputField(namaCtrl, 'Nama Kategori', Icons.label_rounded),
                 const SizedBox(height: 12),
                 _inputField(deskripsiCtrl, 'Sub-tipe / Keterangan',
                     Icons.notes_rounded),
@@ -460,8 +452,7 @@ class _DataKategoriScreenState extends State<DataKategoriScreen> {
                     _chipSelect('Pemasukan', 'pemasukan', selectedTipe,
                         (v) => setS(() => selectedTipe = v)),
                     const SizedBox(width: 8),
-                    _chipSelect('Pengeluaran', 'pengeluaran',
-                        selectedTipe,
+                    _chipSelect('Pengeluaran', 'pengeluaran', selectedTipe,
                         (v) => setS(() => selectedTipe = v)),
                   ],
                 ),
@@ -487,13 +478,11 @@ class _DataKategoriScreenState extends State<DataKategoriScreen> {
 
   void _showEditDialog(KategoriProduk k, ProdukController produk) {
     final namaCtrl = TextEditingController(text: k.nama);
-    final deskripsiCtrl =
-        TextEditingController(text: k.deskripsi ?? '');
+    final deskripsiCtrl = TextEditingController(text: k.deskripsi ?? '');
 
     Get.dialog(
       Dialog(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
@@ -510,8 +499,8 @@ class _DataKategoriScreenState extends State<DataKategoriScreen> {
               const SizedBox(height: 20),
               _inputField(namaCtrl, 'Nama Kategori', Icons.label_rounded),
               const SizedBox(height: 12),
-              _inputField(deskripsiCtrl, 'Sub-tipe / Keterangan',
-                  Icons.notes_rounded),
+              _inputField(
+                  deskripsiCtrl, 'Sub-tipe / Keterangan', Icons.notes_rounded),
               const SizedBox(height: 24),
               _dialogActions(onSave: () {
                 if (namaCtrl.text.trim().isNotEmpty) {
@@ -532,8 +521,7 @@ class _DataKategoriScreenState extends State<DataKategoriScreen> {
   void _confirmHapus(String nama, VoidCallback onHapus) {
     Get.dialog(
       Dialog(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         child: Padding(
           padding: const EdgeInsets.all(28),
           child: Column(
@@ -558,9 +546,7 @@ class _DataKategoriScreenState extends State<DataKategoriScreen> {
                 'Kategori "$nama" akan dihapus permanen.',
                 textAlign: TextAlign.center,
                 style: const TextStyle(
-                    fontSize: 13,
-                    color: Color(0xFF64748B),
-                    height: 1.5),
+                    fontSize: 13, color: Color(0xFF64748B), height: 1.5),
               ),
               const SizedBox(height: 24),
               Row(
@@ -569,16 +555,13 @@ class _DataKategoriScreenState extends State<DataKategoriScreen> {
                     child: OutlinedButton(
                       onPressed: () => Get.back(),
                       style: OutlinedButton.styleFrom(
-                        padding:
-                            const EdgeInsets.symmetric(vertical: 14),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14)),
-                        side: const BorderSide(
-                            color: Color(0xFFE2E8F0)),
+                        side: const BorderSide(color: Color(0xFFE2E8F0)),
                       ),
                       child: const Text('Batal',
-                          style:
-                              TextStyle(color: Color(0xFF64748B))),
+                          style: TextStyle(color: Color(0xFF64748B))),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -591,8 +574,7 @@ class _DataKategoriScreenState extends State<DataKategoriScreen> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFEF4444),
                         foregroundColor: Colors.white,
-                        padding:
-                            const EdgeInsets.symmetric(vertical: 14),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14)),
                         elevation: 0,
@@ -611,16 +593,13 @@ class _DataKategoriScreenState extends State<DataKategoriScreen> {
 
   // ── Helpers ──────────────────────────────────────────────────────────────────
 
-  Widget _inputField(
-      TextEditingController ctrl, String label, IconData icon) {
+  Widget _inputField(TextEditingController ctrl, String label, IconData icon) {
     return TextField(
       controller: ctrl,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon:
-            Icon(icon, color: const Color(0xFF94A3B8), size: 20),
-        border:
-            OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        prefixIcon: Icon(icon, color: const Color(0xFF94A3B8), size: 20),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
@@ -642,8 +621,7 @@ class _DataKategoriScreenState extends State<DataKategoriScreen> {
       onTap: () => onTap(value),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 150),
-        padding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected ? _primary : const Color(0xFFF1F5F9),
           borderRadius: BorderRadius.circular(20),
@@ -651,8 +629,7 @@ class _DataKategoriScreenState extends State<DataKategoriScreen> {
         child: Text(
           label,
           style: TextStyle(
-            color:
-                isSelected ? Colors.white : const Color(0xFF64748B),
+            color: isSelected ? Colors.white : const Color(0xFF64748B),
             fontWeight: FontWeight.w600,
             fontSize: 13,
           ),
@@ -673,8 +650,8 @@ class _DataKategoriScreenState extends State<DataKategoriScreen> {
                   borderRadius: BorderRadius.circular(14)),
               side: const BorderSide(color: Color(0xFFE2E8F0)),
             ),
-            child: const Text('Batal',
-                style: TextStyle(color: Color(0xFF64748B))),
+            child:
+                const Text('Batal', style: TextStyle(color: Color(0xFF64748B))),
           ),
         ),
         const SizedBox(width: 12),

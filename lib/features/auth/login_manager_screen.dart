@@ -89,14 +89,16 @@ class _LoginManagerScreenState extends State<LoginManagerScreen> {
                   labelText: 'Password',
                   prefixIcon: const Icon(Icons.lock_outline),
                   suffixIcon: IconButton(
-                    icon: Icon(
-                        _obscurePassword ? Icons.visibility_off : Icons.visibility),
+                    icon: Icon(_obscurePassword
+                        ? Icons.visibility_off
+                        : Icons.visibility),
                     onPressed: () =>
                         setState(() => _obscurePassword = !_obscurePassword),
                   ),
                 ),
-                validator: (v) =>
-                    v == null || v.isEmpty ? 'Password tidak boleh kosong' : null,
+                validator: (v) => v == null || v.isEmpty
+                    ? 'Password tidak boleh kosong'
+                    : null,
               ),
               const SizedBox(height: 32),
               Obx(() {

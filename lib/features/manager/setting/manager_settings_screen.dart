@@ -118,7 +118,7 @@ class _ManagerSettingsScreenState extends State<ManagerSettingsScreen> {
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w500,
-              color: Colors.white.withOpacity(0.8),
+              color: Colors.white.withValues(alpha: 0.8),
             ),
           ),
         ],
@@ -172,7 +172,7 @@ class _ManagerSettingsScreenState extends State<ManagerSettingsScreen> {
           border: Border.all(color: const Color(0xFFE2E8F0)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -186,7 +186,7 @@ class _ManagerSettingsScreenState extends State<ManagerSettingsScreen> {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: _primary.withOpacity(0.1),
+                color: _primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(item.icon, color: _primary, size: 22),
@@ -254,7 +254,8 @@ class _ManagerSettingsScreenState extends State<ManagerSettingsScreen> {
                 style: const TextStyle(fontSize: 11, color: Color(0xFF94A3B8)),
               )
             : null,
-        trailing: const Icon(Icons.chevron_right_rounded, color: Color(0xFF94A3B8)),
+        trailing:
+            const Icon(Icons.chevron_right_rounded, color: Color(0xFF94A3B8)),
         onTap: onTap ?? (route != null ? () => Get.toNamed(route) : null),
       ),
     );
@@ -282,7 +283,9 @@ class _ManagerSettingsScreenState extends State<ManagerSettingsScreen> {
                   decoration: InputDecoration(
                     labelText: 'Password Lama',
                     suffixIcon: IconButton(
-                      icon: Icon(obscure.value ? Icons.visibility_off : Icons.visibility),
+                      icon: Icon(obscure.value
+                          ? Icons.visibility_off
+                          : Icons.visibility),
                       onPressed: () => obscure.value = !obscure.value,
                     ),
                   ),
@@ -297,7 +300,8 @@ class _ManagerSettingsScreenState extends State<ManagerSettingsScreen> {
             TextField(
               controller: confirmCtrl,
               obscureText: true,
-              decoration: const InputDecoration(labelText: 'Konfirmasi Password Baru'),
+              decoration:
+                  const InputDecoration(labelText: 'Konfirmasi Password Baru'),
             ),
           ],
         ),
@@ -309,12 +313,15 @@ class _ManagerSettingsScreenState extends State<ManagerSettingsScreen> {
       confirm: Obx(() => ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: _primary,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
             ),
             onPressed: auth.isLoading.value
                 ? null
                 : () async {
-                    if (oldCtrl.text.isEmpty || newCtrl.text.isEmpty || confirmCtrl.text.isEmpty) {
+                    if (oldCtrl.text.isEmpty ||
+                        newCtrl.text.isEmpty ||
+                        confirmCtrl.text.isEmpty) {
                       Get.snackbar('Error', 'Semua field wajib diisi');
                       return;
                     }
@@ -326,17 +333,20 @@ class _ManagerSettingsScreenState extends State<ManagerSettingsScreen> {
                       Get.snackbar('Error', 'Password baru minimal 6 karakter');
                       return;
                     }
-                    final ok = await auth.changePassword(oldCtrl.text, newCtrl.text);
+                    final ok =
+                        await auth.changePassword(oldCtrl.text, newCtrl.text);
                     if (ok) Get.back();
                   },
             child: auth.isLoading.value
                 ? const SizedBox(
                     width: 20,
                     height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                    child: CircularProgressIndicator(
+                        strokeWidth: 2, color: Colors.white),
                   )
                 : const Text('Simpan',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold)),
           )),
     );
   }
@@ -357,7 +367,8 @@ class _ManagerSettingsScreenState extends State<ManagerSettingsScreen> {
         style: OutlinedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 14),
           side: const BorderSide(color: Color(0xFFFECACA)),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         ),
       ),
     );

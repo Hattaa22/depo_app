@@ -171,7 +171,8 @@ class _KasirScreenState extends State<KasirScreen> {
             child: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1), shape: BoxShape.circle),
+                  color: Colors.white.withValues(alpha: 0.1),
+                  shape: BoxShape.circle),
               child: const Icon(Icons.arrow_back_ios_new_rounded,
                   color: Colors.white, size: 20),
             ),
@@ -199,7 +200,8 @@ class _KasirScreenState extends State<KasirScreen> {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2), shape: BoxShape.circle),
+                  color: Colors.white.withValues(alpha: 0.2),
+                  shape: BoxShape.circle),
               child: const Icon(Icons.person_add_alt_1_outlined,
                   color: Colors.white, size: 20),
             ),
@@ -221,7 +223,7 @@ class _KasirScreenState extends State<KasirScreen> {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: selectedCustomer != null
-                ? _primary.withOpacity(0.4)
+                ? _primary.withValues(alpha: 0.4)
                 : const Color(0xFFE2E8F0),
             width: selectedCustomer != null ? 1.5 : 1,
           ),
@@ -237,7 +239,7 @@ class _KasirScreenState extends State<KasirScreen> {
               height: 36,
               decoration: BoxDecoration(
                 color: selectedCustomer != null
-                    ? _primary.withOpacity(0.1)
+                    ? _primary.withValues(alpha: 0.1)
                     : const Color(0xFFF1F5F9),
                 shape: BoxShape.circle,
               ),
@@ -347,7 +349,7 @@ class _KasirScreenState extends State<KasirScreen> {
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
-              value: kasir.crewPengirimDipilih.value?.id,
+              initialValue: kasir.crewPengirimDipilih.value?.id,
               decoration: InputDecoration(
                 isDense: true,
                 prefixIcon:
@@ -436,7 +438,9 @@ class _KasirScreenState extends State<KasirScreen> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
         decoration: BoxDecoration(
-          color: selected ? _primary.withOpacity(0.1) : const Color(0xFFF8FAFC),
+          color: selected
+              ? _primary.withValues(alpha: 0.1)
+              : const Color(0xFFF8FAFC),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: selected ? _primary : const Color(0xFFE2E8F0),
@@ -475,7 +479,7 @@ class _KasirScreenState extends State<KasirScreen> {
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
           color: selected
-              ? const Color(0xFF10B981).withOpacity(0.1)
+              ? const Color(0xFF10B981).withValues(alpha: 0.1)
               : const Color(0xFFF8FAFC),
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
@@ -581,7 +585,7 @@ class _KasirScreenState extends State<KasirScreen> {
       child: Row(
         children: [
           Icon(Icons.category_outlined,
-              color: _primary.withOpacity(0.7), size: 22),
+              color: _primary.withValues(alpha: 0.7), size: 22),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -623,8 +627,9 @@ class _KasirScreenState extends State<KasirScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-            color:
-                expanded ? _primary.withOpacity(0.3) : const Color(0xFFF1F5F9)),
+            color: expanded
+                ? _primary.withValues(alpha: 0.3)
+                : const Color(0xFFF1F5F9)),
         boxShadow: const [
           BoxShadow(
               color: Color(0x0A000000), blurRadius: 12, offset: Offset(0, 2))
@@ -664,14 +669,14 @@ class _KasirScreenState extends State<KasirScreen> {
                             style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
-                                color: _primary.withOpacity(0.8))),
+                                color: _primary.withValues(alpha: 0.8))),
                         if (totalQty > 0) ...[
                           const SizedBox(height: 4),
                           Container(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 2),
                             decoration: BoxDecoration(
-                                color: _primary.withOpacity(0.1),
+                                color: _primary.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(999)),
                             child: Text('$totalQty item dipilih',
                                 style: const TextStyle(
@@ -723,7 +728,7 @@ class _KasirScreenState extends State<KasirScreen> {
                               width: 44,
                               height: 44,
                               decoration: BoxDecoration(
-                                  color: c.withOpacity(0.12),
+                                  color: c.withValues(alpha: 0.12),
                                   borderRadius: BorderRadius.circular(12)),
                               child: Icon(ic, color: c, size: 22),
                             ),
@@ -772,7 +777,7 @@ class _KasirScreenState extends State<KasirScreen> {
       width: 64,
       height: 64,
       decoration: BoxDecoration(
-          color: _primary.withOpacity(0.1),
+          color: _primary.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12)),
       child: const Icon(Icons.water_drop_rounded, color: _primary, size: 28),
     );
@@ -894,7 +899,7 @@ class _KasirScreenState extends State<KasirScreen> {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.95),
+        color: Colors.white.withValues(alpha: 0.95),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: const Color(0xFFE2E8F0)),
         boxShadow: const [

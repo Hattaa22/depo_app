@@ -75,7 +75,7 @@ class _DataProdukScreenState extends State<DataProdukScreen> {
                       border: Border.all(color: const Color(0xFFF1F5F9)),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.04),
+                          color: Colors.black.withValues(alpha: 0.04),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -87,7 +87,7 @@ class _DataProdukScreenState extends State<DataProdukScreen> {
                           width: 48,
                           height: 48,
                           decoration: BoxDecoration(
-                            color: _primary.withOpacity(0.1),
+                            color: _primary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(14),
                           ),
                           child: const Icon(Icons.inventory_2_outlined,
@@ -120,8 +120,12 @@ class _DataProdukScreenState extends State<DataProdukScreen> {
                         ),
                         PopupMenuButton<String>(
                           onSelected: (val) {
-                            if (val == 'hapus') produk.hapusProduk(p.id);
-                            if (val == 'edit') _showEditDialog(produk, p.id, p.nama, p.harga);
+                            if (val == 'hapus') {
+                              produk.hapusProduk(p.id);
+                            }
+                            if (val == 'edit') {
+                              _showEditDialog(produk, p.id, p.nama, p.harga);
+                            }
                           },
                           icon: Container(
                             width: 36,
@@ -149,8 +153,7 @@ class _DataProdukScreenState extends State<DataProdukScreen> {
                                     size: 18, color: Color(0xFFEF4444)),
                                 SizedBox(width: 8),
                                 Text('Hapus',
-                                    style:
-                                        TextStyle(color: Color(0xFFEF4444))),
+                                    style: TextStyle(color: Color(0xFFEF4444))),
                               ]),
                             ),
                           ],
@@ -262,7 +265,7 @@ class _DataProdukScreenState extends State<DataProdukScreen> {
                       color: Color(0xFF1E293B))),
               const SizedBox(height: 20),
               Obx(() => DropdownButtonFormField<String>(
-                    value: kategoriId.value,
+                    initialValue: kategoriId.value,
                     decoration: InputDecoration(
                       labelText: 'Kategori',
                       prefixIcon: const Icon(Icons.category_outlined,
@@ -313,7 +316,8 @@ class _DataProdukScreenState extends State<DataProdukScreen> {
     );
   }
 
-  void _showEditDialog(ProdukController produk, String id, String namaSaat, num hargaSaat) {
+  void _showEditDialog(
+      ProdukController produk, String id, String namaSaat, num hargaSaat) {
     final namaCtrl = TextEditingController(text: namaSaat);
     final hargaCtrl = TextEditingController(text: '$hargaSaat');
     Get.dialog(
@@ -396,8 +400,8 @@ class _DataProdukScreenState extends State<DataProdukScreen> {
                   borderRadius: BorderRadius.circular(14)),
               side: const BorderSide(color: Color(0xFFE2E8F0)),
             ),
-            child: const Text('Batal',
-                style: TextStyle(color: Color(0xFF64748B))),
+            child:
+                const Text('Batal', style: TextStyle(color: Color(0xFF64748B))),
           ),
         ),
         const SizedBox(width: 12),

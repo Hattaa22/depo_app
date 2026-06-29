@@ -45,61 +45,60 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
               // ── Header (biru penuh sampai status bar) ─────────────────────
               _buildHeader(context, nama),
 
-                // ── Stats Cards (overlap header) ─────────────────────────────
-                Transform.translate(
-                  offset: const Offset(0, -32),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: analisis.isLoading.value
-                        ? const _StatsLoading()
-                        : _buildStatsRow(data),
-                  ),
-                ),
-
-                // ── Section Title ────────────────────────────────────────────
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(24, 0, 24, 4),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Menu Operasional',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF1E293B),
-                          letterSpacing: -0.3,
-                        ),
-                      ),
-                      SizedBox(height: 2),
-                      Text(
-                        'Akses cepat ke operasi harian',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Color(0xFF94A3B8),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-
-                // ── Menu Grid ────────────────────────────────────────────────
-                Padding(
+              // ── Stats Cards (overlap header) ─────────────────────────────
+              Transform.translate(
+                offset: const Offset(0, -32),
+                child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: GridView.count(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                    childAspectRatio: 1.05,
-                    children: _menuItems
-                        .map((item) => _buildMenuCard(item))
-                        .toList(),
-                  ),
+                  child: analisis.isLoading.value
+                      ? const _StatsLoading()
+                      : _buildStatsRow(data),
                 ),
+              ),
+
+              // ── Section Title ────────────────────────────────────────────
+              const Padding(
+                padding: EdgeInsets.fromLTRB(24, 0, 24, 4),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Menu Operasional',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF1E293B),
+                        letterSpacing: -0.3,
+                      ),
+                    ),
+                    SizedBox(height: 2),
+                    Text(
+                      'Akses cepat ke operasi harian',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Color(0xFF94A3B8),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // ── Menu Grid ────────────────────────────────────────────────
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: GridView.count(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                  childAspectRatio: 1.05,
+                  children:
+                      _menuItems.map((item) => _buildMenuCard(item)).toList(),
+                ),
+              ),
 
               const SizedBox(height: 112),
             ],
@@ -198,13 +197,24 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
 
   // ── Stats Row ────────────────────────────────────────────────────────────────
   Widget _buildStatsRow(Map<String, dynamic>? data) {
+    // Helper to safely parse num
+    num safeParseNum(dynamic value) {
+      if (value == null) return 0;
+      if (value is num) return value;
+      if (value is String) {
+        final parsed = num.tryParse(value);
+        return parsed ?? 0;
+      }
+      return 0;
+    }
+
     return Row(
       children: [
         Expanded(
           child: _buildStatCard(
             title: 'PENDAPATAN',
             value: Formatters.currency(
-                (data?['totalPendapatanHarian'] ?? 0) as num),
+                safeParseNum(data?['totalPendapatanHarian'])),
             valueColor: _primary,
             badge: Row(
               children: const [
@@ -223,7 +233,7 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
         Expanded(
           child: _buildStatCard(
             title: 'TRANSAKSI',
-            value: '${data?['totalTransaksiHari'] ?? 0}',
+            value: '${safeParseNum(data?['totalTransaksiHari'])}',
             badge: Row(
               children: const [
                 Icon(Icons.receipt_long, size: 12, color: Color(0xFFF59E0B)),
@@ -241,7 +251,7 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
         Expanded(
           child: _buildStatCard(
             title: 'GALON',
-            value: '${data?['galonBersih'] ?? data?['tersedia'] ?? 0}',
+            value: '${safeParseNum(data?['galonBersih'] ?? data?['tersedia'])}',
             valueSuffix: ' pcs',
             badge: Row(
               children: const [

@@ -90,8 +90,8 @@ class _CustomerSheetState extends State<CustomerSheet> {
                         decoration: const InputDecoration(
                           border: InputBorder.none,
                           hintText: 'Cari nama atau no. telepon...',
-                          hintStyle: TextStyle(
-                              fontSize: 13, color: Color(0xFF94A3B8)),
+                          hintStyle:
+                              TextStyle(fontSize: 13, color: Color(0xFF94A3B8)),
                           contentPadding: EdgeInsets.symmetric(vertical: 12),
                           isDense: true,
                         ),
@@ -137,9 +137,8 @@ class _CustomerSheetState extends State<CustomerSheet> {
                           contentPadding: const EdgeInsets.symmetric(
                               horizontal: 4, vertical: 4),
                           leading: CircleAvatar(
-                            backgroundColor: isSelected
-                                ? _primary
-                                : const Color(0xFFF1F5F9),
+                            backgroundColor:
+                                isSelected ? _primary : const Color(0xFFF1F5F9),
                             child: Text(
                               c.nama.isNotEmpty ? c.nama[0].toUpperCase() : '?',
                               style: TextStyle(
@@ -157,8 +156,7 @@ class _CustomerSheetState extends State<CustomerSheet> {
                                   color: isSelected
                                       ? _primary
                                       : const Color(0xFF0F172A))),
-                          subtitle: Text(
-                              '${c.alamat ?? '-'}  •  ${c.noHp}',
+                          subtitle: Text('${c.alamat ?? '-'}  •  ${c.noHp}',
                               style: const TextStyle(
                                   fontSize: 12, color: Color(0xFF94A3B8))),
                           trailing: isSelected
@@ -245,8 +243,8 @@ class _AddCustomerSheetState extends State<AddCustomerSheet> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding:
+          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: Container(
         decoration: const BoxDecoration(
           color: Colors.white,
@@ -277,7 +275,7 @@ class _AddCustomerSheetState extends State<AddCustomerSheet> {
                     width: 36,
                     height: 36,
                     decoration: BoxDecoration(
-                      color: _primary.withOpacity(0.1),
+                      color: _primary.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(Icons.person_add_alt_1_rounded,
@@ -297,9 +295,8 @@ class _AddCustomerSheetState extends State<AddCustomerSheet> {
                 label: 'Nama Lengkap',
                 hint: 'Contoh: Budi Santoso',
                 icon: Icons.person_outline_rounded,
-                validator: (v) => (v == null || v.isEmpty)
-                    ? 'Nama tidak boleh kosong'
-                    : null,
+                validator: (v) =>
+                    (v == null || v.isEmpty) ? 'Nama tidak boleh kosong' : null,
               ),
               const SizedBox(height: 14),
               _buildField(
@@ -338,8 +335,8 @@ class _AddCustomerSheetState extends State<AddCustomerSheet> {
                     elevation: 0,
                   ),
                   child: const Text('Simpan Pelanggan',
-                      style: TextStyle(
-                          fontSize: 15, fontWeight: FontWeight.w700)),
+                      style:
+                          TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
                 ),
               ),
             ],
@@ -396,14 +393,16 @@ class _AddCustomerSheetState extends State<AddCustomerSheet> {
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFFEF4444), width: 1.5),
+              borderSide:
+                  const BorderSide(color: Color(0xFFEF4444), width: 1.5),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFFEF4444), width: 1.5),
+              borderSide:
+                  const BorderSide(color: Color(0xFFEF4444), width: 1.5),
             ),
-            contentPadding: const EdgeInsets.symmetric(
-                horizontal: 14, vertical: 14),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
             isDense: true,
           ),
         ),

@@ -35,8 +35,10 @@ class CrewDashboardScreen extends StatelessWidget {
       body: Obx(() {
         final nama = auth.userData['nama'] ?? 'Crew';
         final dashData = analisis.dashboardCrewData.value;
-        final totalPenjualan = (dashData?['totalPenjualanHarian'] as num?)?.toDouble() ?? 0.0;
-        final totalGalonTerjual = (dashData?['totalGalonTerjual'] as num?)?.toInt() ?? 0;
+        final totalPenjualan =
+            (dashData?['totalPenjualanHarian'] as num?)?.toDouble() ?? 0.0;
+        final totalGalonTerjual =
+            (dashData?['totalGalonTerjual'] as num?)?.toInt() ?? 0;
         final recentTransaksi = transaksi.transaksiList.take(5).toList();
 
         return SingleChildScrollView(
@@ -125,7 +127,8 @@ class CrewDashboardScreen extends StatelessWidget {
                             icon: Icons.people_outline,
                             label: 'Pelanggan',
                             isPrimary: false,
-                            onTap: () => Get.toNamed(AppRoutes.crewDataPelanggan),
+                            onTap: () =>
+                                Get.toNamed(AppRoutes.crewDataPelanggan),
                           ),
                         ),
                         const SizedBox(width: 16),
@@ -144,7 +147,6 @@ class CrewDashboardScreen extends StatelessWidget {
               ),
 
               const SizedBox(height: 32),
-
 
               // ── RINGKASAN GALON ──────────────────────────────────────
               Padding(
@@ -266,7 +268,7 @@ class CrewDashboardScreen extends StatelessWidget {
                   Text(
                     'HALO,',
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.8),
+                      color: Colors.white.withValues(alpha: 0.8),
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 2,
@@ -287,7 +289,7 @@ class CrewDashboardScreen extends StatelessWidget {
                 onTap: () => Get.toNamed(AppRoutes.crewPengaturan),
                 child: CircleAvatar(
                   radius: 20,
-                  backgroundColor: Colors.white.withOpacity(0.2),
+                  backgroundColor: Colors.white.withValues(alpha: 0.2),
                   child: Text(
                     nama.isNotEmpty ? nama[0].toUpperCase() : 'C',
                     style: const TextStyle(
@@ -476,7 +478,7 @@ class CrewDashboardScreen extends StatelessWidget {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: _primary.withOpacity(0.1),
+              color: _primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Center(
@@ -628,7 +630,8 @@ class CrewDashboardScreen extends StatelessWidget {
       child: const Center(
         child: Column(
           children: [
-            Icon(Icons.receipt_long_outlined, size: 48, color: Color(0xFF94A3B8)),
+            Icon(Icons.receipt_long_outlined,
+                size: 48, color: Color(0xFF94A3B8)),
             SizedBox(height: 12),
             Text(
               'Belum ada transaksi hari ini',

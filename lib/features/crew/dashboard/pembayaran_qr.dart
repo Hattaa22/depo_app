@@ -116,7 +116,8 @@ class _PembayaranQrScreenState extends State<PembayaranQrScreen> {
   }
 
   void _tampilkanSimulasiPelanggan() {
-    final amount = _jumlah.value > 0 ? _jumlah.value : widget.totalHarga.toDouble();
+    final amount =
+        _jumlah.value > 0 ? _jumlah.value : widget.totalHarga.toDouble();
     final isPaying = false.obs;
 
     Get.bottomSheet(
@@ -215,7 +216,8 @@ class _PembayaranQrScreenState extends State<PembayaranQrScreen> {
                       children: [
                         Text(
                           'Penerima:',
-                          style: TextStyle(color: Color(0xFF64748B), fontSize: 13),
+                          style:
+                              TextStyle(color: Color(0xFF64748B), fontSize: 13),
                         ),
                         Text(
                           'Depo Air Minum',
@@ -233,7 +235,8 @@ class _PembayaranQrScreenState extends State<PembayaranQrScreen> {
                       children: [
                         const Text(
                           'ID Pembayaran:',
-                          style: TextStyle(color: Color(0xFF64748B), fontSize: 13),
+                          style:
+                              TextStyle(color: Color(0xFF64748B), fontSize: 13),
                         ),
                         Text(
                           _paymentId.value.length > 8
@@ -394,7 +397,8 @@ class _PembayaranQrScreenState extends State<PembayaranQrScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.wifi_off_rounded, size: 56, color: Color(0xFF94A3B8)),
+            const Icon(Icons.wifi_off_rounded,
+                size: 56, color: Color(0xFF94A3B8)),
             const SizedBox(height: 16),
             Text(
               _errorMessage.value,
@@ -441,7 +445,8 @@ class _PembayaranQrScreenState extends State<PembayaranQrScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.timer_off_rounded, size: 56, color: Color(0xFFF59E0B)),
+            const Icon(Icons.timer_off_rounded,
+                size: 56, color: Color(0xFFF59E0B)),
             const SizedBox(height: 16),
             const Text(
               'QRIS Kadaluarsa',
@@ -464,7 +469,8 @@ class _PembayaranQrScreenState extends State<PembayaranQrScreen> {
   }
 
   Widget _buildQrState() {
-    final amount = _jumlah.value > 0 ? _jumlah.value : widget.totalHarga.toDouble();
+    final amount =
+        _jumlah.value > 0 ? _jumlah.value : widget.totalHarga.toDouble();
 
     return Center(
       child: SingleChildScrollView(
@@ -516,7 +522,7 @@ class _PembayaranQrScreenState extends State<PembayaranQrScreen> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 16,
                   ),
                 ],
@@ -537,7 +543,7 @@ class _PembayaranQrScreenState extends State<PembayaranQrScreen> {
                 border: Border.all(color: const Color(0xFFBBF7D0)),
               ),
               child: const Text(
-                '✅ QRIS Midtrans Sandbox — Dapat di-scan e-Wallet',
+                'QRIS Midtrans Sandbox - mode uji coba',
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
@@ -561,7 +567,8 @@ class _PembayaranQrScreenState extends State<PembayaranQrScreen> {
             const SizedBox(height: 4),
             Text(
               'Berlaku hingga ${_expiredAt.value}',
-              style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+              style:
+                  const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
             ),
             const SizedBox(height: 24),
             const Divider(),
@@ -595,7 +602,8 @@ class _PembayaranQrScreenState extends State<PembayaranQrScreen> {
             const SizedBox(height: 8),
             const Text(
               'Buka halaman ini di browser untuk scan QR secara langsung menggunakan e-wallet asli, atau klik tombol Simulasi Bayar untuk uji coba sandbox.',
-              style: TextStyle(fontSize: 11, color: Color(0xFF64748B), height: 1.4),
+              style: TextStyle(
+                  fontSize: 11, color: Color(0xFF64748B), height: 1.4),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),

@@ -15,12 +15,155 @@ class SettingDataCrewScreen extends StatefulWidget {
 class _SettingDataCrewScreenState extends State<SettingDataCrewScreen> {
   static const Color _primary = Color(0xFF1392EC);
 
+  DateTime? _startDate;
+  DateTime? _endDate;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Get.find<CrewController>().loadCrew();
+      _fetchFilteredData();
     });
+  }
+
+  void _fetchFilteredData() {
+    final crew = Get.find<CrewController>();
+    final startStr =
+        _startDate != null ? _startDate!.toIso8601String().split('T')[0] : null;
+    final endStr =
+        _endDate != null ? _endDate!.toIso8601String().split('T')[0] : null;
+    crew.loadPengirimanCrew(tanggalMulai: startStr, tanggalAkhir: endStr);
+  }
+
+  Future<void> _pickMonth(BuildContext context) async {
+    int selectedYear = _startDate?.year ?? DateTime.now().year;
+    int selectedMonth = _startDate?.month ?? DateTime.now().month;
+    const monthNames = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'Mei',
+      'Jun',
+      'Jul',
+      'Agu',
+      'Sep',
+      'Okt',
+      'Nov',
+      'Des'
+    ];
+
+    final result = await showDialog<DateTime>(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20)),
+              title: const Text('Pilih Bulan',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.arrow_back_ios, size: 16),
+                        onPressed: () => setState(() => selectedYear--),
+                      ),
+                      Text(
+                        '$selectedYear',
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.arrow_forward_ios, size: 16),
+                        onPressed: () => setState(() => selectedYear++),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    alignment: WrapAlignment.center,
+                    children: List.generate(12, (index) {
+                      final month = index + 1;
+                      final isSelected = selectedMonth == month;
+                      return InkWell(
+                        onTap: () => setState(() => selectedMonth = month),
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          width: 60,
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          decoration: BoxDecoration(
+                            color: isSelected ? _primary : Colors.grey.shade100,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color:
+                                  isSelected ? _primary : Colors.grey.shade300,
+                            ),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            monthNames[index],
+                            style: TextStyle(
+                              color: isSelected ? Colors.white : Colors.black87,
+                              fontWeight: isSelected
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child:
+                      const Text('Batal', style: TextStyle(color: Colors.grey)),
+                ),
+                ElevatedButton(
+                  onPressed: () => Navigator.pop(
+                      context, DateTime(selectedYear, selectedMonth, 1)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _primary,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
+                  ),
+                  child: const Text('Pilih',
+                      style: TextStyle(color: Colors.white)),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    if (result != null) {
+      final firstDay = DateTime(result.year, result.month, 1);
+      final lastDay = DateTime(result.year, result.month + 1, 0);
+      setState(() {
+        _startDate = firstDay;
+        _endDate = lastDay;
+      });
+      _fetchFilteredData();
+    }
+  }
+
+  void _clearFilter() {
+    setState(() {
+      _startDate = null;
+      _endDate = null;
+    });
+    _fetchFilteredData();
   }
 
   @override
@@ -32,6 +175,7 @@ class _SettingDataCrewScreenState extends State<SettingDataCrewScreen> {
       body: Column(
         children: [
           _buildHeader(context, crew),
+          // Removed filter section from body
           Expanded(
             child: Obx(() {
               if (crew.isLoading.value) {
@@ -74,14 +218,37 @@ class _SettingDataCrewScreenState extends State<SettingDataCrewScreen> {
           ),
         ],
       ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 72),
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          border: Border(top: BorderSide(color: Color(0xFFE2E8F0))),
+        ),
         child: SizedBox(
-          width: MediaQuery.of(context).size.width - 48,
-          child: _buildAddCrewButton(crew),
+          width: double.infinity,
+          height: 52,
+          child: ElevatedButton.icon(
+            onPressed: () => _showTambahDialog(crew),
+            icon: const Icon(Icons.person_add_rounded,
+                color: Colors.white, size: 20),
+            label: const Text(
+              'Tambah Crew Baru',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: _primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              elevation: 0,
+            ),
+          ),
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
@@ -133,7 +300,69 @@ class _SettingDataCrewScreenState extends State<SettingDataCrewScreen> {
                   letterSpacing: -0.3,
                 ),
               ),
-              const Icon(Icons.tune_rounded, color: Colors.white, size: 22),
+              Row(
+                children: [
+                  if (_startDate != null) ...[
+                    GestureDetector(
+                      onTap: _clearFilter,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 6),
+                        margin: const EdgeInsets.only(right: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Row(
+                          children: [
+                            Builder(builder: (_) {
+                              const months = [
+                                'Jan',
+                                'Feb',
+                                'Mar',
+                                'Apr',
+                                'Mei',
+                                'Jun',
+                                'Jul',
+                                'Agu',
+                                'Sep',
+                                'Okt',
+                                'Nov',
+                                'Des'
+                              ];
+                              final text =
+                                  '${months[_startDate!.month - 1]} ${_startDate!.year}';
+                              return Text(
+                                text,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              );
+                            }),
+                            const SizedBox(width: 4),
+                            const Icon(Icons.close_rounded,
+                                color: Colors.white, size: 14),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                  GestureDetector(
+                    onTap: () => _pickMonth(context),
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.calendar_month_rounded,
+                          color: Colors.white, size: 20),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
           const SizedBox(height: 24),
@@ -142,10 +371,10 @@ class _SettingDataCrewScreenState extends State<SettingDataCrewScreen> {
           Obx(() => Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.15),
+                  color: Colors.white.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.2),
                   ),
                 ),
                 child: Row(
@@ -159,7 +388,7 @@ class _SettingDataCrewScreenState extends State<SettingDataCrewScreen> {
                             style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w800,
-                              color: Colors.white.withOpacity(0.7),
+                              color: Colors.white.withValues(alpha: 0.7),
                               letterSpacing: 1.5,
                             ),
                           ),
@@ -178,7 +407,7 @@ class _SettingDataCrewScreenState extends State<SettingDataCrewScreen> {
                     Container(
                       width: 1,
                       height: 40,
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withValues(alpha: 0.2),
                     ),
                     Expanded(
                       child: Padding(
@@ -191,7 +420,7 @@ class _SettingDataCrewScreenState extends State<SettingDataCrewScreen> {
                               style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w800,
-                                color: Colors.white.withOpacity(0.7),
+                                color: Colors.white.withValues(alpha: 0.7),
                                 letterSpacing: 1.5,
                               ),
                             ),
@@ -239,7 +468,7 @@ class _SettingDataCrewScreenState extends State<SettingDataCrewScreen> {
         border: Border.all(color: const Color(0xFFF1F5F9)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -305,6 +534,37 @@ class _SettingDataCrewScreenState extends State<SettingDataCrewScreen> {
                     fontSize: 12,
                     color: Color(0xFF64748B),
                   ),
+                ),
+                const SizedBox(height: 8),
+                Builder(
+                  builder: (_) {
+                    final stat =
+                        Get.find<CrewController>().pengirimanByCrewId(c.id);
+                    final totalKirim = stat?['totalKirim'] ?? 0;
+                    final totalDiDepo = stat?['totalDiDepo'] ?? 0;
+                    final totalOngkir = stat?['totalOngkir'] ?? 0;
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Kirim: $totalKirim | Di Depo: $totalDiDepo',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: _primary,
+                          ),
+                        ),
+                        Text(
+                          'Ongkir: Rp$totalOngkir',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF16A34A),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
                 const SizedBox(height: 8),
                 Container(
@@ -376,43 +636,6 @@ class _SettingDataCrewScreenState extends State<SettingDataCrewScreen> {
             ],
           ),
         ],
-      ),
-    );
-  }
-
-  // ── ADD CREW BUTTON ──────────────────────────────────────────────────────────
-  Widget _buildAddCrewButton(CrewController crew) {
-    return GestureDetector(
-      onTap: () => _showTambahDialog(crew),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 18),
-        decoration: BoxDecoration(
-          color: _primary,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: _primary.withOpacity(0.4),
-              blurRadius: 20,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
-        child: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.person_add_rounded, color: Colors.white, size: 22),
-            SizedBox(width: 10),
-            Text(
-              'Tambah Crew Baru',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                letterSpacing: -0.3,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

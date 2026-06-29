@@ -42,15 +42,9 @@ class GalonController extends GetxController {
   Future<void> catatGalon(Map<String, dynamic> data) async {
     isLoading.value = true;
     try {
-      // Debug: log data yang dikirim
-      print('[GALON] Creating galon with data: $data');
-      print('[GALON] Jumlah to create: ${data['jumlah']}');
-      
       final result = await _apiService.createGalon(data);
       final createdCount = result['createdCount'] as int? ?? 1;
-      
-      print('[GALON] Backend response createdCount: $createdCount');
-      
+
       if (createdCount > 1) {
         Get.snackbar(
           'Berhasil',
@@ -62,12 +56,9 @@ class GalonController extends GetxController {
       } else {
         Get.snackbar('Berhasil', 'Galon berhasil dicatat');
       }
-      
-      // Reload galon list dan summary untuk update tampilan
-      print('[GALON] Reloading galon data...');
+
       await loadGalon();
       await loadSummary();
-      print('[GALON] Reload complete');
     } catch (e) {
       errorMessage.value = ApiErrorHelper.message(e);
       Get.snackbar('Error', errorMessage.value,
@@ -94,12 +85,13 @@ class GalonController extends GetxController {
     }
   }
 
-  Future<bool> pinjamGalon(int jumlah, {String? pelangganId, DateTime? tanggal}) async {
+  Future<bool> pinjamGalon(int jumlah,
+      {String? pelangganId, DateTime? tanggal}) async {
     isLoading.value = true;
     errorMessage.value = '';
     try {
       summary.value = await _apiService.pinjamGalon(
-        jumlah, 
+        jumlah,
         pelangganId: pelangganId,
         tanggal: tanggal,
       );
@@ -121,12 +113,13 @@ class GalonController extends GetxController {
     }
   }
 
-  Future<bool> kembalikanGalon(int jumlah, {String? pelangganId, DateTime? tanggal}) async {
+  Future<bool> kembalikanGalon(int jumlah,
+      {String? pelangganId, DateTime? tanggal}) async {
     isLoading.value = true;
     errorMessage.value = '';
     try {
       summary.value = await _apiService.kembalikanGalon(
-        jumlah, 
+        jumlah,
         pelangganId: pelangganId,
         tanggal: tanggal,
       );
@@ -156,4 +149,3 @@ class GalonController extends GetxController {
     }
   }
 }
-

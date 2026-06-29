@@ -7,6 +7,7 @@ import '../../../models/transaksi.dart';
 import '../../../utils/formatters.dart';
 import '../../../widgets/header_back_button.dart';
 import '../../../widgets/modern_date_range_sheet.dart';
+import '../../../widgets/qr_code_widget.dart';
 
 class LaporanTransaksiScreen extends StatefulWidget {
   const LaporanTransaksiScreen({super.key});
@@ -146,7 +147,8 @@ class _LaporanTransaksiScreenState extends State<LaporanTransaksiScreen> {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
                       color: _statusBgColor(tx.status),
                       borderRadius: BorderRadius.circular(8),
@@ -180,10 +182,45 @@ class _LaporanTransaksiScreenState extends State<LaporanTransaksiScreen> {
               _buildInfoRow('Waktu', Formatters.dateTime(tx.createdAt)),
               _buildInfoRow('Pelanggan', tx.pelanggan?.nama ?? '-'),
               _buildInfoRow('No HP Pelanggan', tx.pelanggan?.noHp ?? '-'),
-              _buildInfoRow('Metode Bayar', tx.metodePembayaran.name.toUpperCase()),
+              _buildInfoRow(
+                  'Metode Bayar', tx.metodePembayaran.name.toUpperCase()),
               _buildInfoRow('Petugas', tx.crew?.nama ?? '-'),
+              if (tx.isDikirim) ...[
+                _buildInfoRow('Tipe Pembelian', 'DIKIRIM'),
+                if (tx.pengirimCrew != null)
+                  _buildInfoRow('Petugas Pengirim', tx.pengirimCrew!.nama),
+                if (tx.totalOngkir > 0)
+                  _buildInfoRow(
+                      'Total Ongkir', Formatters.currency(tx.totalOngkir)),
+              ] else ...[
+                _buildInfoRow('Tipe Pembelian', 'DI DEPO'),
+              ],
               if (tx.catatan != null && tx.catatan!.isNotEmpty)
                 _buildInfoRow('Catatan', tx.catatan!),
+
+              // Show QR code if payment is QRIS and qrPaymentId exists
+              if (tx.metodePembayaran == MetodePembayaran.qris &&
+                  tx.qrPaymentId != null) ...[
+                const SizedBox(height: 16),
+                const Divider(color: Color(0xFFF1F5F9)),
+                const SizedBox(height: 16),
+                const Text(
+                  'Kode QR Pembayaran',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF0F172A),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Center(
+                  child: QrCodeWidget(
+                    data: tx.qrPaymentId!,
+                    size: 180,
+                    showBorder: true,
+                  ),
+                ),
+              ],
 
               const SizedBox(height: 16),
               const Divider(color: Color(0xFFF1F5F9)),
@@ -199,62 +236,65 @@ class _LaporanTransaksiScreenState extends State<LaporanTransaksiScreen> {
                 ),
               ),
               const SizedBox(height: 10),
-              ...tx.items.where((item) => item.subtotal > 0).map((item) => Container(
-                    margin: const EdgeInsets.only(bottom: 8),
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF8FAFC),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 36,
-                          height: 36,
-                          decoration: BoxDecoration(
-                            color: _primary.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(Icons.water_drop_rounded,
-                              color: _primary, size: 18),
+              ...tx.items
+                  .where((item) => item.subtotal > 0)
+                  .map((item) => Container(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF8FAFC),
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                item.produk?.nama ?? 'Produk',
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFF1E293B),
-                                ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 36,
+                              height: 36,
+                              decoration: BoxDecoration(
+                                color: _primary.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(8),
                               ),
-                              Text(
-                                '${item.jumlah} x ${Formatters.currency(item.hargaSatuan)}',
-                                style: const TextStyle(
-                                  fontSize: 11,
-                                  color: Color(0xFF94A3B8),
-                                ),
+                              child: const Icon(Icons.water_drop_rounded,
+                                  color: _primary, size: 18),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    item.produk?.nama ?? 'Produk',
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF1E293B),
+                                    ),
+                                  ),
+                                  Text(
+                                    '${item.jumlah} x ${Formatters.currency(item.hargaSatuan)}',
+                                    style: const TextStyle(
+                                      fontSize: 11,
+                                      color: Color(0xFF94A3B8),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                            Text(
+                              Formatters.currency(item.subtotal),
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF0F172A),
+                              ),
+                            ),
+                          ],
                         ),
-                        Text(
-                          Formatters.currency(item.subtotal),
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xFF0F172A),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )),
+                      )),
 
               // ── Status Galon ──────────────────────────────────────────
-              if (tx.items.any((i) => i.galonPinjam > 0 || i.galonKembali > 0)) ...[
+              if (tx.items
+                  .any((i) => i.galonPinjam > 0 || i.galonKembali > 0)) ...[
                 const SizedBox(height: 8),
                 const Divider(color: Color(0xFFF1F5F9)),
                 const SizedBox(height: 12),
@@ -431,7 +471,7 @@ class _LaporanTransaksiScreenState extends State<LaporanTransaksiScreen> {
 
               const SizedBox(height: 24),
               // ── Tombol Validasi (jika menunggu validasi) ─────────────────
-              if (tx.status == StatusTransaksi.menungguValidasi) ...[  
+              if (tx.status == StatusTransaksi.menungguValidasi) ...[
                 Row(
                   children: [
                     Expanded(
@@ -440,16 +480,20 @@ class _LaporanTransaksiScreenState extends State<LaporanTransaksiScreen> {
                           Get.back();
                           _validasiTransaksi(tx.id, 'gagal');
                         },
-                        icon: const Icon(Icons.cancel_outlined, size: 18, color: Color(0xFFEF4444)),
+                        icon: const Icon(Icons.cancel_outlined,
+                            size: 18, color: Color(0xFFEF4444)),
                         label: const Text(
                           'Tolak',
-                          style: TextStyle(color: Color(0xFFEF4444), fontWeight: FontWeight.w700),
+                          style: TextStyle(
+                              color: Color(0xFFEF4444),
+                              fontWeight: FontWeight.w700),
                         ),
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           side: const BorderSide(color: Color(0xFFFEE2E2)),
                           backgroundColor: const Color(0xFFFEF2F2),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12)),
                         ),
                       ),
                     ),
@@ -460,16 +504,19 @@ class _LaporanTransaksiScreenState extends State<LaporanTransaksiScreen> {
                           Get.back();
                           _validasiTransaksi(tx.id, 'sukses');
                         },
-                        icon: const Icon(Icons.check_circle_outline_rounded, size: 18, color: Colors.white),
+                        icon: const Icon(Icons.check_circle_outline_rounded,
+                            size: 18, color: Colors.white),
                         label: const Text(
                           'Setujui',
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+                          style: TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.w700),
                         ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF10B981),
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           elevation: 0,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12)),
                         ),
                       ),
                     ),
@@ -628,7 +675,7 @@ class _LaporanTransaksiScreenState extends State<LaporanTransaksiScreen> {
                           border: Border.all(color: const Color(0xFFF1F5F9)),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.04),
+                              color: Colors.black.withValues(alpha: 0.04),
                               blurRadius: 8,
                               offset: const Offset(0, 2),
                             ),
@@ -640,7 +687,7 @@ class _LaporanTransaksiScreenState extends State<LaporanTransaksiScreen> {
                               width: 44,
                               height: 44,
                               decoration: BoxDecoration(
-                                color: _primary.withOpacity(0.1),
+                                color: _primary.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: const Icon(
@@ -840,7 +887,7 @@ class _LaporanTransaksiScreenState extends State<LaporanTransaksiScreen> {
             child: Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.15),
+                color: Colors.white.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Icon(
@@ -870,7 +917,7 @@ class _LaporanTransaksiScreenState extends State<LaporanTransaksiScreen> {
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, color: color, size: 18),
@@ -905,7 +952,8 @@ class _LaporanTransaksiScreenState extends State<LaporanTransaksiScreen> {
     );
   }
 
-  Widget _buildInfoRow(String label, String value) {
+  Widget _buildInfoRow(String label, String value,
+      {Color? valueColor, FontWeight? valueFontWeight}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -924,10 +972,10 @@ class _LaporanTransaksiScreenState extends State<LaporanTransaksiScreen> {
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF334155),
+                fontWeight: valueFontWeight ?? FontWeight.w600,
+                color: valueColor ?? const Color(0xFF334155),
               ),
             ),
           ),

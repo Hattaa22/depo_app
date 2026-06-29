@@ -14,9 +14,11 @@ class AuthService {
   Future<AuthResponse> loginCrew(String username, String password) async {
     // Mock authentication untuk development
     if (AppConstants.useMockAuth) {
-      final finalUsername = username.trim().isEmpty ? 'crew001' : username.trim();
+      final finalUsername =
+          username.trim().isEmpty ? 'crew001' : username.trim();
       final mockResponse = AuthResponse(
-        accessToken: 'mock_access_token_crew_${DateTime.now().millisecondsSinceEpoch}',
+        accessToken:
+            'mock_access_token_crew_${DateTime.now().millisecondsSinceEpoch}',
         refreshToken: 'mock_refresh_token_crew',
         role: 'crew',
         userData: {
@@ -40,16 +42,21 @@ class AuthService {
   Future<AuthResponse> loginManager(String username, String password) async {
     // Mock authentication untuk development
     if (AppConstants.useMockAuth) {
-      final finalEmail = username.trim().isEmpty ? 'manager@depoair.com' : username.trim();
-      final displayName = finalEmail.contains('@') ? finalEmail.split('@')[0] : finalEmail;
+      final finalEmail =
+          username.trim().isEmpty ? 'manager@depoair.com' : username.trim();
+      final displayName =
+          finalEmail.contains('@') ? finalEmail.split('@')[0] : finalEmail;
       final mockResponse = AuthResponse(
-        accessToken: 'mock_access_token_manager_${DateTime.now().millisecondsSinceEpoch}',
+        accessToken:
+            'mock_access_token_manager_${DateTime.now().millisecondsSinceEpoch}',
         refreshToken: 'mock_refresh_token_manager',
         role: 'manager',
         userData: {
           'id': 'manager_001',
           'email': finalEmail,
-          'nama': finalEmail == 'manager@depoair.com' ? 'Manager Test User' : displayName,
+          'nama': finalEmail == 'manager@depoair.com'
+              ? 'Manager Test User'
+              : displayName,
           'username': displayName,
         },
       );
@@ -67,7 +74,9 @@ class AuthService {
   Future<void> logout() async {
     try {
       if (!AppConstants.useMockAuth) {
-        await _apiService.logout();
+        final refreshToken =
+            await _localStorage.getSecure(AppConstants.keyRefreshToken);
+        await _apiService.logout(refreshToken: refreshToken);
       }
     } catch (_) {
       // Tetap lanjut logout lokal meski API error
@@ -77,12 +86,14 @@ class AuthService {
   }
 
   Future<AuthResponse?> tryRefreshToken() async {
-    final refreshToken = await _localStorage.getSecure(AppConstants.keyRefreshToken);
+    final refreshToken =
+        await _localStorage.getSecure(AppConstants.keyRefreshToken);
     if (refreshToken == null) return null;
 
     try {
       // Mock refresh untuk development
-      if (AppConstants.useMockAuth && refreshToken.startsWith('mock_refresh_token')) {
+      if (AppConstants.useMockAuth &&
+          refreshToken.startsWith('mock_refresh_token')) {
         return null; // Mock doesn't need refresh
       }
 
@@ -122,11 +133,15 @@ class AuthService {
 
   Future<void> _saveSession(AuthResponse response) async {
     await Future.wait([
-      _localStorage.setSecure(AppConstants.keyAccessToken, response.accessToken),
-      _localStorage.setSecure(AppConstants.keyRefreshToken, response.refreshToken),
+      _localStorage.setSecure(
+          AppConstants.keyAccessToken, response.accessToken),
+      _localStorage.setSecure(
+          AppConstants.keyRefreshToken, response.refreshToken),
       _localStorage.setString(AppConstants.keyUserRole, response.role),
-      _localStorage.setString(AppConstants.keyUserId, response.userData['id']?.toString() ?? ''),
-      _localStorage.setString(AppConstants.userDataKey, jsonEncode(response.userData)),
+      _localStorage.setString(
+          AppConstants.keyUserId, response.userData['id']?.toString() ?? ''),
+      _localStorage.setString(
+          AppConstants.userDataKey, jsonEncode(response.userData)),
     ]);
   }
 

@@ -52,7 +52,8 @@ class Pengeluaran {
         'kategoriNama': kategoriNama,
         'nominal': nominal,
         'keterangan': keterangan,
-        'tanggal': '${tanggal.year}-${tanggal.month.toString().padLeft(2, '0')}-${tanggal.day.toString().padLeft(2, '0')}',
+        'tanggal':
+            '${tanggal.year}-${tanggal.month.toString().padLeft(2, '0')}-${tanggal.day.toString().padLeft(2, '0')}',
         'createdAt': createdAt.toIso8601String(),
       };
 }

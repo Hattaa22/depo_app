@@ -95,8 +95,11 @@ class ApiService {
     return AuthResponse.fromJson(res.data as Map<String, dynamic>);
   }
 
-  Future<void> logout() async {
-    await _dio.post('/auth/logout');
+  Future<void> logout({String? refreshToken}) async {
+    await _dio.post('/auth/logout', data: {
+      if (refreshToken != null && refreshToken.isNotEmpty)
+        'refresh_token': refreshToken,
+    });
   }
 
   Future<void> changePassword(String passwordLama, String passwordBaru) async {
