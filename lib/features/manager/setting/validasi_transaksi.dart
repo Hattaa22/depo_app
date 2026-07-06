@@ -436,93 +436,117 @@ class _ValidasiTransaksiScreenState extends State<ValidasiTransaksiScreen> {
     final isSuccess = status == 'sukses';
     final actionColor =
         isSuccess ? const Color(0xFF10B981) : const Color(0xFFEF4444);
+    var isSubmitting = false;
 
     Get.dialog(
-      Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        child: Padding(
-          padding: const EdgeInsets.all(28),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 64,
-                height: 64,
-                decoration: BoxDecoration(
-                  color: actionColor.withValues(alpha: 0.12),
-                  shape: BoxShape.circle,
+      StatefulBuilder(
+        builder: (dialogContext, setDialogState) => Dialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          child: Padding(
+            padding: const EdgeInsets.all(28),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 64,
+                  height: 64,
+                  decoration: BoxDecoration(
+                    color: actionColor.withValues(alpha: 0.12),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    isSuccess
+                        ? Icons.check_circle_outline_rounded
+                        : Icons.cancel_outlined,
+                    color: actionColor,
+                    size: 32,
+                  ),
                 ),
-                child: Icon(
+                const SizedBox(height: 16),
+                Text(
+                  '$actionName Transaksi?',
+                  style: const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFF1E293B),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
                   isSuccess
-                      ? Icons.check_circle_outline_rounded
-                      : Icons.cancel_outlined,
-                  color: actionColor,
-                  size: 32,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                '$actionName Transaksi?',
-                style: const TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xFF1E293B),
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                isSuccess
-                    ? 'Apakah Anda yakin ingin memvalidasi dan menyetujui transaksi ini?'
-                    : 'Apakah Anda yakin ingin membatalkan/menolak transaksi ini?',
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 13,
-                  color: Color(0xFF64748B),
-                  height: 1.5,
-                ),
-              ),
-              const SizedBox(height: 24),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => Get.back(),
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14)),
-                        side: const BorderSide(color: Color(0xFFE2E8F0)),
-                      ),
-                      child: const Text('Batal',
-                          style: TextStyle(color: Color(0xFF64748B))),
-                    ),
+                      ? 'Apakah Anda yakin ingin memvalidasi dan menyetujui transaksi ini?'
+                      : 'Apakah Anda yakin ingin membatalkan/menolak transaksi ini?',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: Color(0xFF64748B),
+                    height: 1.5,
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Get.back();
-                        controller.validasiTransaksi(id, status,
-                            reloadStatus:
-                                '${AppConstants.statusMenungguValidasi},${AppConstants.statusPending}');
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: actionColor,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14)),
-                        elevation: 0,
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: isSubmitting
+                            ? null
+                            : () => Navigator.of(dialogContext).pop(),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14)),
+                          side: const BorderSide(color: Color(0xFFE2E8F0)),
+                        ),
+                        child: const Text('Batal',
+                            style: TextStyle(color: Color(0xFF64748B))),
                       ),
-                      child: Text(actionName),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: isSubmitting
+                            ? null
+                            : () async {
+                                setDialogState(() => isSubmitting = true);
+                                Navigator.of(dialogContext).pop();
+                                await Future<void>.delayed(
+                                    const Duration(milliseconds: 80));
+                                await controller.validasiTransaksi(
+                                  id,
+                                  status,
+                                  reloadStatus:
+                                      '${AppConstants.statusMenungguValidasi},${AppConstants.statusPending}',
+                                );
+                              },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: actionColor,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14)),
+                          elevation: 0,
+                        ),
+                        child: isSubmitting
+                            ? const SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : Text(actionName),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
+      barrierDismissible: !isSubmitting,
     );
   }
 }

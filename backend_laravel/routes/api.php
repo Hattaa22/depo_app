@@ -21,8 +21,10 @@ Route::prefix('v1')->group(function () {
     Route::post('/auth/login/crew', [AuthController::class, 'loginCrew'])->middleware('throttle:login');
     Route::post('/auth/login/manager', [AuthController::class, 'loginManager'])->middleware('throttle:login');
     Route::post('/auth/refresh', [AuthController::class, 'refresh']);
-    Route::get('/pembayaran/qris/test-simulasi', [PaymentController::class, 'qrisTestSimulasi']);
-    Route::get('/pembayaran/qris/{paymentId}/status-public', [PaymentController::class, 'qrisStatusPublic']);
+    if (app()->environment(['local', 'testing'])) {
+        Route::get('/pembayaran/qris/test-simulasi', [PaymentController::class, 'qrisTestSimulasi']);
+        Route::get('/pembayaran/qris/{paymentId}/status-public', [PaymentController::class, 'qrisStatusPublic']);
+    }
     Route::post('/pembayaran/midtrans/notification', [PaymentController::class, 'midtransNotification']);
 
     Route::middleware('api.token')->group(function () {

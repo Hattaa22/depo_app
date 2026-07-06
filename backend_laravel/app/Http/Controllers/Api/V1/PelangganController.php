@@ -73,8 +73,10 @@ class PelangganController extends Controller
         return response()->json($this->camel((array) DB::table('pelanggan')->where('id', $id)->first()));
     }
 
-    public function pelangganDestroy(string $id)
+    public function pelangganDestroy(Request $request, string $id)
     {
+        $this->managerOnly($request);
+
         DB::table('pelanggan')->where('id', $id)->update($this->withUpdatedAt('pelanggan', ['is_aktif' => 0]));
 
         return response()->noContent();

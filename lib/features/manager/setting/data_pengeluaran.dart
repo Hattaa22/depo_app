@@ -371,19 +371,45 @@ class _DataPengeluaranScreenState extends State<DataPengeluaranScreen> {
                 // Dropdown Kategori
                 Obx(() => DropdownButtonFormField<String>(
                       initialValue: kategoriId.value,
+                      isExpanded: true,
+                      borderRadius: BorderRadius.circular(18),
+                      elevation: 8,
+                      menuMaxHeight: 320,
+                      icon: const Icon(Icons.keyboard_arrow_down_rounded),
+                      dropdownColor: Colors.white,
                       decoration: InputDecoration(
                         labelText: 'Kategori Pengeluaran',
                         prefixIcon: const Icon(Icons.pie_chart_outline_rounded,
                             color: Color(0xFF94A3B8), size: 20),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 16),
                         border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12)),
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: BorderSide.none,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide:
+                              const BorderSide(color: Color(0xFFE2E8F0)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide:
+                              const BorderSide(color: _primary, width: 2),
+                        ),
                         filled: true,
                         fillColor: const Color(0xFFF8FAFC),
                       ),
                       items: controller.kategoriList
                           .map((k) => DropdownMenuItem(
                                 value: k.id,
-                                child: Text(k.nama),
+                                child: Text(
+                                  k.nama,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                               ))
                           .toList(),
                       onChanged: (v) {

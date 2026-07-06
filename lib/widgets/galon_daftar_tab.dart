@@ -694,6 +694,9 @@ class _GalonDaftarTabState extends State<GalonDaftarTab> {
             const SizedBox(height: 16),
             Obx(() => DropdownButtonFormField<String>(
                   initialValue: status.value,
+                  isExpanded: true,
+                  borderRadius: BorderRadius.circular(18),
+                  icon: const Icon(Icons.keyboard_arrow_down_rounded),
                   items: const [
                     DropdownMenuItem(
                       value: AppConstants.galonTersedia,
@@ -709,17 +712,26 @@ class _GalonDaftarTabState extends State<GalonDaftarTab> {
                     ),
                   ],
                   onChanged: (v) => status.value = v!,
-                  decoration: const InputDecoration(labelText: 'Status'),
+                  decoration: _dropdownDecoration(
+                    label: 'Status',
+                    icon: Icons.flag_outlined,
+                  ),
                 )),
             const SizedBox(height: 16),
             Obx(() => DropdownButtonFormField<String>(
                   initialValue: jenis.value,
+                  isExpanded: true,
+                  borderRadius: BorderRadius.circular(18),
+                  icon: const Icon(Icons.keyboard_arrow_down_rounded),
                   items: const [
                     DropdownMenuItem(value: 'isi', child: Text('Isi')),
                     DropdownMenuItem(value: 'kosong', child: Text('Kosong')),
                   ],
                   onChanged: (v) => jenis.value = v!,
-                  decoration: const InputDecoration(labelText: 'Jenis'),
+                  decoration: _dropdownDecoration(
+                    label: 'Jenis',
+                    icon: Icons.water_drop_outlined,
+                  ),
                 )),
             const SizedBox(height: 16),
             Obx(() {
@@ -731,6 +743,8 @@ class _GalonDaftarTabState extends State<GalonDaftarTab> {
               return DropdownButtonFormField<Pelanggan>(
                 initialValue: selectedPelanggan.value,
                 isExpanded: true,
+                borderRadius: BorderRadius.circular(18),
+                icon: const Icon(Icons.keyboard_arrow_down_rounded),
                 hint: const Text('Pilih pelanggan...'),
                 items: list
                     .map((p) => DropdownMenuItem<Pelanggan>(
@@ -739,8 +753,10 @@ class _GalonDaftarTabState extends State<GalonDaftarTab> {
                         ))
                     .toList(),
                 onChanged: (v) => selectedPelanggan.value = v,
-                decoration:
-                    const InputDecoration(labelText: 'Pelanggan Peminjam'),
+                decoration: _dropdownDecoration(
+                  label: 'Pelanggan Peminjam',
+                  icon: Icons.person_outline_rounded,
+                ),
               );
             }),
           ],
@@ -794,6 +810,31 @@ class _GalonDaftarTabState extends State<GalonDaftarTab> {
       default:
         return const Color(0xFF94A3B8);
     }
+  }
+
+  InputDecoration _dropdownDecoration({
+    required String label,
+    required IconData icon,
+  }) {
+    return InputDecoration(
+      labelText: label,
+      prefixIcon: Icon(icon, color: const Color(0xFF94A3B8), size: 20),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide.none,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: _primary, width: 2),
+      ),
+      filled: true,
+      fillColor: const Color(0xFFF8FAFC),
+    );
   }
 }
 

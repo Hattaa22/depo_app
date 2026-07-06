@@ -80,7 +80,7 @@ class ApiTokenService
 
     private function secret(): string
     {
-        $key = (string) config('app.key');
+        $key = (string) (config('services.jwt.secret') ?: config('app.key'));
         if (str_starts_with($key, 'base64:')) {
             return base64_decode(substr($key, 7)) ?: $key;
         }

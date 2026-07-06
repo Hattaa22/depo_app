@@ -10,6 +10,7 @@ import 'local_storage.dart';
 /// Menyisipkan Bearer token & menangani 401.
 class ApiInterceptor extends Interceptor {
   final LocalStorage _storage;
+  Future<String?>? _refreshFuture;
 
   ApiInterceptor(this._storage);
 
@@ -75,6 +76,20 @@ class ApiInterceptor extends Interceptor {
   }
 
   Future<String?> _refreshAccessToken() async {
+    final currentRefresh = _refreshFuture;
+    if (currentRefresh != null) {
+      return currentRefresh;
+    }
+
+    _refreshFuture = _performRefreshAccessToken();
+    try {
+      return await _refreshFuture;
+    } finally {
+      _refreshFuture = null;
+    }
+  }
+
+  Future<String?> _performRefreshAccessToken() async {
     final refreshToken = await _storage.getSecure(AppConstants.keyRefreshToken);
     if (refreshToken == null || refreshToken.isEmpty) return null;
 

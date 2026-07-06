@@ -6,18 +6,18 @@ import 'package:flutter/foundation.dart';
 /// Contoh:
 /// flutter build apk --dart-define=API_BASE_URL=https://api.domain.com/api/v1
 class ApiConfig {
-  static const String _localWifiApiUrl = 'http://192.168.110.180:8000/api/v1';
+  static const String _defaultApiUrl = 'https://depoapp.flukswater.com/api/v1';
   static const String apiBaseUrl = String.fromEnvironment('API_BASE_URL');
   static const bool allowHttpApi = bool.fromEnvironment('ALLOW_HTTP_API');
 
   static String get baseUrl {
     final configured = apiBaseUrl.trim();
-    final rawUrl = configured.isNotEmpty ? configured : _localWifiApiUrl;
+    final rawUrl = configured.isNotEmpty ? configured : _defaultApiUrl;
 
     final normalized = _withApiVersion(rawUrl);
     final uri = Uri.tryParse(normalized);
     if (uri == null || !uri.hasScheme || uri.host.isEmpty) {
-      return _localWifiApiUrl;
+      return _defaultApiUrl;
     }
 
     if (uri.scheme != 'https' &&

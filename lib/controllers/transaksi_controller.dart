@@ -18,6 +18,22 @@ class TransaksiController extends GetxController {
   final isLoading = false.obs;
   final errorMessage = ''.obs;
 
+  void _showSnackbar(
+    String title,
+    String message, {
+    Color? backgroundColor,
+    Color? colorText,
+  }) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Get.snackbar(
+        title,
+        message,
+        backgroundColor: backgroundColor,
+        colorText: colorText,
+      );
+    });
+  }
+
   Future<void> loadTransaksi({
     int page = 1,
     String? status,
@@ -77,7 +93,7 @@ class TransaksiController extends GetxController {
       }
     } catch (e) {
       errorMessage.value = ApiErrorHelper.message(e);
-      Get.snackbar('Error', errorMessage.value,
+      _showSnackbar('Error', errorMessage.value,
           backgroundColor: const Color(0xFFE63946),
           colorText: const Color(0xFFFFFFFF));
     } finally {
@@ -94,7 +110,7 @@ class TransaksiController extends GetxController {
           ? AppConstants.validasiSukses
           : AppConstants.validasiGagal;
       await _apiService.validasiTransaksi(transaksiId, {'status': apiStatus});
-      Get.snackbar('Berhasil', 'Transaksi berhasil divalidasi');
+      _showSnackbar('Berhasil', 'Transaksi berhasil divalidasi');
       await loadTransaksi(status: reloadStatus);
       ManagerNavHelper.refreshHomeData();
       ManagerNavHelper.refreshLaporanData();
@@ -105,7 +121,7 @@ class TransaksiController extends GetxController {
       }
     } catch (e) {
       errorMessage.value = ApiErrorHelper.message(e);
-      Get.snackbar('Error', errorMessage.value,
+      _showSnackbar('Error', errorMessage.value,
           backgroundColor: Color(0xFFE63946), colorText: Color(0xFFFFFFFF));
     } finally {
       isLoading.value = false;

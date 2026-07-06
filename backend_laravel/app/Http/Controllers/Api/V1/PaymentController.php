@@ -45,6 +45,12 @@ class PaymentController extends Controller
                     'error' => 'transaksiId tidak valid',
                 ], 404);
             }
+            if (! $this->canAccessTransaksi($request, $trx)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Anda tidak berwenang mengakses transaksi ini',
+                ], 403);
+            }
             if ($trx->metode_pembayaran !== 'qris') {
                 return response()->json([
                     'success' => false,
@@ -215,7 +221,7 @@ class PaymentController extends Controller
         return response()->json($response, 201);
     }
 
-    public function qrisStatus(string $paymentId, MidtransService $midtrans)
+    public function qrisStatus(Request $request, string $paymentId, MidtransService $midtrans)
     {
         try {
             Log::info('Cek status pembayaran QRIS', ['payment_id' => $paymentId]);
@@ -227,6 +233,13 @@ class PaymentController extends Controller
                     'message' => 'Pembayaran QR tidak ditemukan',
                     'error' => 'paymentId tidak valid',
                 ], 404);
+            }
+            $trx = DB::table('transaksi')->where('id', $row->transaksi_id)->first();
+            if (! $trx || ! $this->canAccessTransaksi($request, $trx)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Anda tidak berwenang mengakses pembayaran ini',
+                ], 403);
             }
 
             $expiresAt = $row->expires_at ?? $row->expired_at ?? null;
@@ -303,7 +316,7 @@ class PaymentController extends Controller
         }
     }
 
-    public function qrisSimulatePay(string $paymentId)
+    public function qrisSimulatePay(Request $request, string $paymentId)
     {
         if (! config('services.midtrans.allow_simulation')) {
             return response()->json(['success' => false, 'message' => 'Simulasi pembayaran dinonaktifkan'], 403);
@@ -313,6 +326,13 @@ class PaymentController extends Controller
             $row = DB::table('qr_payments')->where('payment_id', $paymentId)->first();
             if (! $row) {
                 return response()->json(['success' => false, 'message' => 'Pembayaran QR tidak ditemukan'], 404);
+            }
+            $trx = DB::table('transaksi')->where('id', $row->transaksi_id)->first();
+            if (! $trx || ! $this->canAccessTransaksi($request, $trx)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Anda tidak berwenang mengakses pembayaran ini',
+                ], 403);
             }
             $paidAt = now();
             $update = ['status' => 'settlement', 'paid_at' => $paidAt, 'updated_at' => $paidAt];
@@ -356,6 +376,18 @@ class PaymentController extends Controller
             'testOrderId' => $id,
             'testAmount' => 15000,
         ]);
+    }
+
+    private function canAccessTransaksi(Request $request, object $trx): bool
+    {
+        $auth = $this->auth($request);
+        if (($auth['role'] ?? null) === 'manager') {
+            return true;
+        }
+
+        $userId = $auth['sub'] ?? null;
+
+        return $userId !== null && in_array($userId, [$trx->crew_id, $trx->pengirim_crew_id], true);
     }
 
     public function midtransNotification(Request $request, MidtransService $midtrans)

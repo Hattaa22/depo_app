@@ -33,9 +33,15 @@ class RouteServiceProvider extends ServiceProvider
         });
 
         RateLimiter::for('login', function (Request $request) {
-            $username = strtolower((string) $request->input('username', ''));
+            $identifier = strtolower((string) (
+                $request->input('email')
+                ?? $request->input('noHp')
+                ?? $request->input('no_hp')
+                ?? $request->input('username')
+                ?? ''
+            ));
 
-            return Limit::perMinute(5)->by($request->ip().'|'.$username);
+            return Limit::perMinute(5)->by($request->ip().'|'.$identifier);
         });
     }
 }

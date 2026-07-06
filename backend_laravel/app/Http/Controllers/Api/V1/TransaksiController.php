@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
 use Throwable;
 
@@ -179,23 +180,38 @@ class TransaksiController extends Controller
 
     public function transaksiStatus(Request $request, string $id)
     {
+        $this->managerOnly($request);
+        $data = $request->validate([
+            'status' => ['required', 'string', Rule::in(['pending', 'menungguValidasi', 'selesai', 'dibatalkan'])],
+        ]);
+
         if (! DB::table('transaksi')->where('id', $id)->exists()) {
             return response()->json(['message' => 'Transaksi tidak ditemukan'], 404);
         }
-        DB::table('transaksi')->where('id', $id)->update(['status' => $request->input('status'), 'updated_at' => now()]);
+        DB::table('transaksi')->where('id', $id)->update(['status' => $data['status'], 'updated_at' => now()]);
 
         return $this->transaksiShow($id);
     }
 
     public function transaksiValidasi(Request $request, string $id)
     {
+        $this->managerOnly($request);
+        $data = $request->validate([
+            'status' => ['required', 'string', Rule::in(['sukses', 'gagal'])],
+        ]);
+
         $auth = $this->auth($request);
-        return DB::transaction(function () use ($request, $id, $auth) {
-            $trx = DB::table('transaksi')->where('id', $id)->first();
+        return DB::transaction(function () use ($id, $auth, $data) {
+            $trx = DB::table('transaksi')->where('id', $id)->lockForUpdate()->first();
             if (! $trx) {
                 return response()->json(['message' => 'Transaksi tidak ditemukan'], 404);
             }
-            $status = $request->input('status');
+
+            if (in_array($trx->status_validasi, ['valid', 'invalid'], true)) {
+                return $this->transaksiShow($id);
+            }
+
+            $status = $data['status'];
             $nextStatus = $trx->status;
             $nextValidasi = $trx->status_validasi;
             if ($status === 'sukses') {

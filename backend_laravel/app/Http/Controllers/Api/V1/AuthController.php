@@ -46,14 +46,14 @@ class AuthController extends Controller
         }
 
         if (count($rows) === 0) {
-            return response()->json(['message' => $role === 'crew' ? 'Nomor HP tidak terdaftar atau tidak aktif' : 'Email atau password salah'], 401);
+            return response()->json(['message' => $role === 'crew' ? 'Nomor HP atau PIN salah' : 'Email atau password salah'], 401);
         }
 
         $user = (array) $rows[0];
         $hash = $role === 'crew' ? ($user['pin_hash'] ?: $user['password_hash']) : $user['password_hash'];
         
         if (! Hash::check($secret, $hash)) {
-            return response()->json(['message' => $role === 'crew' ? 'PIN salah' : 'Email atau password salah'], 401);
+            return response()->json(['message' => $role === 'crew' ? 'Nomor HP atau PIN salah' : 'Email atau password salah'], 401);
         }
 
         $accessToken = $tokens->issueAccessToken($user);

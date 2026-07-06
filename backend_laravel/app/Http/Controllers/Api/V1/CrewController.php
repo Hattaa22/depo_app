@@ -20,6 +20,8 @@ class CrewController extends Controller
 
     public function crewIndex(Request $request)
     {
+        $this->managerOnly($request);
+
         $query = DB::table('users')->where('role', 'crew');
         if ($request->filled('search')) {
             $search = '%'.strtolower((string) $request->query('search')).'%';
@@ -31,8 +33,10 @@ class CrewController extends Controller
         return $this->paginate($query->orderByDesc('created_at'), $request, fn ($row) => $this->crewResponse((array) $row));
     }
 
-    public function crewShow(string $id)
+    public function crewShow(Request $request, string $id)
     {
+        $this->managerOnly($request);
+
         $row = DB::table('users')->where('id', $id)->where('role', 'crew')->first();
         if (! $row) {
             return response()->json(['message' => 'Crew tidak ditemukan'], 404);
@@ -132,14 +136,17 @@ class CrewController extends Controller
             return response()->json(['message' => 'Crew tidak ditemukan'], 404);
         }
 
-        $defaultPin = '123456';
+        $newPin = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
         DB::table('users')->where('id', $id)->update([
-            'password_hash' => Hash::make($defaultPin),
-            'pin_hash' => Hash::make($defaultPin),
+            'password_hash' => Hash::make($newPin),
+            'pin_hash' => Hash::make($newPin),
             'updated_at' => now(),
         ]);
 
-        return response()->json(['message' => 'PIN berhasil direset ke '.$defaultPin]);
+        return response()->json([
+            'message' => 'PIN berhasil direset',
+            'pinBaru' => $newPin,
+        ]);
     }
 
     public function crewUpdateStatus(Request $request, string $id)

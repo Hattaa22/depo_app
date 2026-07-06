@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
 use Throwable;
 class GalonController extends Controller
@@ -63,22 +64,31 @@ class GalonController extends Controller
 
     public function galonStore(Request $request)
     {
-        $count = max(1, (int) $request->input('jumlah', 1));
+        $data = $request->validate([
+            'jumlah' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'kodeGalon' => ['nullable', 'string', 'max:20', 'unique:galon,kode_galon'],
+            'jenis' => ['nullable', 'string', Rule::in(['isi', 'kosong'])],
+            'status' => ['nullable', 'string', Rule::in(['tersedia', 'dipinjam', 'rusak', 'hilang'])],
+            'pelangganId' => ['nullable', 'exists:pelanggan,id'],
+            'catatan' => ['nullable', 'string'],
+        ]);
+
+        $count = max(1, (int) ($data['jumlah'] ?? 1));
         $created = [];
         for ($i = 0; $i < $count; $i++) {
             $id = (string) Str::uuid();
-            $code = $count === 1 && $request->filled('kodeGalon')
-                ? (string) $request->input('kodeGalon')
+            $code = $count === 1 && isset($data['kodeGalon'])
+                ? (string) $data['kodeGalon']
                 : $this->nextGalonCode($i);
             DB::table('galon')->insert([
                 'id' => $id,
                 'kode_galon' => $code,
                 'merek' => 'Depo',
-                'jenis' => $request->input('jenis', 'isi'),
-                'status' => $request->input('status', 'tersedia'),
-                'pelanggan_id' => $request->input('pelangganId'),
-                'tanggal_pinjam' => $request->input('status') === 'dipinjam' ? now() : null,
-                'catatan' => $request->input('catatan'),
+                'jenis' => $data['jenis'] ?? 'isi',
+                'status' => $data['status'] ?? 'tersedia',
+                'pelanggan_id' => $data['pelangganId'] ?? null,
+                'tanggal_pinjam' => ($data['status'] ?? 'tersedia') === 'dipinjam' ? now() : null,
+                'catatan' => $data['catatan'] ?? null,
                 'created_at' => now(),
             ]);
             $created[] = $this->camel((array) DB::table('galon')->where('id', $id)->first());
@@ -96,19 +106,27 @@ class GalonController extends Controller
         if (! $current) {
             return response()->json(['message' => 'Galon tidak ditemukan'], 404);
         }
-        $nextStatus = $request->input('status', $current->status);
+        $data = $request->validate([
+            'kodeGalon' => ['nullable', 'string', 'max:20', 'unique:galon,kode_galon,'.$id],
+            'jenis' => ['nullable', 'string', Rule::in(['isi', 'kosong'])],
+            'status' => ['nullable', 'string', Rule::in(['tersedia', 'dipinjam', 'rusak', 'hilang'])],
+            'pelangganId' => ['nullable', 'exists:pelanggan,id'],
+            'catatan' => ['nullable', 'string'],
+        ]);
+
+        $nextStatus = $data['status'] ?? $current->status;
         DB::table('galon')->where('id', $id)->update([
-            'kode_galon' => $request->input('kodeGalon', $current->kode_galon),
+            'kode_galon' => $data['kodeGalon'] ?? $current->kode_galon,
             'merek' => 'Depo',
-            'jenis' => $request->input('jenis', $current->jenis),
+            'jenis' => $data['jenis'] ?? $current->jenis,
             'status' => $nextStatus,
-            'pelanggan_id' => $request->has('pelangganId') ? $request->input('pelangganId') : $current->pelanggan_id,
+            'pelanggan_id' => array_key_exists('pelangganId', $data) ? $data['pelangganId'] : $current->pelanggan_id,
             'tanggal_pinjam' => $nextStatus === 'dipinjam' ? ($current->tanggal_pinjam ?: now()) : null,
-            'catatan' => $request->input('catatan', $current->catatan),
+            'catatan' => $data['catatan'] ?? $current->catatan,
             'updated_at' => now(),
         ]);
 
-        if ($request->filled('status') && $request->input('status') !== $current->status) {
+        if (isset($data['status']) && $data['status'] !== $current->status) {
             $jenisMutasi = match ($nextStatus) {
                 'dipinjam' => 'pinjam',
                 'tersedia' => 'kembali',
@@ -121,9 +139,9 @@ class GalonController extends Controller
                 'aksi' => 'ubah_status',
                 'jenis_mutasi' => $jenisMutasi,
                 'jumlah' => 1,
-                'kode_galon' => json_encode([$request->input('kodeGalon', $current->kode_galon)]),
+                'kode_galon' => json_encode([$data['kodeGalon'] ?? $current->kode_galon]),
                 'status_dari' => $current->status,
-                'status_ke' => $request->input('status'),
+                'status_ke' => $data['status'],
                 'crew_id' => $this->auth($request)['sub'],
                 'crew_nama' => $this->auth($request)['nama'],
             ]);
@@ -134,23 +152,37 @@ class GalonController extends Controller
 
     public function galonPinjam(Request $request)
     {
-        return response()->json($this->applyGalonMutasi('pinjam', (int) $request->input('jumlah'), [
-            'pelanggan_id' => $request->input('pelangganId'),
-            'catatan' => $request->input('catatan'),
+        $data = $request->validate([
+            'jumlah' => ['required', 'integer', 'min:1'],
+            'pelangganId' => ['required', 'exists:pelanggan,id'],
+            'catatan' => ['nullable', 'string'],
+            'tanggal' => ['nullable', 'date'],
+        ]);
+
+        return response()->json($this->applyGalonMutasi('pinjam', (int) $data['jumlah'], [
+            'pelanggan_id' => $data['pelangganId'],
+            'catatan' => $data['catatan'] ?? null,
             'crew_id' => $this->auth($request)['sub'],
             'crew_nama' => $this->auth($request)['nama'],
-            'tanggal' => $request->input('tanggal'),
+            'tanggal' => $data['tanggal'] ?? null,
         ]));
     }
 
     public function galonKembali(Request $request)
     {
-        return response()->json($this->applyGalonMutasi('kembali', (int) $request->input('jumlah'), [
-            'pelanggan_id' => $request->input('pelangganId'),
-            'catatan' => $request->input('catatan'),
+        $data = $request->validate([
+            'jumlah' => ['required', 'integer', 'min:1'],
+            'pelangganId' => ['required', 'exists:pelanggan,id'],
+            'catatan' => ['nullable', 'string'],
+            'tanggal' => ['nullable', 'date'],
+        ]);
+
+        return response()->json($this->applyGalonMutasi('kembali', (int) $data['jumlah'], [
+            'pelanggan_id' => $data['pelangganId'],
+            'catatan' => $data['catatan'] ?? null,
             'crew_id' => $this->auth($request)['sub'],
             'crew_nama' => $this->auth($request)['nama'],
-            'tanggal' => $request->input('tanggal'),
+            'tanggal' => $data['tanggal'] ?? null,
         ]));
     }
 }

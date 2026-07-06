@@ -39,7 +39,7 @@ class AuthController extends GetxController {
     final api = Get.find<ApiService>();
     final ok = await api.cekKoneksiServer();
     if (!ok) {
-      Get.snackbar(
+      _showSnackbar(
         'Server tidak terjangkau',
         ApiErrorHelper.connectionHelp(),
         backgroundColor: const Color(0xFFE63946),
@@ -48,6 +48,24 @@ class AuthController extends GetxController {
       );
     }
     return ok;
+  }
+
+  void _showSnackbar(
+    String title,
+    String message, {
+    Color? backgroundColor,
+    Color? colorText,
+    Duration? duration,
+  }) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Get.snackbar(
+        title,
+        message,
+        backgroundColor: backgroundColor,
+        colorText: colorText,
+        duration: duration,
+      );
+    });
   }
 
   Future<void> loginCrew(String noHp, String password) async {
@@ -63,7 +81,7 @@ class AuthController extends GetxController {
       Get.offAllNamed(AppRoutes.crewDashboard);
     } catch (e) {
       errorMessage.value = ApiErrorHelper.message(e);
-      Get.snackbar(
+      _showSnackbar(
         'Gagal login',
         errorMessage.value,
         backgroundColor: const Color(0xFFE63946),
@@ -88,7 +106,7 @@ class AuthController extends GetxController {
       Get.offAllNamed(AppRoutes.managerDashboard);
     } catch (e) {
       errorMessage.value = ApiErrorHelper.message(e);
-      Get.snackbar(
+      _showSnackbar(
         'Gagal login',
         errorMessage.value,
         backgroundColor: const Color(0xFFE63946),
@@ -131,7 +149,7 @@ class AuthController extends GetxController {
       return true;
     } catch (e) {
       errorMessage.value = ApiErrorHelper.message(e);
-      Get.snackbar(
+      _showSnackbar(
         'Gagal mengubah password',
         errorMessage.value,
         backgroundColor: const Color(0xFFE63946),
@@ -154,7 +172,7 @@ class AuthController extends GetxController {
       return true;
     } catch (e) {
       errorMessage.value = ApiErrorHelper.message(e);
-      Get.snackbar(
+      _showSnackbar(
         'Gagal mengubah PIN',
         errorMessage.value,
         backgroundColor: const Color(0xFFE63946),

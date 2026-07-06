@@ -42,4 +42,8 @@ return [
         'allow_simulation' => (bool) env('MIDTRANS_ALLOW_SIMULATION', false),
     ],
 
+    'jwt' => [
+        'secret' => env('JWT_SECRET'),
+    ],
+
 ];
