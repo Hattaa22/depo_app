@@ -40,21 +40,27 @@ class _PembayaranQrScreenState extends State<PembayaranQrScreen> {
   final _errorMessage = ''.obs;
   final _expiredAt = ''.obs;
   final _jumlah = 0.0.obs;
+  bool _isLeavingPage = false;
 
   @override
   void initState() {
     super.initState();
-    _initQris();
-    _pollingTimer = Timer.periodic(const Duration(seconds: 4), (_) {
-      _cekStatus();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _initQris();
+      _pollingTimer = Timer.periodic(const Duration(seconds: 4), (_) {
+        _cekStatus();
+      });
     });
   }
 
   Future<void> _initQris() async {
+    if (_isLeavingPage || !mounted) return;
     _isLoading.value = true;
     _errorMessage.value = '';
     try {
       final payment = await _api.buatPembayaranQris(widget.transaksiId);
+      if (_isLeavingPage || !mounted) return;
       _paymentId.value = payment.paymentId;
       _qrisString.value = payment.qrContent;
       _qrImageUrl.value = payment.qrImageUrl ?? '';
@@ -65,6 +71,7 @@ class _PembayaranQrScreenState extends State<PembayaranQrScreen> {
           ? Formatters.dateTime(expiredAt)
           : payment.expiresAt;
     } catch (e) {
+      if (_isLeavingPage || !mounted) return;
       _errorMessage.value = ApiErrorHelper.message(e);
       Get.snackbar(
         'Gagal membuat QRIS',
@@ -74,17 +81,21 @@ class _PembayaranQrScreenState extends State<PembayaranQrScreen> {
         duration: const Duration(seconds: 5),
       );
     } finally {
-      _isLoading.value = false;
+      if (!_isLeavingPage && mounted) {
+        _isLoading.value = false;
+      }
     }
   }
 
   Future<void> _cekStatus() async {
+    if (_isLeavingPage || !mounted) return;
     if (_paymentId.value.isEmpty || _isPaid.value || _isExpired.value) return;
     if (_isPolling.value) return;
 
     _isPolling.value = true;
     try {
       final status = await _api.cekStatusPembayaranQris(_paymentId.value);
+      if (_isLeavingPage || !mounted) return;
       if (status.isPaid) {
         _onPembayaranBerhasil();
       } else if (status.isExpired) {
@@ -94,8 +105,24 @@ class _PembayaranQrScreenState extends State<PembayaranQrScreen> {
     } catch (_) {
       // Tetap polling — koneksi sementara putus
     } finally {
-      _isPolling.value = false;
+      if (!_isLeavingPage && mounted) {
+        _isPolling.value = false;
+      }
     }
+  }
+
+  void _bukaRiwayatTransaksi() {
+    if (_isLeavingPage) return;
+    _isLeavingPage = true;
+    _pollingTimer?.cancel();
+    Get.offAllNamed(AppRoutes.crewRiwayat);
+  }
+
+  void _tutupPembayaran() {
+    if (_isLeavingPage) return;
+    _isLeavingPage = true;
+    _pollingTimer?.cancel();
+    Get.offAllNamed(AppRoutes.crewDashboard);
   }
 
   /// Buka halaman checkout Midtrans Snap di browser.
@@ -124,7 +151,7 @@ class _PembayaranQrScreenState extends State<PembayaranQrScreen> {
   }
 
   void _onPembayaranBerhasil() {
-    if (_isPaid.value) return;
+    if (_isLeavingPage || !mounted || _isPaid.value) return;
     _isPaid.value = true;
     _pollingTimer?.cancel();
     Get.snackbar(
@@ -135,7 +162,9 @@ class _PembayaranQrScreenState extends State<PembayaranQrScreen> {
       duration: const Duration(seconds: 3),
     );
     Future.delayed(const Duration(milliseconds: 800), () {
-      if (mounted) Get.offAllNamed(AppRoutes.crewDashboard);
+      if (!mounted || _isLeavingPage) return;
+      _isLeavingPage = true;
+      Get.offAllNamed(AppRoutes.crewDashboard);
     });
   }
 
@@ -152,10 +181,7 @@ class _PembayaranQrScreenState extends State<PembayaranQrScreen> {
         title: const Text('Pembayaran QRIS'),
         leading: IconButton(
           icon: const Icon(Icons.close),
-          onPressed: () {
-            _pollingTimer?.cancel();
-            Get.offAllNamed(AppRoutes.crewDashboard);
-          },
+          onPressed: _tutupPembayaran,
         ),
       ),
       body: Obx(() {
@@ -394,9 +420,9 @@ class _PembayaranQrScreenState extends State<PembayaranQrScreen> {
             ),
             const SizedBox(height: 12),
             OutlinedButton.icon(
-              onPressed: _cekStatus,
-              icon: const Icon(Icons.refresh_rounded, size: 18),
-              label: const Text('Cek Status Pembayaran'),
+              onPressed: _bukaRiwayatTransaksi,
+              icon: const Icon(Icons.history_rounded, size: 18),
+              label: const Text('Lihat Riwayat Transaksi'),
               style: OutlinedButton.styleFrom(
                 foregroundColor: const Color(0xFF0284C7),
                 side: const BorderSide(color: Color(0xFF0284C7)),

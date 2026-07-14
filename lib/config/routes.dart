@@ -111,7 +111,12 @@ class AppRoutes {
     return GetPage(
       name: name,
       page: () {
-        Get.find<CrewMainController>().changeTab(tabIndex);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (Get.currentRoute == name &&
+              Get.isRegistered<CrewMainController>()) {
+            Get.find<CrewMainController>().changeTab(tabIndex);
+          }
+        });
         return const CrewMainScreen();
       },
     );

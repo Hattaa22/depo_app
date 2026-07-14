@@ -1230,16 +1230,13 @@ class _KasirScreenState extends State<KasirScreen> {
           GestureDetector(
             onTap: total > 0
                 ? () {
-                    final perluPelanggan =
-                        kasir.memilikiGalonBaru || kasir.isDikirim;
-                    if (perluPelanggan &&
-                        (kasir.pelangganDipilih.value == null ||
-                            kasir.pelangganDipilih.value!.id.isEmpty)) {
+                    if (kasir.pelangganDipilih.value == null ||
+                        kasir.pelangganDipilih.value!.id.isEmpty) {
                       Get.snackbar(
                         'Perhatian',
                         kasir.isDikirim
                             ? 'Pilih pelanggan untuk pengiriman galon'
-                            : 'Pilih pelanggan untuk penjualan galon baru',
+                            : 'Pilih pelanggan sebelum melakukan pembayaran',
                         backgroundColor: Colors.orange,
                         colorText: Colors.white,
                       );

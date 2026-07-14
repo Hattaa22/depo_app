@@ -6,14 +6,22 @@ import '../../../config/routes.dart';
 import '../../../utils/formatters.dart';
 import '../../../widgets/header_back_button.dart';
 
-class AnalisisKeuanganReportScreen extends StatelessWidget {
+class AnalisisKeuanganReportScreen extends StatefulWidget {
   const AnalisisKeuanganReportScreen({super.key});
+
+  @override
+  State<AnalisisKeuanganReportScreen> createState() =>
+      _AnalisisKeuanganReportScreenState();
+}
+
+class _AnalisisKeuanganReportScreenState
+    extends State<AnalisisKeuanganReportScreen> {
+  DateTime? _mulai;
+  DateTime? _akhir;
 
   @override
   Widget build(BuildContext context) {
     final analisis = Get.find<AnalisisController>();
-    final mulai = Rxn<DateTime>();
-    final akhir = Rxn<DateTime>();
 
     Future<void> pilihTanggal() async {
       final range = await showDateRangePicker(
@@ -21,9 +29,11 @@ class AnalisisKeuanganReportScreen extends StatelessWidget {
         firstDate: DateTime(2020),
         lastDate: DateTime.now(),
       );
-      if (range != null) {
-        mulai.value = range.start;
-        akhir.value = range.end;
+      if (range != null && mounted) {
+        setState(() {
+          _mulai = range.start;
+          _akhir = range.end;
+        });
         analisis.loadRingkasan(
           Formatters.dateOnly(range.start),
           Formatters.dateOnly(range.end),
@@ -73,11 +83,11 @@ class AnalisisKeuanganReportScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (mulai.value != null && akhir.value != null)
+              if (_mulai != null && _akhir != null)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16),
                   child: Text(
-                    '${Formatters.dateOnly(mulai.value!)} - ${Formatters.dateOnly(akhir.value!)}',
+                    '${Formatters.dateOnly(_mulai!)} - ${Formatters.dateOnly(_akhir!)}',
                     style: const TextStyle(color: AppTheme.textSecondary),
                   ),
                 ),

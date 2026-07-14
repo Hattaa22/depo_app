@@ -85,7 +85,7 @@ class TransaksiController extends GetxController {
           'pengirimCrewId': pengirimCrewId,
       });
       transaksiTerbaru.value = result;
-      await loadTransaksi();
+      await loadTransaksi(crewId: crewId);
       if (Get.isRegistered<GalonController>()) {
         final galon = Get.find<GalonController>();
         await galon.loadSummary();
