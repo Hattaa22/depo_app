@@ -66,7 +66,12 @@ class ApiInterceptor extends Interceptor {
         }
       }
 
-      await _clearSessionAndRedirect();
+      final authorization =
+          err.requestOptions.headers['Authorization']?.toString() ?? '';
+      final failedAccessToken = authorization.startsWith('Bearer ')
+          ? authorization.substring(7)
+          : null;
+      await _clearSessionAndRedirect(expectedAccessToken: failedAccessToken);
     }
     handler.next(err);
   }
@@ -113,6 +118,18 @@ class ApiInterceptor extends Interceptor {
       final nextRefreshToken = data['refresh_token'] as String? ?? '';
       if (accessToken.isEmpty || nextRefreshToken.isEmpty) return null;
 
+      // Login role lain mungkin sudah mengganti sesi ketika request refresh
+      // ini masih berjalan. Jangan biarkan hasil refresh sesi lama menimpa
+      // token dari login terbaru.
+      final activeRefreshToken =
+          await _storage.getSecure(AppConstants.keyRefreshToken);
+      if (activeRefreshToken != refreshToken) {
+        if (kDebugMode) {
+          debugPrint('[API] STALE REFRESH RESULT IGNORED');
+        }
+        return null;
+      }
+
       await Future.wait([
         _storage.setSecure(AppConstants.keyAccessToken, accessToken),
         _storage.setSecure(AppConstants.keyRefreshToken, nextRefreshToken),
@@ -140,7 +157,15 @@ class ApiInterceptor extends Interceptor {
     }
   }
 
-  Future<void> _clearSessionAndRedirect() async {
+  Future<void> _clearSessionAndRedirect({String? expectedAccessToken}) async {
+    final activeAccessToken =
+        await _storage.getSecure(AppConstants.keyAccessToken);
+    if (expectedAccessToken != null &&
+        expectedAccessToken.isNotEmpty &&
+        activeAccessToken != expectedAccessToken) {
+      // Request yang gagal berasal dari sesi lama; sesi baru jangan dihapus.
+      return;
+    }
     await _storage.removeSecure(AppConstants.keyAccessToken);
     await _storage.removeSecure(AppConstants.keyRefreshToken);
     if (Get.key.currentState != null) {

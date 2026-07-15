@@ -32,6 +32,9 @@ class AuthService {
       return mockResponse;
     }
 
+    // Hapus sesi role sebelumnya agar request setelah login tidak sempat
+    // menggunakan token lama saat pengguna berpindah antara crew/manager.
+    await _clearSession();
     final response = await _apiService.loginCrew(
       LoginRequest(identifier: noHp, password: password, noHp: noHp),
     );
@@ -64,6 +67,8 @@ class AuthService {
       return mockResponse;
     }
 
+    // Hapus sesi role sebelumnya sebelum membuat sesi manager yang baru.
+    await _clearSession();
     final response = await _apiService.loginManager(
       LoginRequest(identifier: email, password: password),
     );
