@@ -102,6 +102,24 @@ class ApiFlowTest extends TestCase
             ->assertJsonFragment(['id' => $transactionId]);
     }
 
+    public function test_crew_can_load_active_delivery_crew_options(): void
+    {
+        $token = $this->crewToken();
+
+        $this->getJson('/api/v1/crew', [
+            'Authorization' => "Bearer {$token}",
+        ])
+            ->assertOk()
+            ->assertJsonStructure([
+                'data' => [['id', 'nama', 'noHp', 'isAktif']],
+                'total',
+                'page',
+                'limit',
+                'totalPages',
+            ])
+            ->assertJsonMissingPath('data.0.alamat');
+    }
+
     public function test_crew_can_create_cash_transaction(): void
     {
         $token = $this->crewToken();

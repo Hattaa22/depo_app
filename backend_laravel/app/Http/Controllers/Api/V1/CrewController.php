@@ -20,8 +20,6 @@ class CrewController extends Controller
 
     public function crewIndex(Request $request)
     {
-        $this->managerOnly($request);
-
         $query = DB::table('users')->where('role', 'crew');
         if ($request->filled('search')) {
             $search = '%'.strtolower((string) $request->query('search')).'%';
@@ -30,7 +28,20 @@ class CrewController extends Controller
             });
         }
 
-        return $this->paginate($query->orderByDesc('created_at'), $request, fn ($row) => $this->crewResponse((array) $row));
+        $isManager = ($this->auth($request)['role'] ?? null) === 'manager';
+
+        return $this->paginate(
+            $query->orderByDesc('created_at'),
+            $request,
+            fn ($row) => $isManager
+                ? $this->crewResponse((array) $row)
+                : [
+                    'id' => $row->id,
+                    'nama' => $row->nama,
+                    'noHp' => $row->no_hp ?? '',
+                    'isAktif' => (bool) ($row->is_aktif ?? true),
+                ],
+        );
     }
 
     public function crewShow(Request $request, string $id)
